@@ -1,0 +1,1019 @@
+{
+    "Run2017_Ele_ReMiniAOD": {
+        "dir": "SingleElectron",
+        "type": "0",
+        "xsec": "1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "Run2017_Mu_ReMiniAOD": {
+        "dir": "SingleMuon",
+        "type": "0",
+        "xsec": "1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "Run2017_MET_MiniAOD": {
+        "dir": "MET",
+        "type": "0",
+        "xsec": "1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "Run2017_DoubleEle_ReMiniAOD": {
+        "dir": "DoubleEG",
+        "type": "0",
+        "xsec": "1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "Run2017_DoubleMu_ReMiniAOD": {
+        "dir": "DoubleMuon",
+        "type": "0",
+        "xsec": "1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WplusH125ToCC_WLNu_powheg": {
+        "dir": "WplusH_HToCC_WToLNu_M125_13TeV_powheg_pythia8",
+        "type": "-13500",
+        "xsec": "0.008540",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WminusH125ToCC_WLNu_powheg": {
+        "dir": "WminusH_HToCC_WToLNu_M125_13TeV_powheg_pythia8",
+        "type": "-13501",
+        "xsec": "0.005411",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ZH125ToCC_ZLL_powheg": {
+        "dir": "ZH_HToCC_ZToLL_M125_13TeV_powheg_pythia8",
+        "type": "-13502",
+        "xsec": "0.002342",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125ToCC_ZLL_powheg": {
+        "dir": "ggZH_HToCC_ZToLL_M125_13TeV_powheg_pythia8",
+        "type": "-13503",
+        "xsec": "0.000357",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ZH125ToCC_ZNuNu_powheg": {
+        "dir": "ZH_HToCC_ZToNuNu_M125_13TeV_powheg_pythia8",
+        "type": "-13504",
+        "xsec": "0.004628",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125ToCC_ZNuNu_powheg": {
+        "dir": "ggZH_HToCC_ZToNuNu_M125_13TeV_powheg_pythia8",
+        "type": "-13505",
+        "xsec": "0.000713",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WplusH125_powheg": {
+        "dir": "WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8",
+        "type": "-12500",
+        "xsec": "0.17202",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WminusH125_powheg": {
+        "dir": "WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8",
+        "type": "-12501",
+        "xsec": "0.10899",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ZH125_ZLL_powheg": {
+        "dir": "ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8",
+        "type": "-12502",
+        "xsec": "0.04718",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125_ZLL_powheg": {
+        "dir": "ggZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8",
+        "type": "-12503",
+        "xsec": "0.00720",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ZH125_ZNuNu_powheg": {
+        "dir": "ZH_HToBB_ZToNuNu_M125_13TeV_powheg_pythia8",
+        "type": "-12504",
+        "xsec": "0.09322",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125_ZNuNu_powheg": {
+        "dir": "ggZH_HToBB_ZToNuNu_M125_13TeV_powheg_pythia8",
+        "type": "-12505",
+        "xsec": "0.01437",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WplusH125ToTauTau": {
+        "dir": "WplusHToTauTau_M125_13TeV_powheg_pythia8",
+        "type": "500",
+        "xsec": "0.0527",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WminusH125ToTauTau": {
+        "dir": "WminusHToTauTau_M125_13TeV_powheg_pythia8",
+        "type": "501",
+        "xsec": "0.0358",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ZH125ToTauTau": {
+        "dir": "ZHToTauTau_M125_13TeV_powheg_pythia8",
+        "type": "502",
+        "xsec": "0.0594",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125ToTauTau_ZLL": {
+        "dir": "ggZH_HToTauTau_ZToLL_M125_13TeV_powheg_pythia8",
+        "type": "503",
+        "xsec": "0.00077",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ggZH125ToTauTau_ZNuNu": {
+        "dir": "ggZH_HToTauTau_ZToNuNu_M125_13TeV_powheg_pythia8",
+        "type": "504",
+        "xsec": "0.00155",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WJets_madgraph": {
+        "dir": "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "40",
+        "xsec": "52940",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT100To200": {
+        "dir": "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "41",
+        "xsec": "1395",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT200To400": {
+        "dir": "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "42",
+        "xsec": "407.9",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT400To600": {
+        "dir": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "43",
+        "xsec": "57.48",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT600To800": {
+        "dir": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "44",
+        "xsec": "12.87",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT800To1200": {
+        "dir": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "45",
+        "xsec": "5.366",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT1200To2500": {
+        "dir": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "46",
+        "xsec": "1.074",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets-HT2500ToInf": {
+        "dir": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "47",
+        "xsec": "0.008001",
+        "lepflav": "",
+        "kfac": "1.167",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W1Jets-Pt50To150": {
+        "dir": "W1JetsToLNu_LHEWpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "61",
+        "xsec": "2661.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W1Jets-Pt100To150": {
+        "dir": "W1JetsToLNu_LHEWpT_100-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "62",
+        "xsec": "286.1",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W1Jets-Pt150To250": {
+        "dir": "W1JetsToLNu_LHEWpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "63",
+        "xsec": "71.9",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W1Jets-Pt250To400": {
+        "dir": "W1JetsToLNu_LHEWpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "64",
+        "xsec": "8.05",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W1Jets-Pt400ToInf": {
+        "dir": "W1JetsToLNu_LHEWpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "65",
+        "xsec": "0.885",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W2Jets-Pt50To150": {
+        "dir": "W2JetsToLNu_LHEWpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "67",
+        "xsec": "1331.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W2Jets-Pt100To150": {
+        "dir": "W2JetsToLNu_LHEWpT_100-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "68",
+        "xsec": "277.7",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W2Jets-Pt150To250": {
+        "dir": "W2JetsToLNu_LHEWpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "69",
+        "xsec": "105.9",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W2Jets-Pt250To400": {
+        "dir": "W2JetsToLNu_LHEWpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "70",
+        "xsec": "18.67",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "W2Jets-Pt400ToInf": {
+        "dir": "W2JetsToLNu_LHEWpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "72",
+        "xsec": "3.037",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets_0J_nlo": {
+        "dir": "WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "75",
+        "xsec": "54500.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets_1J_nlo": {
+        "dir": "WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "76",
+        "xsec": "8750.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WJets_2J_nlo": {
+        "dir": "WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "77",
+        "xsec": "3010.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_madgraph": {
+        "dir": "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "110",
+        "xsec": "5343.",
+        "lepflav": "",
+        "kfac": "1.14",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT100to200_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "111",
+        "xsec": "161.1",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT200to400_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "112",
+        "xsec": "48.66",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT400to600_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "113",
+        "xsec": "6.968",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT600to800_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "114",
+        "xsec": "1.743",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT800to1200_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "115",
+        "xsec": "0.8502",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT1200to2500_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "116",
+        "xsec": "0.1743",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_HT2500toInf_madgraph": {
+        "dir": "DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "117",
+        "xsec": "0.003468",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_M4to50_HT100to200_madgraph": {
+        "dir": "DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "125",
+        "xsec": "203.7",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_M4to50_HT200to400_madgraph": {
+        "dir": "DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "126",
+        "xsec": "54.27",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_M4to50_HT400to600_madgraph": {
+        "dir": "DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "127",
+        "xsec": "5.728",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYToLL_M4to50_HT600toInf_madgraph": {
+        "dir": "DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "128",
+        "xsec": "1.846",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYJetsToLL_nlo": {
+        "dir": "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "130",
+        "xsec": "6508.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY1ToLL_PtZ-50To150": {
+        "dir": "DY1JetsToLL_M-50_LHEZpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "131",
+        "xsec": "316.6",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY1ToLL_PtZ-150To250": {
+        "dir": "DY1JetsToLL_M-50_LHEZpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "132",
+        "xsec": "9.543",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY1ToLL_PtZ-250To400": {
+        "dir": "DY1JetsToLL_M-50_LHEZpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "133",
+        "xsec": "1.098",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY1ToLL_PtZ-400ToInf": {
+        "dir": "DY1JetsToLL_M-50_LHEZpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "134",
+        "xsec": "0.1193",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY2ToLL_PtZ-50To150": {
+        "dir": "DY2JetsToLL_M-50_LHEZpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "135",
+        "xsec": "169.6",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY2ToLL_PtZ-150To250": {
+        "dir": "DY2JetsToLL_M-50_LHEZpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "136",
+        "xsec": "15.65",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY2ToLL_PtZ-250To400": {
+        "dir": "DY2JetsToLL_M-50_LHEZpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "137",
+        "xsec": "2.737",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DY2ToLL_PtZ-400ToInf": {
+        "dir": "DY2JetsToLL_M-50_LHEZpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "138",
+        "xsec": "0.4477",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYJetsToLL_0J_nlo": {
+        "dir": "DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "139",
+        "xsec": "5333.",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYJetsToLL_1J_nlo": {
+        "dir": "DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "140",
+        "xsec": "965.0",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "DYJetsToLL_2J_nlo": {
+        "dir": "DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "141",
+        "xsec": "362.0",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT100To200": {
+        "dir": "ZJetsToNuNu_HT-100To200_13TeV-madgraph",
+        "type": "150",
+        "xsec": "302.8",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT200To400": {
+        "dir": "ZJetsToNuNu_HT-200To400_13TeV-madgraph",
+        "type": "151",
+        "xsec": "92.59",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT400To600": {
+        "dir": "ZJetsToNuNu_HT-400To600_13TeV-madgraph",
+        "type": "152",
+        "xsec": "13.18",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT600To800": {
+        "dir": "ZJetsToNuNu_HT-600To800_13TeV-madgraph",
+        "type": "153",
+        "xsec": "3.257",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT800To1200": {
+        "dir": "ZJetsToNuNu_HT-800To1200_13TeV-madgraph",
+        "type": "154",
+        "xsec": "1.49",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT1200To2500": {
+        "dir": "ZJetsToNuNu_HT-1200To2500_13TeV-madgraph",
+        "type": "155",
+        "xsec": "0.3419",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZJetsToNuNu_HT2500ToInf": {
+        "dir": "ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph",
+        "type": "156",
+        "xsec": "0.005146",
+        "lepflav": "",
+        "kfac": "1.137",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z1JetsToNuNu_PtZ-50To150": {
+        "dir": "Z1JetsToNuNu_M-50_LHEZpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "157",
+        "xsec": "596.4",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z1JetsToNuNu_PtZ-150To250": {
+        "dir": "Z1JetsToNuNu_M-50_LHEZpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "158",
+        "xsec": "17.98",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z1JetsToNuNu_PtZ-250To400": {
+        "dir": "Z1JetsToNuNu_M-50_LHEZpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "159",
+        "xsec": "2.057",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z1JetsToNuNu_PtZ-400ToInf": {
+        "dir": "Z1JetsToNuNu_M-50_LHEZpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "160",
+        "xsec": "0.224",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z2JetsToNuNu_PtZ-50To150": {
+        "dir": "Z2JetsToNuNu_M-50_LHEZpT_50-150_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "161",
+        "xsec": "325.7",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z2JetsToNuNu_PtZ-150To250": {
+        "dir": "Z2JetsToNuNu_M-50_LHEZpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "162",
+        "xsec": "29.76",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z2JetsToNuNu_PtZ-250To400": {
+        "dir": "Z2JetsToNuNu_M-50_LHEZpT_250-400_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "163",
+        "xsec": "5.166",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "Z2JetsToNuNu_PtZ-400ToInf": {
+        "dir": "Z2JetsToNuNU_M-50_LHEZpT_400-inf_TuneCP5_13TeV-amcnloFXFX-pythia8",
+        "type": "164",
+        "xsec": "0.8457",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "QCD_HT100to200": {
+        "dir": "QCD_HT100to200_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "1",
+        "xsec": "27990000",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT200to300": {
+        "dir": "QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "2",
+        "xsec": "1547000",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT300to500": {
+        "dir": "QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "3",
+        "xsec": "322600",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT500to700": {
+        "dir": "QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "4",
+        "xsec": "29980",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT700to1000": {
+        "dir": "QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "5",
+        "xsec": "6334",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT1000to1500": {
+        "dir": "QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "6",
+        "xsec": "1088",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT1500to2000": {
+        "dir": "QCD_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "7",
+        "xsec": "99.11",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "QCD_HT2000toInf": {
+        "dir": "QCD_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8",
+        "type": "8",
+        "xsec": "20.23",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_tW_antitop_5f_inc": {
+        "dir": "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
+        "type": "21",
+        "xsec": "35.85",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_tW_top_5f_inc_PSw": {
+        "dir": "ST_tW_top_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "20",
+        "xsec": "35.85",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_s-c_top": {
+        "dir": "ST_s-channel_top_leptonDecays_13TeV-PSweights_powheg-pythia",
+        "type": "16",
+        "xsec": "2.0688",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_s-c_antitop": {
+        "dir": "ST_s-channel_antitop_leptonDecays_13TeV-PSweights_powheg-pythia",
+        "type": "17",
+        "xsec": "1.2934",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_t-c_top_4f_inc": {
+        "dir": "ST_t-channel_top_4f_InclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "18",
+        "xsec": "136.02",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "ST_t-c_antitop_4f_inc": {
+        "dir": "ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "19",
+        "xsec": "80.95",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "TT_DiLep": {
+        "dir": "TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "202",
+        "xsec": "88.29",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "TT_SingleLep": {
+        "dir": "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",
+        "type": "203",
+        "xsec": "365.34",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "TT_AllHadronic": {
+        "dir": "TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "212",
+        "xsec": "377.96",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": ""
+    },
+    "WWTo4Q": {
+        "dir": "WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8",
+        "type": "28",
+        "xsec": "47.73",
+        "lepflav": "",
+        "kfac": "1.162",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WWTo2L2Nu": {
+        "dir": "WWTo2L2Nu_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "29",
+        "xsec": "11.08",
+        "lepflav": "",
+        "kfac": "1.162",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WZTo1L3Nu": {
+        "dir": "WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8_v2",
+        "type": "30",
+        "xsec": "3.294",
+        "lepflav": "",
+        "kfac": "0.978",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WZTo2L2Q": {
+        "dir": "WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "31",
+        "xsec": "6.351",
+        "lepflav": "",
+        "kfac": "0.978",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WZTo1L1Nu2Q": {
+        "dir": "WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "32",
+        "xsec": "11.66",
+        "lepflav": "",
+        "kfac": "0.978",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WZTo3L1Nu": {
+        "dir": "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+        "type": "33",
+        "xsec": "5.062",
+        "lepflav": "",
+        "kfac": "0.978",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WWTo1L1Nu2Q": {
+        "dir": "WWToLNuQQ_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8",
+        "type": "34",
+        "xsec": "45.99",
+        "lepflav": "",
+        "kfac": "1.162",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZZTo2L2Q": {
+        "dir": "ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "36",
+        "xsec": "3.693",
+        "lepflav": "",
+        "kfac": "1.134",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZZTo2Q2Nu": {
+        "dir": "ZZTo2Q2Nu_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "37",
+        "xsec": "4.554",
+        "lepflav": "",
+        "kfac": "1.134",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZZTo2L2Nu": {
+        "dir": "ZZTo2L2Nu_13TeV_powheg_pythia8",
+        "type": "38",
+        "xsec": "0.6008",
+        "lepflav": "",
+        "kfac": "1.134",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZZTo4L": {
+        "dir": "ZZTo4L_13TeV_powheg_pythia8",
+        "type": "39",
+        "xsec": "1.325",
+        "lepflav": "",
+        "kfac": "1.134",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "WZTo1L1Nu2Q_ext": {
+        "dir": "WZTo1L1Nu2Q_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "32",
+        "xsec": "11.66",
+        "lepflav": "",
+        "kfac": "0.978",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "ZZTo2L2Q_ext": {
+        "dir": "ZZTo2L2Q_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8",
+        "type": "36",
+        "xsec": "3.693",
+        "lepflav": "",
+        "kfac": "1.134",
+        "doJetFlavorSplit": "1",
+        "npro": ""
+    },
+    "BGravHHTo4Q": {
+        "dir": "BulkGravitonToHHTo4Q_MX-600to6000_MH-15to250_part1_TuneCP5_13TeV-madgraph_pythia8",
+        "type": "666",
+        "xsec": "1.0",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": "100000"
+    }
+}

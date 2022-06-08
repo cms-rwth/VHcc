@@ -1,0 +1,122 @@
+{
+    "Single top": [
+        "ST_s-c_top",
+        "ST_s-c_antitop",
+        "ST_t-c_antitop",
+        "ST_t-c_top",
+        "ST_tW_antitop",
+        "ST_tW_top"
+    ],
+    "t#bar{t}": [
+        "TT_AllHadronic",
+        "TT_SingleLep",
+        "TT_DiLep"
+    ],
+    "VV+other": [
+        "WWTo4Q",
+        "WWTo2L2Nu",
+        "WWTo1L1Nu2Q",
+        "WZTo1L3Nu",
+        "WZTo2L2Q",
+        "WZTo3L1Nu",
+        "ZZTo2L2Nu",
+        "ZZTo4L",
+        "WZTo1L1Nu2Qbb",
+        "WZTo1L1Nu2Qll",
+        "ZZTo2L2Qbb",
+        "ZZTo2L2Qll",
+        "ZZTo2Q2Nubb",
+        "ZZTo2Q2Null"
+    ],
+    "VV+cc": [
+        "WZTo1L1Nu2Qcc",
+        "ZZTo2L2Qcc",
+        "ZZTo2Q2Nucc"
+    ],
+    "Data": [
+        "Run2017_DoubleEle_ReMiniAOD",
+        "Run2017_DoubleMu_ReMiniAOD",
+        "Run2017_Ele_ReMiniAOD",
+        "Run2017_Mu_ReMiniAOD"
+    ],
+    "Z+l": [
+        "DYJetsToLL_nlo_udbsg",
+        "DY1ToLL_PtZ-50To150_udbsg",
+        "DY1ToLL_PtZ-150To250_udbsg",
+        "DY1ToLL_PtZ-250To400_udbsg",
+        "DY1ToLL_PtZ-400ToInf_udbsg",
+        "DY2ToLL_PtZ-50To150_udbsg",
+        "DY2ToLL_PtZ-150To250_udbsg",
+        "DY2ToLL_PtZ-250To400_udbsg",
+        "DY2ToLL_PtZ-400ToInf_udbsg"
+    ],
+    "Z+b": [
+        "DYJetsToLL_nlo_bl",
+        "DYJetsToLL_nlo_bc",
+        "DYJetsToLL_nlo_bb",
+        "DY1ToLL_PtZ-50To150_bl",
+        "DY1ToLL_PtZ-50To150_bc",
+        "DY1ToLL_PtZ-50To150_bb",
+        "DY1ToLL_PtZ-150To250_bl",
+        "DY1ToLL_PtZ-150To250_bc",
+        "DY1ToLL_PtZ-150To250_bb",
+        "DY1ToLL_PtZ-250To400_bl",
+        "DY1ToLL_PtZ-250To400_bc",
+        "DY1ToLL_PtZ-250To400_bb",
+        "DY1ToLL_PtZ-400ToInf_bl",
+        "DY1ToLL_PtZ-400ToInf_bc",
+        "DY1ToLL_PtZ-400ToInf_bb",
+        "DY2ToLL_PtZ-50To150_bl",
+        "DY2ToLL_PtZ-50To150_bc",
+        "DY2ToLL_PtZ-50To150_bb",
+        "DY2ToLL_PtZ-150To250_bl",
+        "DY2ToLL_PtZ-150To250_bc",
+        "DY2ToLL_PtZ-150To250_bb",
+        "DY2ToLL_PtZ-250To400_bl",
+        "DY2ToLL_PtZ-250To400_bc",
+        "DY2ToLL_PtZ-250To400_bb",
+        "DY2ToLL_PtZ-400ToInf_bl",
+        "DY2ToLL_PtZ-400ToInf_bc",
+        "DY2ToLL_PtZ-400ToInf_bb"
+    ],
+    "Z+c": [
+        "DYJetsToLL_nlo_cl",
+        "DYJetsToLL_nlo_cc",
+        "DY1ToLL_PtZ-50To150_cl",
+        "DY1ToLL_PtZ-50To150_cc",
+        "DY1ToLL_PtZ-150To250_cl",
+        "DY1ToLL_PtZ-150To250_cc",
+        "DY1ToLL_PtZ-250To400_cl",
+        "DY1ToLL_PtZ-250To400_cc",
+        "DY1ToLL_PtZ-400ToInf_cl",
+        "DY1ToLL_PtZ-400ToInf_cc",
+        "DY2ToLL_PtZ-50To150_cl",
+        "DY2ToLL_PtZ-50To150_cc",
+        "DY2ToLL_PtZ-150To250_cl",
+        "DY2ToLL_PtZ-150To250_cc",
+        "DY2ToLL_PtZ-250To400_cl",
+        "DY2ToLL_PtZ-250To400_cc",
+        "DY2ToLL_PtZ-400ToInf_cl",
+        "DY2ToLL_PtZ-400ToInf_cc"
+    ],
+    "WH(c#bar{c})": [
+        "WminusH125ToCC_powheg",
+        "WplusH125ToCC_powheg"
+    ],
+    "ZH(c#bar{c})": [
+        "ZH125ToCC_ZLL_powheg"
+    ],
+    "ggZH(c#bar{c})": [
+        "ggZH125ToCC_ZLL_powheg"
+    ],
+    "WH(b#bar{b})": [
+        "WminusH125_powheg",
+        "WplusH125_powheg"
+    ],
+    "ZH(b#bar{b})": [
+        "ZH125_ZLL_powheg"
+    ],
+    "ggZH(b#bar{b})": [
+        "ggZH125_ZLL_powheg"
+    ]
+}
