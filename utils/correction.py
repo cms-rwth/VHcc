@@ -18,20 +18,20 @@ def init_corr(year):
     ext = extractor()
     if year == "2016":
         ##Electron
-        ext.add_weight_sets(["ele_Trig TrigSF data/Rereco17_94X/Lepton/Ele32_L1DoubleEG_TrigSF_vhcc.histo.histo.root"])
-        ext.add_weight_sets(["ele_ID_post EGamma_SF2D data/Electron/UL16/egammaEffi.txt_Ele_wp90iso_postVFP_EGM2D.histo.root"])
-        ext.add_weight_sets(["ele_Rereco_above20_post EGamma_SF2D data/Electron/UL16/egammaEffi_ptAbove20.txt_EGM2D_UL2016postVFP.histo.root"])
-        ext.add_weight_sets(["ele_Rereco_below20_post EGamma_SF2D data/Electron/UL16/egammaEffi_ptBelow20.txt_EGM2D_UL2016postVFP.histo.root"])
-        ext.add_weight_sets(["ele_ID_pre EGamma_SF2D data/Electron/UL16/egammaEffi.txt_Ele_wp90iso_preVFP_EGM2D.histo.root"])
-        ext.add_weight_sets(["ele_Rereco_above20_pre EGamma_SF2D data/Electron/UL16/egammaEffi_ptAbove20.txt_EGM2D_UL2016preVFP.histo.root"])
-        ext.add_weight_sets(["ele_Rereco_below20_pre EGamma_SF2D data/Electron/UL16/egammaEffi_ptBelow20.txt_EGM2D_UL2016preVFP.histo.root"]) 
+        ext.add_weight_sets(["ele_Trig TrigSF src/VHcc/data/Rereco17_94X/Lepton/Ele32_L1DoubleEG_TrigSF_vhcc.histo.histo.root"])
+        ext.add_weight_sets(["ele_ID_post EGamma_SF2D dsrc/VHcc/ata/Electron/UL16/egammaEffi.txt_Ele_wp90iso_postVFP_EGM2D.histo.root"])
+        ext.add_weight_sets(["ele_Rereco_above20_post EGamma_SF2D src/VHcc/data/Electron/UL16/egammaEffi_ptAbove20.txt_EGM2D_UL2016postVFP.histo.root"])
+        ext.add_weight_sets(["ele_Rereco_below20_post EGamma_SF2D src/VHcc/data/Electron/UL16/egammaEffi_ptBelow20.txt_EGM2D_UL2016postVFP.histo.root"])
+        ext.add_weight_sets(["ele_ID_pre EGamma_SF2D src/VHcc/data/Electron/UL16/egammaEffi.txt_Ele_wp90iso_preVFP_EGM2D.histo.root"])
+        ext.add_weight_sets(["ele_Rereco_above20_pre EGamma_SF2D src/VHcc/data/Electron/UL16/egammaEffi_ptAbove20.txt_EGM2D_UL2016preVFP.histo.root"])
+        ext.add_weight_sets(["ele_Rereco_below20_pre EGamma_SF2D src/VHcc/data/Electron/UL16/egammaEffi_ptBelow20.txt_EGM2D_UL2016preVFP.histo.root"]) 
         ####Muon 
-        ext.add_weight_sets(["mu_ID_pre NUM_TightID_DEN_TrackerMuons_abseta_pt  data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_ID.histo.root"])
-        # ext.add_weight_sets(["mu_Trig_pre NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight_abseta_pt  data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_SingleMuonTriggers.histo.root"])
-        ext.add_weight_sets(["mu_Iso_pre NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_ISO.histo.root"])
-        ext.add_weight_sets(["mu_ID_post NUM_TightID_DEN_TrackerMuons_abseta_pt  data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_ID.histo.root"])
-        # ext.add_weight_sets(["mu_Trig_post NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight_abseta_pt  data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_SingleMuonTriggers.histo.root"])
-        ext.add_weight_sets(["mu_Iso_post NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_ISO.histo.root"])
+        ext.add_weight_sets(["mu_ID_pre NUM_TightID_DEN_TrackerMuons_abseta_pt  src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_ID.histo.root"])
+        # ext.add_weight_sets(["mu_Trig_pre NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight_abseta_pt  src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_SingleMuonTriggers.histo.root"])
+        ext.add_weight_sets(["mu_Iso_pre NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_HIPM_ISO.histo.root"])
+        ext.add_weight_sets(["mu_ID_post NUM_TightID_DEN_TrackerMuons_abseta_pt  src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_ID.histo.root"])
+        # ext.add_weight_sets(["mu_Trig_post NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight_abseta_pt  src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_SingleMuonTriggers.histo.root"])
+        ext.add_weight_sets(["mu_Iso_post NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt src/VHcc/data/Muon/UL16/Efficiencies_muon_generalTracks_Z_Run2016_UL_ISO.histo.root"])
         ### JERC
         ext.add_weight_sets([
         "* * src/VHcc/data/JEC_JERSF/UL16/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.jersf.txt",
