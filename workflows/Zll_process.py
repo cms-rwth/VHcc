@@ -1105,10 +1105,10 @@ class NanoProcessor(processor.ProcessorABC):
                             output['nAddJetsFSRsub302p5_puid'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,
                                               nAddJetsFSRsub302p5_puid=normalize(ak.num(jet_conditions)-2-ak.num(jet_conditions&fsr_conditions),cut),
                                               weight=weights.weight()[cut]*lepsf)
-                            
-                            output['weight_full'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,weight_full=weights.weight()[cut]*lepsf)
-                            output['genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight=events.genWeight[cut])
-                            output['sign_genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight_by_abs=(events.genWeight/abs(events.genWeight))[cut])
+                            if not isRealData:
+                                output['weight_full'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,weight_full=weights.weight()[cut]*lepsf)
+                                output['genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight=events.genWeight[cut])
+                                output['sign_genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight_by_abs=(events.genWeight/abs(events.genWeight))[cut])
                             
                             
                             
@@ -1117,7 +1117,7 @@ class NanoProcessor(processor.ProcessorABC):
                             #                          weight=weights.weight()[cut]*lepsf)
                             
                             # AN, MY
-                            if self._export_array:
+                            if self._export_array and not isRealData:
                                 output['array'][dataset]['weight']+=processor.column_accumulator(ak.to_numpy(weights.weight()[cut]*lepsf))
                     
         return output

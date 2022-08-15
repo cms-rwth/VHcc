@@ -23,7 +23,7 @@ def scale_xs(hist,lumi,events,unscale=False,year=2017,xsfile="metadata/sample_in
         #key_stripped = key.split('/')[1].split('/')[0]
         key_stripped = key
         print(key_stripped)
-        if type(key) != str or key=="Data" or key not in xs_dict:
+        if type(key) != str or key=="Data" or "Run" in key or key not in xs_dict:
             continue
         if unscale: 
             scales[key]=events[key]/(xs_dict[key_stripped]*lumi)

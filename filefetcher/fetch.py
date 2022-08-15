@@ -26,7 +26,8 @@ parser = argparse.ArgumentParser(description='Create json with individual paths 
                                               Note: You should compare the available datasets with the necessary ones first to avoid running on unused samples.')
 parser.add_argument('-i', '--input', default=r'singlemuon', help='List of samples in DAS (default: %(default)s)')
 parser.add_argument('-s', '--site', default=r'global', help='Site (default: %(default)s)')
-parser.add_argument('-o', '--output', default=r'singlemuon', help='Site (default: %(default)s)')
+parser.add_argument('-o', '--output', default=r'singlemuon', help='Dataset name, (default: %(default)s)')
+parser.add_argument('-d', '--debug', default=r'n', help='Debug only, do not write output')
 args = parser.parse_args()
 fset = []
 
@@ -50,13 +51,26 @@ with open(f'../metadata/sample_info_{year}.json') as si:
 instance = 'prod/'+args.site
 
 
-xrd = 'root://xrootd-cms.infn.it//'
+xrd_generic = 'root://xrootd-cms.infn.it//'
+
+possible_redirectors = {
+        'T2_DE_DESY' : 'root://dcache-cms-xrootd.desy.de:1094//',
+        'T2_DE_RWTH' : 'root://grid-cms-xrootd.physik.rwth-aachen.de:1094//',
+        'T2_CH_CERN' : xrd_generic
+    }
 
 for dataset in fset:
     print(dataset)
     flist = os.popen(("/cvmfs/cms.cern.ch/common/dasgoclient -query='instance={} file dataset={}'").format(instance,fset[fset.index(dataset)].rstrip())).read().split('\n')
+    slist = os.popen(("/cvmfs/cms.cern.ch/common/dasgoclient -query='instance={} site dataset={} system=dbs3' --json | jq").format(instance,fset[fset.index(dataset)].rstrip())).read().split('\n')
+    at_site = slist[-6].split(' ')[-1].split('\"')[1].split('\"')[0]
+    xrd = possible_redirectors[at_site]
     dictname = dataset.rstrip()
     dictname = dictname[1:].split('/')[0]
+    if args.debug == 'y':
+        if 'yy' in args.debug:
+            print(slist)
+        print(at_site)
     if dictname in ['SingleMuon','DoubleMuon','SingleElectron','DoubleElectron','DoubleEG','EGamma','MET']:
         dictname = dataset.rstrip()
     else:
@@ -66,8 +80,10 @@ for dataset in fset:
     else: #needed to collect all data samples into one common key "Data" (using append() would introduce a new element for the key)
         fdict[dictname].extend([xrd+f for f in flist if len(f) > 1])
 
-#print(fdict)
-#pprint.pprint(fdict, depth=1)
+if 'yy' in args.debug:
+    print(fdict)
+    #pprint.pprint(fdict, depth=1)
 
-with open('../metadata/%s.json'%(args.output), 'w') as fp:
-    json.dump(fdict, fp, indent=4)
+if not args.debug == 'y':
+    with open('../metadata/%s.json'%(args.output), 'w') as fp:
+        json.dump(fdict, fp, indent=4)
