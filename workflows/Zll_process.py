@@ -1022,7 +1022,7 @@ class NanoProcessor(processor.ProcessorABC):
         lepflav = ['ee','mumu']
         reg = ['SR_2LL','SR_2LH','CR_Zcc_2LL','CR_Zcc_2LH','CR_Z_LF_2LL','CR_Z_LF_2LH','CR_Z_HF_2LL','CR_Z_HF_2LH','CR_t_tbar_2LL','CR_t_tbar_2LH']
         
-        #print(possible_flavSplits)
+        print(possible_flavSplits)
         
         #### write into histograms (i.e. write output)
         for histname, h in output.items():
@@ -1030,7 +1030,6 @@ class NanoProcessor(processor.ProcessorABC):
                 dataset_renamed = dataset if s == 'already_split_sample' else dataset + s
                 for ch in lepflav:
                     for r in reg:
-                        #cut = selection.all('lepsel','jetsel','global_selection','metfilter','lumi', r, ch, s, 'trigger_%s'%(ch))
                         cut = selection.all('lepsel','jetsel','global_selection','metfilter','lumi', r, ch, s, 'trigger_%s'%(ch))
                         llcut = ll_cand[cut]
                         #llcut = llcut[:,0]

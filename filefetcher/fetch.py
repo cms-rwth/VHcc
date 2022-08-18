@@ -19,6 +19,20 @@
 # python fetch.py -i ../samples/datasamples_2017_Wln_used.txt -s phys03 -o datasamples_2017_Wln_used
 # python fetch.py -i ../samples/datasamples_2017_Zll_used.txt -s phys03 -o datasamples_2017_Zll_used
 # python fetch.py -i ../samples/datasamples_2017_Znn_used.txt -s phys03 -o datasamples_2017_Znn_used
+# Use this after having identified the corrupted files on dCache:
+# python fetch.py -i ../samples/mcsamples_2017_vjets_used.txt -s phys03 -o mcsamples_2017_vjets_used -r ../metadata/mcsamples_2017_vjets_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_Wln_used.txt -s phys03 -o mcsamples_2017_vjets_Wln_used -r ../metadata/mcsamples_2017_vjets_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_Zll_used.txt -s phys03 -o mcsamples_2017_vjets_Zll_used -r ../metadata/mcsamples_2017_vjets_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_Znn_used.txt -s phys03 -o mcsamples_2017_vjets_Znn_used -r ../metadata/mcsamples_2017_vjets_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_ext_used.txt -s phys03 -o mcsamples_2017_vjets_ext_used -r ../metadata/mcsamples_2017_vjets_ext_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_ext_Wln_used.txt -s phys03 -o mcsamples_2017_vjets_ext_Wln_used -r ../metadata/mcsamples_2017_vjets_ext_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_ext_Zll_used.txt -s phys03 -o mcsamples_2017_vjets_ext_Zll_used -r ../metadata/mcsamples_2017_vjets_ext_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_vjets_ext_Znn_used.txt -s phys03 -o mcsamples_2017_vjets_ext_Znn_used -r ../metadata/mcsamples_2017_vjets_ext_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_other_used.txt -s phys03 -o mcsamples_2017_other_used -r ../metadata/mcsamples_2017_other_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_other_Wln_used.txt -s phys03 -o mcsamples_2017_other_Wln_used -r ../metadata/mcsamples_2017_other_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_other_Zll_used.txt -s phys03 -o mcsamples_2017_other_Zll_used -r ../metadata/mcsamples_2017_other_used_corrupted.txt
+# python fetch.py -i ../samples/mcsamples_2017_other_Znn_used.txt -s phys03 -o mcsamples_2017_other_Znn_used -r ../metadata/mcsamples_2017_other_used_corrupted.txt
+# Aug '22, higgs + data were not affected
 import os, sys
 import json
 import argparse
@@ -27,15 +41,27 @@ parser = argparse.ArgumentParser(description='Create json with individual paths 
 parser.add_argument('-i', '--input', default=r'singlemuon', help='List of samples in DAS (default: %(default)s)')
 parser.add_argument('-s', '--site', default=r'global', help='Site (default: %(default)s)')
 parser.add_argument('-o', '--output', default=r'singlemuon', help='Dataset name, (default: %(default)s)')
-parser.add_argument('-d', '--debug', default=r'n', help='Debug only, do not write output')
+parser.add_argument('-d', '--debug', default=r'n', help='Debug only, do not write output, (default: %(default)s)')
+parser.add_argument('-r', '--removed', default=r'n', help='Path to list of corrupted files to be removed from final json, (default: %(default)s)')
 args = parser.parse_args()
-fset = []
 
+fset = []
 with open(args.input) as fp: 
     lines = fp.readlines() 
     for line in lines:
         if line[0] != '\n' and line[0] != '#':
             fset.append(line)
+
+corrupted_list = []            
+if args.removed != 'n':
+    print('Will create reduced json with non-corrupted files only.')
+    with open(args.removed) as rm_files: 
+        lines = rm_files.readlines() 
+        for line in lines:
+            if line[0] != '\n' and line[0] != '#':
+                corrupted_list.append(line.split('\n')[0])
+    print('These files will be excluded:')
+    print(corrupted_list)
 
 fdict = {}
 
@@ -76,14 +102,22 @@ for dataset in fset:
     else:
         dictname = info_dict[dictname]
     if dictname not in fdict:
-        fdict[dictname] = [xrd+f for f in flist if len(f) > 1]
+        if 'yy' in args.debug:
+            for f in flist[:20]:
+                print(xrd+f)
+                print(corrupted_list)
+                print((xrd+f) in corrupted_list)
+            print()
+        fdict[dictname] = [xrd+f for f in flist if ((len(f) > 1) and ((xrd+f) not in corrupted_list))]
     else: #needed to collect all data samples into one common key "Data" (using append() would introduce a new element for the key)
-        fdict[dictname].extend([xrd+f for f in flist if len(f) > 1])
+        fdict[dictname].extend([xrd+f for f in flist if ((len(f) > 1) and ((xrd+f) not in corrupted_list))])
 
 if 'yy' in args.debug:
     print(fdict)
     #pprint.pprint(fdict, depth=1)
 
-if not args.debug == 'y':
+if args.debug == 'n':
+    if args.removed != 'n':
+        args.output = args.output + '_nonCorruptedOnly'
     with open('../metadata/%s.json'%(args.output), 'w') as fp:
         json.dump(fdict, fp, indent=4)
