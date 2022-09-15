@@ -70,7 +70,7 @@ class NanoProcessor(processor.ProcessorABC):
         self._year=year
         self._version=version # only because the new runner etc. needs that, not used later
         self._export_array = True # if 'test' in self._version else False
-        self._debug = True
+        self._debug = False #True
         
         # paths from table 1 and 2 of the AN_2020_235
         
@@ -653,12 +653,17 @@ class NanoProcessor(processor.ProcessorABC):
         elesel = ((event_e.pt > 20) & (abs(event_e.eta) < 2.5) & (event_e.mvaFall17V2Iso_WP90==1) & (event_e.pfRelIso03_all<0.25))
         # but 30GeV and WP80 for 1L
         event_e = event_e[elesel]
+        # something I saw in a recent presentation, and also in AT code:
+        # https://indico.desy.de/event/34473/contributions/122201/attachments/76587/98753/RTG_Meeting_01_09_22.pdf
+        # https://github.com/mastrolorenzo/AnalysisTools-1/blob/master/VHccAnalysis/PlotWithVarial/ZllHccLowPt.py#L256-L257
+        # is to require "good electrons", which means excluding some region (eta),
+        # I guess it has sth to do with transition between barrel / endcap?
+        event_e = event_e[(abs(event_e.eta) > 1.5660) | (abs(event_e.eta) < 1.4442)]
         event_e = event_e[ak.argsort(event_e.pt, axis=1,ascending=False)]
         event_e["lep_flav"] = 11*event_e.charge
         event_e = ak.pad_none(event_e,2,axis=1)
         nele = ak.sum(elesel,axis=1)
         # sorting after selecting should be faster (less computations on average, no?)
-   
         
         # for this channel (Zll / 2L)
         selection.add('lepsel',ak.to_numpy((nele==2)|(nmu==2)))
@@ -700,7 +705,8 @@ class NanoProcessor(processor.ProcessorABC):
         
         if (ak.count(ll_cand.pt)>0):
             ll_cand  = ll_cand[ak.argsort(ll_cand.pt, axis=1,ascending=False)]
-            # try tbe second option here
+            # try the second option here
+            # NOTE: Comment out to debug stuff
             ll_cand = ll_cand[:, 0]
             
         
@@ -872,17 +878,31 @@ class NanoProcessor(processor.ProcessorABC):
         # - valid for 2LH and 2LL
         # - valid for any region, no matter if SR or CR
         
+        # leppair and ll_cand have different dim, leppair contains lists,
+        # ll_cand only numbers on innermost dim (because already reduced above)
+        # therefore when evaluating ak.any with axis=-1,
+        # ll_cand will ALWAYS be true (a.k.a. for every event), as long as one event fulfils the criterion
+        # for leppair, there needs to be one per event, as expected
+       # print((leppair.lep1.pt>20))
+       # print((ll_cand.mass>75))
+       # print((higgs_cand.mass<250))
+       # print((njet>=2))
+        # inside any one can then only place stuff that has one more dim
         req_global = ak.any((leppair.lep1.pt>20) & (leppair.lep2.pt>20) \
-                        & (ll_cand.mass>75) & (ll_cand.mass<150) \
-                        & (ll_cand.pt>60) & (njet>=2) \
+                              # opposite charge
+                        & (leppair.lep1.charge+leppair.lep2.charge==0) \
+                        #& (ll_cand.mass>75) & (ll_cand.mass<150) & (ll_cand.pt>60) \
+                        #& (njet>=2) \
                         #& (leading_with_fsr.pt>20) & (subleading_with_fsr.pt>20) \
-                        & (higgs_cand.mass<250) \
-                        & (leppair.lep1.charge+leppair.lep2.charge==0),  # opposite charge
+                        #& (higgs_cand.mass<250) \
                         #& (events.MET.pt>20) \
                         #& (make_p4(leppair.lep1).delta_r(make_p4(leppair.lep2))>0.4),
-                        axis=-1
+                        , axis=-1
             )
-        
+        req_global = req_global \
+                   & (ll_cand.mass>75) & (ll_cand.mass<150) & (ll_cand.pt>60) \
+                   & (njet>=2) \
+                   & (higgs_cand.mass<250)
         
         
         selection.add('global_selection',ak.to_numpy(req_global))
@@ -908,46 +928,53 @@ class NanoProcessor(processor.ProcessorABC):
         
         # global already contains Vpt>60 as the lower bound
         # global also has higgs_cand.mass<250
-        req_sr_Zll = ak.any((ll_cand.mass<105) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_sr_Zll = (ll_cand.mass<105) & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
-                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4),
-                            axis=-1)
+                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4)
         # flip H mass, otherwise same
-        req_cr_Zcc = ak.any((ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_cr_Zcc = (ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & ~((higgs_cand.mass>=50) & (higgs_cand.mass<=200)) \
-                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4),
-                            axis=-1)
+                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4)
         # no requirement on m_ll
-        req_cr_Z_LF = ak.any((higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_cr_Z_LF = (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
-                            & (leading.btagDeepFlavCvL<0.225) & (leading.btagDeepFlavCvB>0.4),
-                            axis=-1)
+                            & (leading.btagDeepFlavCvL<0.225) & (leading.btagDeepFlavCvB>0.4)
         
-        req_cr_Z_HF = ak.any((ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_cr_Z_HF = (ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
-                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4),
-                            axis=-1)
+                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4)
         
-        req_cr_t_tbar = ak.any(~((ll_cand.mass>0) & (ll_cand.mass<10)) & ~((ll_cand.mass>75) & (ll_cand.mass<120)) \
+        req_cr_t_tbar = ~((ll_cand.mass>0) & (ll_cand.mass<10)) & ~((ll_cand.mass>75) & (ll_cand.mass<120)) \
                             & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
-                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4),
-                            axis=-1)
+                            & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4)
         
-        req_sr_Zll_vpt_low  = req_global & req_sr_Zll & ak.any(ll_cand.pt<150, axis=-1)
-        req_sr_Zll_vpt_high = req_global & req_sr_Zll & ak.any(ll_cand.pt>150, axis=-1)
+        req_sr_Zll_vpt_low  = req_global & req_sr_Zll & (ll_cand.pt<150)
+       # print(ll_cand.pt<150)
+       # print(ak.any(ll_cand.pt<150, axis=-1))
+       # print(req_sr_Zll_vpt_low)
+        req_sr_Zll_vpt_high = req_global & req_sr_Zll & (ll_cand.pt>150)
+       # print(ll_cand.pt>150)
+       # print(req_sr_Zll_vpt_high)
+       # print(len(req_sr_Zll_vpt_low))
+       # print(len(req_sr_Zll_vpt_low == req_sr_Zll_vpt_high))
+       # print(np.sum(ak.to_numpy(req_sr_Zll_vpt_low)))
+       # print(np.sum(ak.to_numpy(req_sr_Zll_vpt_low == req_sr_Zll_vpt_high)))
         
-        req_cr_Zcc_vpt_low  = req_global & req_cr_Zcc & ak.any(ll_cand.pt<150, axis=-1)
-        req_cr_Zcc_vpt_high = req_global & req_cr_Zcc & ak.any(ll_cand.pt>150, axis=-1)
+        req_cr_Zcc_vpt_low  = req_global & req_cr_Zcc & (ll_cand.pt<150)
+       # print(req_sr_Zll_vpt_low)
+        req_cr_Zcc_vpt_high = req_global & req_cr_Zcc & (ll_cand.pt>150)
+       # print(req_sr_Zll_vpt_high)
+       # print(np.sum(ak.to_numpy(req_sr_Zll_vpt_low & req_sr_Zll_vpt_high)))
         
-        req_cr_Z_LF_vpt_low  = req_global & req_cr_Z_LF & ak.any(ll_cand.pt<150, axis=-1)
-        req_cr_Z_LF_vpt_high = req_global & req_cr_Z_LF & ak.any(ll_cand.pt>150, axis=-1)
+        req_cr_Z_LF_vpt_low  = req_global & req_cr_Z_LF & (ll_cand.pt<150)
+        req_cr_Z_LF_vpt_high = req_global & req_cr_Z_LF & (ll_cand.pt>150)
         
-        req_cr_Z_HF_vpt_low  = req_global & req_cr_Z_HF & ak.any(ll_cand.pt<150, axis=-1)
-        req_cr_Z_HF_vpt_high = req_global & req_cr_Z_HF & ak.any(ll_cand.pt>150, axis=-1)
+        req_cr_Z_HF_vpt_low  = req_global & req_cr_Z_HF & (ll_cand.pt<150)
+        req_cr_Z_HF_vpt_high = req_global & req_cr_Z_HF & (ll_cand.pt>150)
         
-        req_cr_t_tbar_vpt_low  = req_global & req_cr_t_tbar & ak.any(ll_cand.pt<150, axis=-1)
-        req_cr_t_tbar_vpt_high = req_global & req_cr_t_tbar & ak.any(ll_cand.pt>150, axis=-1)
+        req_cr_t_tbar_vpt_low  = req_global & req_cr_t_tbar & (ll_cand.pt<150)
+        req_cr_t_tbar_vpt_high = req_global & req_cr_t_tbar & (ll_cand.pt>150)
         
         
         #prob not necessary
@@ -1032,13 +1059,14 @@ class NanoProcessor(processor.ProcessorABC):
                     for r in reg:
                         cut = selection.all('lepsel','jetsel','global_selection','metfilter','lumi', r, ch, s, 'trigger_%s'%(ch))
                         llcut = ll_cand[cut]
+                        # this next line is necessary if running with multiple possible ll candidates
                         #llcut = llcut[:,0]
 
                         lep1cut = llcut.lep1
                         lep2cut = llcut.lep2
                         #print(self._version)
                         if not isRealData and not self._debug:
-                            print('not data, not test')
+                            #print('not data, not test')
                             if ch=='ee':
                                 lepsf=eleSFs(lep1cut,self._year,self._corr)*eleSFs(lep2cut,self._year,self._corr)
                             elif ch=='mumu':
@@ -1088,6 +1116,7 @@ class NanoProcessor(processor.ProcessorABC):
                         #    h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav =ch, region = r,**fields,weight=weights.weight()[cut]*lepsf) 
                         elif 'll_' in histname:
                             fields = {l: ak.fill_none(flatten(llcut[histname.replace('ll_','')]),np.nan) for l in h.fields if l in dir(llcut)}
+                            #print(max(llcut['pt']))
                             h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav=ch, region = r,**fields,weight=weights.weight()[cut]*lepsf) 
                         elif 'jj_' in histname:
                             fields = {l: normalize(higgs_cand[histname.replace('jj_','')],cut) for l in h.fields if l in dir(higgs_cand)}
