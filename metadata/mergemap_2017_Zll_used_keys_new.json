@@ -1,0 +1,73 @@
+{
+    "Single top": [
+        "ST_s-c_top",
+        "ST_s-c_antitop",
+        "ST_t-c_antitop_4f_inc",
+        "ST_t-c_top_4f_inc",
+        "ST_tW_antitop_5f_inc",
+        "ST_tW_top_5f_inc_PSw"
+    ],
+    "t#bar{t}": [
+        "TT_AllHadronic",
+        "TT_SingleLep",
+        "TT_DiLep"
+    ],
+    "VV+other": [
+        "WWTo4Q",
+        "WWTo2L2Nu",
+        "WWTo1L1Nu2Q",
+        "WZTo1L3Nu",
+        "WZTo2L2Q",
+        "WZTo3L1Nu",
+        "ZZTo2L2Nu",
+        "ZZTo4L",
+        "WZTo1L1Nu2Qbb",
+        "WZTo1L1Nu2Qll",
+        "ZZTo2L2Qbb",
+        "ZZTo2L2Qll",
+        "ZZTo2Q2Nubb",
+        "ZZTo2Q2Null"
+    ],
+    "VV+cc": [
+        "WZTo1L1Nu2Qcc",
+        "ZZTo2L2Qcc",
+        "ZZTo2Q2Nucc"
+    ],
+    "Data": [
+        "Run2017_DoubleEle_ReMiniAOD",
+        "Run2017_DoubleMu_ReMiniAOD",
+        "Run2017_Ele_ReMiniAOD",
+        "Run2017_Mu_ReMiniAOD"
+    ],
+    "Z+jets": [
+        "DYJetsToLL_nlo",
+        "DY1ToLL_PtZ-50To150",
+        "DY1ToLL_PtZ-150To250",
+        "DY1ToLL_PtZ-250To400",
+        "DY1ToLL_PtZ-400ToInf",
+        "DY2ToLL_PtZ-50To150",
+        "DY2ToLL_PtZ-150To250",
+        "DY2ToLL_PtZ-250To400",
+        "DY2ToLL_PtZ-400ToInf"
+    ],
+    "WH(c#bar{c})": [
+        "WminusH125ToCC_WLNu_powheg",
+        "WplusH125ToCC_WLNu_powheg"
+    ],
+    "ZH(c#bar{c})": [
+        "ZH125ToCC_ZLL_powheg"
+    ],
+    "ggZH(c#bar{c})": [
+        "ggZH125ToCC_ZLL_powheg"
+    ],
+    "WH(b#bar{b})": [
+        "WminusH125_powheg",
+        "WplusH125_powheg"
+    ],
+    "ZH(b#bar{b})": [
+        "ZH125_ZLL_powheg"
+    ],
+    "ggZH(b#bar{b})": [
+        "ggZH125_ZLL_powheg"
+    ]
+}

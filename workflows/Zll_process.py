@@ -7,7 +7,7 @@ from select import select
 
 import json
 
-from coffea import hist, processor
+from coffea import hist, processor # ToDo: move to the better hist
 from coffea.nanoevents.methods import vector
 import awkward as ak
 from VHcc.utils.correction import jec,muSFs,eleSFs,init_corr
@@ -17,7 +17,6 @@ from functools import partial
 # import numba
 from VHcc.helpers.util import reduce_and, reduce_or, nano_mask_or, get_ht, normalize, make_p4
 
-# AN, MY
 def empty_column_accumulator():
     return processor.column_accumulator(np.array([],dtype=np.float64))
 def array_accumulator():
@@ -268,19 +267,23 @@ class NanoProcessor(processor.ProcessorABC):
         #print(list_of_datasets)
         #sys.exit()
         # Define axes
-        # Should read axes from NanoAOD config
+        # Should read axes from NanoAOD config / metadata
         dataset_axis = hist.Cat("dataset", "Primary dataset")
         # split V+jets sample & VZ signal, this is per event
         # https://github.com/mastrolorenzo/AnalysisTools-1/blob/master/plugins/VHccAnalysis.cc#L2184-L2276
         datasetSplit_axis = hist.Cat("datasetSplit", "Dataset split by flav", list_of_datasets)
         
         # use hadronFlavour, necessary when applying btag scale factors (that depend on flavour)
-        # this one will be done per jet
+        # this one will be done per jet, can have values 0, 4, 5
         flav_axis = hist.Bin("flav", r"hadronFlavour",[0,1,4,5,6])
         
         lepflav_axis = hist.Cat("lepflav",['ee','mumu'])
         
-        regions = ['SR_2LL','SR_2LH','CR_Zcc_2LL','CR_Zcc_2LH','CR_Z_LF_2LL','CR_Z_LF_2LH','CR_Z_HF_2LL','CR_Z_HF_2LH','CR_t_tbar_2LL','CR_t_tbar_2LH']
+        regions = ['SR_2LL','SR_2LH',
+                   'CR_Zcc_2LL','CR_Zcc_2LH',
+                   'CR_Z_LF_2LL','CR_Z_LF_2LH',
+                   'CR_Z_HF_2LL','CR_Z_HF_2LH',
+                   'CR_t_tbar_2LL','CR_t_tbar_2LH']
         region_axis = hist.Cat("region",regions)
         
         # Events
@@ -299,7 +302,7 @@ class NanoProcessor(processor.ProcessorABC):
         mt_axis =  hist.Bin("mt", r" $m_{T}$ [GeV]", 30, 0, 300)
         dr_axis = hist.Bin("dr","$\Delta$R",20,0,5)
         
-        # some more variables to check, enter BDT
+        # some more variables to check, which enter BDT
         # need to revisit this later, because high Vpt and low Vpt can have different binning
         jjVPtRatio_axis = hist.Bin("jjVPtRatio",r"$p_{T}(jj) / $p_{T}(V)$ [GeV]",15,0,2)
         #dphi_V_H_axis = hist.Bin("dphi_V_H","$\Delta\Phi(V, H)$",20,0,3.2)
@@ -339,7 +342,7 @@ class NanoProcessor(processor.ProcessorABC):
         disc_list = ['btagDeepFlavC','btagDeepFlavB','btagDeepFlavCvL','btagDeepFlavCvB']
         btag_axes = []
         for d in disc_list:
-            # ToDo: find out why -1 bin is irrelevant here
+            # technically, -1 values are possible, but probably unlikely to matter much after event selection
             btag_axes.append(hist.Bin(d, d , 20, 0, 1))  
             
         _hist_event_dict = {
@@ -378,26 +381,87 @@ class NanoProcessor(processor.ProcessorABC):
                 #'dphi_ll':hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, phi_axis),
             }
         
+        # jets will be ordered by DeepJet (which is DeepFlav for historical reasons)
         objects=['leading_jetflav','subleading_jetflav','lep1','lep2','ll','jj']
         
         for i in objects:
+            # distinguish between jets and other objects, as the structure for jets contains additional flavour axis
             if 'jet' in i: 
-                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, mass_axis)
+                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts",
+                                                         dataset_axis,
+                                                         datasetSplit_axis,
+                                                         lepflav_axis,
+                                                         region_axis,
+                                                         flav_axis,
+                                                         pt_axis)
+                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts",
+                                                          dataset_axis,
+                                                          datasetSplit_axis,
+                                                          lepflav_axis,
+                                                          region_axis,
+                                                          flav_axis,
+                                                          eta_axis)
+                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts",
+                                                          dataset_axis,
+                                                          datasetSplit_axis,
+                                                          lepflav_axis,
+                                                          region_axis,
+                                                          flav_axis,
+                                                          phi_axis)
+                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts",
+                                                           dataset_axis,
+                                                           datasetSplit_axis,
+                                                           lepflav_axis,
+                                                           region_axis,
+                                                           flav_axis,
+                                                           mass_axis)
             else:
-                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, mass_axis)
+                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts",
+                                                         dataset_axis,
+                                                         datasetSplit_axis,
+                                                         lepflav_axis,
+                                                         region_axis,
+                                                         pt_axis)
+                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts",
+                                                          dataset_axis,
+                                                          datasetSplit_axis,
+                                                          lepflav_axis,
+                                                          region_axis,
+                                                          eta_axis)
+                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts",
+                                                          dataset_axis,
+                                                          datasetSplit_axis,
+                                                          lepflav_axis,
+                                                          region_axis,
+                                                          phi_axis)
+                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts",
+                                                           dataset_axis,
+                                                           datasetSplit_axis,
+                                                           lepflav_axis,
+                                                           region_axis,
+                                                           mass_axis)
         
+        # more information on the discriminators is stored for the first two jets,
+        # ordered by DeepJet CvL discriminator and called "leading" and "subleading"
         for disc, axis in zip(disc_list,btag_axes):
-            _hist_event_dict["leading_jetflav_%s" %(disc)] = hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, axis)
-            _hist_event_dict["subleading_jetflav_%s" %(disc)] = hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, flav_axis, axis)
+            _hist_event_dict["leading_jetflav_%s" %(disc)] = hist.Hist("Counts",
+                                                                       dataset_axis,
+                                                                       datasetSplit_axis,
+                                                                       lepflav_axis,
+                                                                       region_axis,
+                                                                       flav_axis,
+                                                                       axis)
+            _hist_event_dict["subleading_jetflav_%s" %(disc)] = hist.Hist("Counts",
+                                                                          dataset_axis,
+                                                                          datasetSplit_axis,
+                                                                          lepflav_axis,
+                                                                          region_axis,
+                                                                          flav_axis,
+                                                                          axis)
             
         self.event_hists = list(_hist_event_dict.keys())
-        # AN, MY
+        
+        # this can be used to not only store histograms, but also features on a per-event basis (arrays)
         if self._export_array:
             _hist_event_dict['array'] = processor.defaultdict_accumulator(array_accumulator)
         self._accumulator = processor.dict_accumulator(
@@ -605,6 +669,8 @@ class NanoProcessor(processor.ProcessorABC):
                 sampleFlavSplit = sampleFlavSplit + 3
                 selection.add('ll',sampleFlavSplit == 3)
                 split_by_flav = True
+                
+            # this is how it looked in AT for comparison:
             '''
             else if( cursample->doJetFlavorSplit
                      && ( mInt("sampleIndex")==27 || mInt("sampleIndex")==28
@@ -635,7 +701,6 @@ class NanoProcessor(processor.ProcessorABC):
         ## muon twiki: https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2
         #event_mu = events.Muon[ak.argsort(events.Muon.pt, axis=1, ascending=False)]
         event_mu = events.Muon
-        # I expect that there is a bunch of corrections that are not yet implemented here, following the discussions on Mon & Wed
         # looseId >= 1 or looseId seems to be the same...
         musel = ((event_mu.pt > 20) & (abs(event_mu.eta) < 2.4) & (event_mu.looseId >= 1) & (event_mu.pfRelIso04_all<0.25))
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(event_mu.dxy)<0.06)&(abs(event_mu.dz)<0.2) and tightId for 1L
@@ -663,7 +728,7 @@ class NanoProcessor(processor.ProcessorABC):
         event_e["lep_flav"] = 11*event_e.charge
         event_e = ak.pad_none(event_e,2,axis=1)
         nele = ak.sum(elesel,axis=1)
-        # sorting after selecting should be faster (less computations on average, no?)
+        # sorting after selecting should be faster (less computations on average)
         
         # for this channel (Zll / 2L)
         selection.add('lepsel',ak.to_numpy((nele==2)|(nmu==2)))
@@ -706,8 +771,8 @@ class NanoProcessor(processor.ProcessorABC):
         if (ak.count(ll_cand.pt)>0):
             ll_cand  = ll_cand[ak.argsort(ll_cand.pt, axis=1,ascending=False)]
             # try the second option here
-            # NOTE: Comment out to debug stuff
-            ll_cand = ll_cand[:, 0]
+        # NOTE: Comment out to debug stuff
+        ll_cand = ll_cand[:, 0]
             
         
             
@@ -888,19 +953,17 @@ class NanoProcessor(processor.ProcessorABC):
        # print((higgs_cand.mass<250))
        # print((njet>=2))
         # inside any one can then only place stuff that has one more dim
+        
+        # related to individual leptons
         req_global = ak.any((leppair.lep1.pt>20) & (leppair.lep2.pt>20) \
                               # opposite charge
-                        & (leppair.lep1.charge+leppair.lep2.charge==0) \
-                        #& (ll_cand.mass>75) & (ll_cand.mass<150) & (ll_cand.pt>60) \
-                        #& (njet>=2) \
-                        #& (leading_with_fsr.pt>20) & (subleading_with_fsr.pt>20) \
-                        #& (higgs_cand.mass<250) \
-                        #& (events.MET.pt>20) \
-                        #& (make_p4(leppair.lep1).delta_r(make_p4(leppair.lep2))>0.4),
+                        & ((leppair.lep1.charge+leppair.lep2.charge)==0) \
                         , axis=-1
             )
+        # cands and global stuff
+        # note: V_pt > 60 as in AT, AN: 50 (don't confuse)
         req_global = req_global \
-                   & (ll_cand.mass>75) & (ll_cand.mass<150) & (ll_cand.pt>60) \
+                   & (ll_cand.pt>60) \
                    & (njet>=2) \
                    & (higgs_cand.mass<250)
         
@@ -908,8 +971,8 @@ class NanoProcessor(processor.ProcessorABC):
         selection.add('global_selection',ak.to_numpy(req_global))
         
         
-        mask2e = req_global & (nele==2)
-        mask2mu = req_global & (nmu==2)
+        mask2e = req_global & (nele == 2)
+        mask2mu = req_global & (nmu == 2)
         
         #mask2lep = [ak.any(tup) for tup in zip(maskemu, mask2mu, mask2e)]
         mask2lep = [ak.any(tup) for tup in zip(mask2mu, mask2e)]
@@ -919,8 +982,8 @@ class NanoProcessor(processor.ProcessorABC):
         
         #output['cutflow'][dataset]['selected Z pairs'] += ak.sum(ak.num(good_leptons)>0)
         
-        selection.add('ee',ak.to_numpy(nele==2))
-        selection.add('mumu',ak.to_numpy(nmu==2))
+        selection.add('ee',ak.to_numpy(nele == 2))
+        selection.add('mumu',ak.to_numpy(nmu == 2))
         
         
         #print(higgs_cand.type)
@@ -928,30 +991,33 @@ class NanoProcessor(processor.ProcessorABC):
         
         # global already contains Vpt>60 as the lower bound
         # global also has higgs_cand.mass<250
-        req_sr_Zll = (ll_cand.mass<105) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_sr_Zll = (ll_cand.mass > 75) & (ll_cand.mass < 105) \
+                            & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
                             & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4)
         # flip H mass, otherwise same
-        req_cr_Zcc = (ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_cr_Zcc = (ll_cand.mass > 85) & (ll_cand.mass < 97) \
+                            & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & ~((higgs_cand.mass>=50) & (higgs_cand.mass<=200)) \
                             & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB>0.4)
-        # no requirement on m_ll
-        req_cr_Z_LF = (higgs_cand.delta_phi(ll_cand)>2.5) \
+        # Note: m_ll requirement not in AN, but in AT
+        req_cr_Z_LF = (ll_cand.mass > 75) & (ll_cand.mass < 105) \
+                            & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
                             & (leading.btagDeepFlavCvL<0.225) & (leading.btagDeepFlavCvB>0.4)
         
-        req_cr_Z_HF = (ll_cand.mass>85) & (ll_cand.mass<97) & (higgs_cand.delta_phi(ll_cand)>2.5) \
+        req_cr_Z_HF = (ll_cand.mass > 85) & (ll_cand.mass < 97) \
+                            & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
                             & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4)
         
         req_cr_t_tbar = ~((ll_cand.mass>0) & (ll_cand.mass<10)) & ~((ll_cand.mass>75) & (ll_cand.mass<120)) \
-                            & (higgs_cand.delta_phi(ll_cand)>2.5) \
                             & (higgs_cand.mass>=50) & (higgs_cand.mass<=200) \
                             & (leading.btagDeepFlavCvL>0.225) & (leading.btagDeepFlavCvB<0.4)
         
         req_sr_Zll_vpt_low  = req_global & req_sr_Zll & (ll_cand.pt<150)
        # print(ll_cand.pt<150)
-       # print(ak.any(ll_cand.pt<150, axis=-1))
+       # print(ak.any(ll_cand.pt<150, axis=-1)
        # print(req_sr_Zll_vpt_low)
         req_sr_Zll_vpt_high = req_global & req_sr_Zll & (ll_cand.pt>150)
        # print(ll_cand.pt>150)
@@ -1041,13 +1107,17 @@ class NanoProcessor(processor.ProcessorABC):
         output['cutflow'][dataset]['jet selection'] += ak.sum(njet>=2)
         output['cutflow'][dataset]['global selection'] += ak.sum(req_global)
         output['cutflow'][dataset]['signal region'] += ak.sum(req_global & req_sr_Zll)
-        output['cutflow'][dataset]['signal region & ee or mumu'] += ak.sum(req_global & req_sr_Zll & ((nele==2)|(nmu==2)) )
-        output['cutflow'][dataset]['signal ee'] += ak.sum(req_global & req_sr_Zll & (nele==2) & trigger_ee)
-        output['cutflow'][dataset]['signal mumu'] += ak.sum(req_global & req_sr_Zll & (nmu==2) & trigger_mm)
+        output['cutflow'][dataset]['signal region & ee or mumu'] += ak.sum(req_global & req_sr_Zll & ( ((nele == 2) & trigger_ee) | ((nmu == 2) & trigger_mm)))
+        output['cutflow'][dataset]['signal ee'] += ak.sum(req_global & req_sr_Zll & (nele == 2) & trigger_ee)
+        output['cutflow'][dataset]['signal mumu'] += ak.sum(req_global & req_sr_Zll & (nmu == 2) & trigger_mm)
         
 
         lepflav = ['ee','mumu']
-        reg = ['SR_2LL','SR_2LH','CR_Zcc_2LL','CR_Zcc_2LH','CR_Z_LF_2LL','CR_Z_LF_2LH','CR_Z_HF_2LL','CR_Z_HF_2LH','CR_t_tbar_2LL','CR_t_tbar_2LH']
+        reg = ['SR_2LL','SR_2LH',
+               'CR_Zcc_2LL','CR_Zcc_2LH',
+               'CR_Z_LF_2LL','CR_Z_LF_2LH',
+               'CR_Z_HF_2LL','CR_Z_HF_2LH',
+               'CR_t_tbar_2LL','CR_t_tbar_2LH']
         
         print(possible_flavSplits)
         
@@ -1057,7 +1127,15 @@ class NanoProcessor(processor.ProcessorABC):
                 dataset_renamed = dataset if s == 'already_split_sample' else dataset + s
                 for ch in lepflav:
                     for r in reg:
-                        cut = selection.all('lepsel','jetsel','global_selection','metfilter','lumi', r, ch, s, 'trigger_%s'%(ch))
+                        cut = selection.all('lepsel',
+                                            'jetsel',
+                                            'global_selection',
+                                            'metfilter',
+                                            'lumi',
+                                            r,
+                                            ch,
+                                            s,
+                                            'trigger_%s'%(ch))
                         llcut = ll_cand[cut]
                         # this next line is necessary if running with multiple possible ll candidates
                         #llcut = llcut[:,0]
@@ -1067,18 +1145,18 @@ class NanoProcessor(processor.ProcessorABC):
                         #print(self._version)
                         if not isRealData and not self._debug:
                             #print('not data, not test')
-                            if ch=='ee':
-                                lepsf=eleSFs(lep1cut,self._year,self._corr)*eleSFs(lep2cut,self._year,self._corr)
-                            elif ch=='mumu':
-                                lepsf=muSFs(lep1cut,self._year,self._corr)*muSFs(lep2cut,self._year,self._corr)
-                            # This would be emu channel, which does not exist in the VHcc Zll case
+                            if ch == 'ee':
+                                lepsf = eleSFs(lep1cut, self._year, self._corr) * eleSFs(lep2cut, self._year, self._corr)
+                            elif ch == 'mumu':
+                                lepsf = muSFs(lep1cut, self._year, self._corr) * muSFs(lep2cut, self._year, self._corr)
                             '''
+                            # This would be emu channel, which does not exist in the VHcc Zll case
                             else:
-                                lepsf= np.where(lep1cut.lep_flav==11,
-                                               eleSFs(lep1cut,self._year,self._corr)*muSFs(lep2cut,self._year,self._corr),
+                                lepsf = np.where(lep1cut.lep_flav == 11,
+                                               eleSFs(lep1cut, self._year, self._corr) * muSFs(lep2cut, self._year, self._corr),
                                                1.) \
-                                       * np.where(lep1cut.lep_flav==13,
-                                               eleSFs(lep2cut,self._year,self._corr)*muSFs(lep1cut,self._year,self._corr),
+                                      * np.where(lep1cut.lep_flav == 13,
+                                               eleSFs(lep2cut, self._year, self._corr) * muSFs(lep1cut, self._year, self._corr),
                                                1.)
                            '''
                         else : 
@@ -1091,62 +1169,134 @@ class NanoProcessor(processor.ProcessorABC):
                         # print(lepsf)
                         if 'leading_jetflav_' in histname and 'sub' not in histname:
                             #print(dir(leading))
-                            fields = {l: normalize(leading[histname.replace('leading_jetflav_','')],cut) for l in h.fields if l in dir(leading)}
+                            fields = {l: normalize(leading[histname.replace('leading_jetflav_','')],
+                                                   cut) for l in h.fields if l in dir(leading)}
                             if isRealData:
-                                flavor= ak.zeros_like(normalize(leading['pt'],cut))
+                                flavor = ak.zeros_like(normalize(leading['pt'],cut))
                             else:
-                                flavor= normalize(leading.hadronFlavour,cut)
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav =ch, region = r, flav=flavor, **fields,weight=weights.weight()[cut]*lepsf)  
+                                flavor = normalize(leading.hadronFlavour,cut)
+                            h.fill(dataset = dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   flav = flavor,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf)  
                         elif 'subleading_jetflav_' in histname:
                             #print(dir(leading))
-                            fields = {l: normalize(subleading[histname.replace('subleading_jetflav_','')],cut) for l in h.fields if l in dir(subleading)}
+                            fields = {l: normalize(subleading[histname.replace('subleading_jetflav_','')],
+                                                   cut) for l in h.fields if l in dir(subleading)}
                             if isRealData:
-                                flavor= ak.zeros_like(normalize(subleading['pt'],cut))
+                                flavor = ak.zeros_like(normalize(subleading['pt'],cut))
                             else:
-                                flavor= normalize(subleading.hadronFlavour,cut)
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed,   lepflav =ch, region = r, flav=flavor, **fields,weight=weights.weight()[cut]*lepsf)  
+                                flavor = normalize(subleading.hadronFlavour,cut)
+                            h.fill(dataset = dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   flav = flavor,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf)  
                         elif 'lep1_' in histname:
-                            fields = {l: ak.fill_none(flatten(lep1cut[histname.replace('lep1_','')]),np.nan) for l in h.fields if l in dir(lep1cut)}
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav=ch,region = r, **fields,weight=weights.weight()[cut]*lepsf)
+                            fields = {l: ak.fill_none(flatten(lep1cut[histname.replace('lep1_','')]),
+                                                      np.nan) for l in h.fields if l in dir(lep1cut)}
+                            h.fill(dataset = dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf)
                         elif 'lep2_' in histname:
-                            fields = {l: ak.fill_none(flatten(lep2cut[histname.replace('lep2_','')]),np.nan) for l in h.fields if l in dir(lep2cut)}
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav=ch,region = r, **fields,weight=weights.weight()[cut]*lepsf)
+                            fields = {l: ak.fill_none(flatten(lep2cut[histname.replace('lep2_','')]),
+                                                      np.nan) for l in h.fields if l in dir(lep2cut)}
+                            h.fill(dataset  =dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf)
                         #elif 'MET_' in histname:
-                        #    fields = {l: normalize(events.MET[histname.replace('MET_','')],cut) for l in h.fields if l in dir(events.MET)}
-                        #    h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav =ch, region = r,**fields,weight=weights.weight()[cut]*lepsf) 
+                        #    fields = {l: normalize(events.MET[histname.replace('MET_','')],
+                        #                           cut) for l in h.fields if l in dir(events.MET)}
+                        #    h.fill(dataset = dataset,
+                        #           datasetSplit = dataset_renamed,
+                        #           lepflav = ch,
+                        #           region = r,
+                        #           **fields,
+                        #           weight = weights.weight()[cut] * lepsf) 
                         elif 'll_' in histname:
-                            fields = {l: ak.fill_none(flatten(llcut[histname.replace('ll_','')]),np.nan) for l in h.fields if l in dir(llcut)}
+                            fields = {l: ak.fill_none(flatten(llcut[histname.replace('ll_','')]),
+                                                      np.nan) for l in h.fields if l in dir(llcut)}
                             #print(max(llcut['pt']))
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav=ch, region = r,**fields,weight=weights.weight()[cut]*lepsf) 
+                            h.fill(dataset = dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf) 
                         elif 'jj_' in histname:
-                            fields = {l: normalize(higgs_cand[histname.replace('jj_','')],cut) for l in h.fields if l in dir(higgs_cand)}
-                            h.fill(dataset=dataset, datasetSplit=dataset_renamed,  lepflav=ch, region = r,**fields,weight=weights.weight()[cut]*lepsf) 
+                            fields = {l: normalize(higgs_cand[histname.replace('jj_','')],
+                                                   cut) for l in h.fields if l in dir(higgs_cand)}
+                            h.fill(dataset = dataset,
+                                   datasetSplit = dataset_renamed,
+                                   lepflav = ch,
+                                   region = r,
+                                   **fields,
+                                   weight = weights.weight()[cut] * lepsf) 
                         else:
-                            output['nj'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,
-                                              nj=normalize(ak.num(jet_conditions),cut),
-                                              weight=weights.weight()[cut]*lepsf)
-                            # probably wrong
-                            output['nAddJets302p5_puid'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,
-                                              nAddJets302p5_puid=normalize(ak.num(jet_conditions)-2,cut),
-                                              weight=weights.weight()[cut]*lepsf)
-                            # probably also wrong
-                            output['nAddJetsFSRsub302p5_puid'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,
-                                              nAddJetsFSRsub302p5_puid=normalize(ak.num(jet_conditions)-2-ak.num(jet_conditions&fsr_conditions),cut),
-                                              weight=weights.weight()[cut]*lepsf)
+                            output['nj'].fill(dataset = dataset,
+                                              datasetSplit = dataset_renamed,
+                                              lepflav = ch,
+                                              region = r,
+                                              nj = normalize(ak.num(jet_conditions),cut),
+                                              weight = weights.weight()[cut]*lepsf)
+                            # check?
+                            output['nAddJets302p5_puid'].fill(dataset = dataset,
+                                                              datasetSplit = dataset_renamed,
+                                                              lepflav = ch,
+                                                              region = r,
+                                                              nAddJets302p5_puid = normalize(ak.num(jet_conditions)
+                                                                                             -2,
+                                                                                             cut),
+                                                              weight = weights.weight()[cut]*lepsf)
+                            # check?
+                            output['nAddJetsFSRsub302p5_puid'].fill(dataset = dataset,
+                                                                    datasetSplit = dataset_renamed,
+                                                                    lepflav = ch,
+                                                                    region = r,
+                                                                    nAddJetsFSRsub302p5_puid = normalize(ak.num(jet_conditions)
+                                                                                                         -2
+                                                                                                         -ak.num(jet_conditions&fsr_conditions),
+                                                                                                         cut),
+                                                                    weight = weights.weight()[cut]*lepsf)
                             if not isRealData:
-                                output['weight_full'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,weight_full=weights.weight()[cut]*lepsf)
-                                output['genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight=events.genWeight[cut])
-                                output['sign_genweight'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,genWeight_by_abs=(events.genWeight/abs(events.genWeight))[cut])
-                            
-                            
-                            
-                            #output['jjVPtRatio'].fill(dataset=dataset, datasetSplit=dataset_renamed, lepflav=ch,region = r,
-                            #                          jjVPtRatio=(normalize(higgs_cand['pt'],cut)/ak.fill_none(flatten(llcut['pt']),np.nan)),
-                            #                          weight=weights.weight()[cut]*lepsf)
-                            
-                            # AN, MY
+                                output['weight_full'].fill(dataset = dataset,
+                                                           datasetSplit = dataset_renamed,
+                                                           lepflav = ch,
+                                                           region = r,
+                                                           weight_full = weights.weight()[cut]*lepsf)
+                                output['genweight'].fill(dataset = dataset,
+                                                         datasetSplit = dataset_renamed,
+                                                         lepflav = ch,
+                                                         region = r,
+                                                         genWeight = events.genWeight[cut])
+                                output['sign_genweight'].fill(dataset = dataset,
+                                                              datasetSplit = dataset_renamed,
+                                                              lepflav = ch,
+                                                              region = r,
+                                                              genWeight_by_abs = (events.genWeight/abs(events.genWeight))[cut])
+                            #output['jjVPtRatio'].fill(dataset=dataset,
+                            #                          datasetSplit = dataset_renamed,
+                            #                          lepflav = ch,
+                            #                          region = r,
+                            #                          jjVPtRatio = (normalize(higgs_cand['pt'],
+                            #                                                  cut) / ak.fill_none(flatten(llcut['pt']),
+                            #                                                                      np.nan)),
+                            #                          weight = weights.weight()[cut] * lepsf)
                             if self._export_array and not isRealData:
-                                output['array'][dataset]['weight']+=processor.column_accumulator(ak.to_numpy(weights.weight()[cut]*lepsf))
+                                output['array'][dataset]['weight'] += processor.column_accumulator(
+                                                                        ak.to_numpy(weights.weight()[cut] * lepsf)
+                                                                      )
                     
         return output
 

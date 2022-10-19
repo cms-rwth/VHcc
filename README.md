@@ -25,6 +25,11 @@ python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-50To150.coffea --jso
 python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-150To250.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-150To250
 python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-250To400.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-250To400
 python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-400ToInf.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-400ToInf
+
+
+NEW:
+python runner.py --wf Zll --output Zll_higgs_17_NEW.coffea --json src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json --executor parsl/condor/naf_lite --skipbadfiles
+python runner.py --wf Zll --output Zll_data_17_NEW.coffea --json src/VHcc/metadata/datasamples_2017_Zll_used.json --executor parsl/condor/naf_lite_merges  --skipbadfiles
 ```
 ### Useful commands to remove jobs from condor
 #### Why?
