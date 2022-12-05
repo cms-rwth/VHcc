@@ -346,13 +346,48 @@ class NanoProcessor(processor.ProcessorABC):
             btag_axes.append(hist.Bin(d, d , 20, 0, 1))  
             
         _hist_event_dict = {
-                'nj'                       : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, njet_axis),
-                'nAddJets302p5_puid'       : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, nAddJets_axis),
-                'nAddJetsFSRsub302p5_puid' : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, nAddJets_FSRsub_axis),
-                'weight_full'              : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, weight_axis),
-                'genweight'                : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, genweight_axis),
-                'sign_genweight'           : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, sign_genweight_axis),
-                'jjVPtRatio'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, jjVPtRatio_axis)
+                'nj'                       : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       njet_axis),
+                'nAddJets302p5_puid'       : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       nAddJets_axis),
+                'nAddJetsFSRsub302p5_puid' : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       nAddJets_FSRsub_axis),
+                'weight_full'              : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       weight_axis),
+                'genweight'                : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       genweight_axis),
+                'sign_genweight'           : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       sign_genweight_axis),
+                'jjVPtRatio'               : hist.Hist("Counts",
+                                                       dataset_axis,
+                                                       datasetSplit_axis,
+                                                       lepflav_axis,
+                                                       region_axis,
+                                                       jjVPtRatio_axis)
             
                 #'dphi_V_H'                 : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dphi_V_H_axis)
                 #'dr_j1_j2'                 : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dr_j1_j2_axis)
@@ -584,8 +619,7 @@ class NanoProcessor(processor.ProcessorABC):
         
         
         
-        
-        # Not sure if this is even needed in the Zll channel, but it probably won't hurt
+        # Not strictly necessary for Zll
         met = ak.zip({
                     "pt":  events.MET.pt,
                     "phi": events.MET.phi,
@@ -602,6 +636,7 @@ class NanoProcessor(processor.ProcessorABC):
         if not isRealData and not self._debug:
             if doFlavSplit == '1' and not (int(sample_type) >= 27 and int(sample_type) <= 39):
                 split_by_flav = True
+                # uses the same naming scheme as AT, although udbsg is counterintuitive (b? [sic!])
                 possible_flavSplits = ['_cc','_bb','_bc','_cl','_bl','_udbsg']
                 # =================================================================================
                 #
