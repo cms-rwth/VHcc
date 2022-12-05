@@ -64,10 +64,12 @@ def get_info_dict(year):
         return info_dict
 
 class NanoProcessor(processor.ProcessorABC):
-    # Define histograms
-    def __init__(self, year="2017",version="test_nolepsf"):    
-        self._year=year
-        self._version=version # only because the new runner etc. needs that, not used later
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self._year = self.cfg.dataset["year"]
+        self._campaign = self.cfg.dataset["campaign"]
+
+        self._version=self.cfg.userconfig['version'] # only because the new runner etc. needs that, not used later
         self._export_array = True # if 'test' in self._version else False
         self._debug = False #True
         
@@ -255,7 +257,7 @@ class NanoProcessor(processor.ProcessorABC):
             '2018': LumiMask('src/VHcc/data/Lumimask/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt')
         }
         
-        self._corr = init_corr(year)
+        self._corr = init_corr(self._year)
         
         # Axes: Cat - what it is, a type of something, described with words
         #       Bin - how much of something, numerical things

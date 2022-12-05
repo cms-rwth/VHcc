@@ -1,36 +1,32 @@
 # VHcc
 Search for VH(cc) process with CMS data, using coffea processor
 
-Follow [this link]( https://codimd.web.cern.ch/wLJlIq8jQtqJ-y7fP-kgdw#
-) for setup instructions.
-
-### Example job submission for VHcc
+## Software setup
+ * First follow the [Readme instructions from CoffeaRunner repo](https://github.com/cms-rwth/CoffeaRunner/blob/master/README.md).
+ * Then, checkout this repo into `./src/` directory:
 ```
-python runner.py --wf Zll --output Zll_vjets_17.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --workers 6 --scaleout 6
-python runner.py --wf Zll --output Zll_vjets_ext_17.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_ext_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --workers 6 --scaleout 6
-python runner.py --wf Zll --output Zll_other_17.coffea --json src/VHcc/metadata/mcsamples_2017_other_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --workers 6 --scaleout 6
-python runner.py --wf Zll --output Zll_higgs_17.coffea --json src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json --executor parsl/condor/naf_lite --workers 6 --scaleout 6
-python runner.py --wf Zll --output Zll_data_17.coffea --json src/VHcc/metadata/datasamples_2017_Zll_used.json --executor parsl/condor/naf_lite --workers 6 --scaleout 6
+git clone git@github.com:cms-rwth/VHcc src/VHcc
 ```
-
-Trying more jobs, splitting into actual processor & merging
-```
-python runner.py --wf Zll --output Zll_vjets_17_just10.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite_merges --limit 10
-python runner.py --wf Zll --output Zll_vjets_17_DYJetsToLL_nlo.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DYJetsToLL_nlo
-python runner.py --wf Zll --output Zll_vjets_17_DY1ToLL_PtZ-50To150.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY1ToLL_PtZ-50To150
-python runner.py --wf Zll --output Zll_vjets_17_DY1ToLL_PtZ-150To250.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY1ToLL_PtZ-150To250
-python runner.py --wf Zll --output Zll_vjets_17_DY1ToLL_PtZ-250To400.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY1ToLL_PtZ-250To400
-python runner.py --wf Zll --output Zll_vjets_17_DY1ToLL_PtZ-400ToInf.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY1ToLL_PtZ-400ToInf
-python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-50To150.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-50To150
-python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-150To250.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-150To250
-python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-250To400.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-250To400
-python runner.py --wf Zll --output Zll_vjets_17_DY2ToLL_PtZ-400ToInf.coffea --json src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json --executor parsl/condor/naf_lite --only DY2ToLL_PtZ-400ToInf
+ * Re-compile: 
+ `pip install -e .`
 
 
-NEW:
-python runner.py --wf Zll --output Zll_higgs_17_NEW.coffea --json src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json --executor parsl/condor/naf_lite --skipbadfiles
-python runner.py --wf Zll --output Zll_data_17_NEW.coffea --json src/VHcc/metadata/datasamples_2017_Zll_used.json --executor parsl/condor/naf_lite_merges  --skipbadfiles
+## Example job submission for VHcc
+
+ * Run the code using a config file:
 ```
+python runner_wconfig.py --cfg src/VHcc/cfg_VHcc.py
+```
+ * The processor where the selection is implemented is found at `src/VHcc/workflows/Zll_process.py`
+ * The config file - `src/VHcc/cfg_VHcc.py` - governs the submission parameters. For example:
+   * `dataset` - the names of the datasets to run over, including the path to .json file obtained with fetcher.
+     * Using `samples` and `samples_exclude` parameters one can run over specific samples.
+   * `workflow` - the worflow to run
+   * `run_options` - jobs submission parameters
+   * `userconfig` - one can also create dedicated parameters for specific workflos.
+   * More details on the config can be found in [CoffeRunner's Readme](//github.com/cms-rwth/CoffeaRunner/blob/master/README.md) 
+
+
 ### Useful commands to remove jobs from condor
 #### Why?
 To not fill the queue with more than the allowed number of individual jobs. (5000 I think)
