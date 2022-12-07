@@ -7,7 +7,10 @@ from select import select
 
 import json
 
-from coffea import hist, processor # ToDo: move to the better hist
+#from coffea import hist, processor # ToDo: move to the better hist
+from coffea import processor # ToDo: move to the better hist
+import hist
+from hist import Hist
 from coffea.nanoevents.methods import vector
 import awkward as ak
 from VHcc.utils.correction import jec,muSFs,eleSFs,init_corr
@@ -270,43 +273,59 @@ class NanoProcessor(processor.ProcessorABC):
         #sys.exit()
         # Define axes
         # Should read axes from NanoAOD config / metadata
-        dataset_axis = hist.Cat("dataset", "Primary dataset")
+        #dataset_axis = hist.Cat("dataset", "Primary dataset")
+        dataset_axis = hist.axis.StrCategory([],      name="dataset", label="Primary dataset", growth=True)
         # split V+jets sample & VZ signal, this is per event
         # https://github.com/mastrolorenzo/AnalysisTools-1/blob/master/plugins/VHccAnalysis.cc#L2184-L2276
-        datasetSplit_axis = hist.Cat("datasetSplit", "Dataset split by flav", list_of_datasets)
+        #datasetSplit_axis = hist.Cat("datasetSplit", "Dataset split by flav", list_of_datasets)
+        datasetSplit_axis = hist.axis.StrCategory(list_of_datasets, name="datasetSplit", label="Dataset split by flav")
         
         # use hadronFlavour, necessary when applying btag scale factors (that depend on flavour)
         # this one will be done per jet, can have values 0, 4, 5
-        flav_axis = hist.Bin("flav", r"hadronFlavour",[0,1,4,5,6])
+        #flav_axis = hist.Bin("flav", r"hadronFlavour",[0,1,4,5,6])
+        flav_axis = hist.axis.Variable([0,1,4,5,6], name="flav", label="hadronFlavour")
         
-        lepflav_axis = hist.Cat("lepflav",['ee','mumu'])
+        #lepflav_axis = hist.Cat("lepflav",['ee','mumu'])
+        lepflav_axis = hist.axis.StrCategory(['ee','mumu'], name="lepflav", label="Lepton flav")
         
         regions = ['SR_2LL','SR_2LH',
                    'CR_Zcc_2LL','CR_Zcc_2LH',
                    'CR_Z_LF_2LL','CR_Z_LF_2LH',
                    'CR_Z_HF_2LL','CR_Z_HF_2LH',
                    'CR_t_tbar_2LL','CR_t_tbar_2LH']
-        region_axis = hist.Cat("region",regions)
+        #region_axis = hist.Cat("region",regions)
+        region_axis = hist.axis.StrCategory(regions, name="region", label="Region")
         
         # Events
-        njet_axis  = hist.Bin("nj",  r"N jets", 13, -.5, 12.5)
+        njet_axis  = hist.axis.Regular(13, -.5, 12.5, name="nj", label="N jets") #hist.Bin("nj",  r"N jets", 13, -.5, 12.5)
         
-        nAddJets_axis  = hist.Bin("nAddJets302p5_puid",  r"N additional jets", 11, -.5, 10.5)
-        nAddJets_FSRsub_axis  = hist.Bin("nAddJetsFSRsub302p5_puid",  r"N additional jets (FSR subtracted)", 11, -.5, 10.5)
+        nAddJets_axis  = hist.axis.Regular(11, -.5, 10.5, name="nAddJets302p5_puid", label="N additional jets")
+        #hist.Bin("nAddJets302p5_puid",  r"N additional jets", 11, -.5, 10.5)
+        nAddJets_FSRsub_axis  = hist.axis.Regular(11, -.5, 10.5, name="nAddJetsFSRsub302p5_puid", label="N additional jets (FSR subtracted)")
+        #hist.Bin("nAddJetsFSRsub302p5_puid",  r"N additional jets (FSR subtracted)", 11, -.5, 10.5)
         
         #nbjet_axis = hist.Bin("nbj", r"N b jets",    [0,1,2,3,4,5])            
         #ncjet_axis = hist.Bin("ncj", r"N c jets",    [0,1,2,3,4,5])
         # kinematic variables       
-        pt_axis   = hist.Bin("pt",   r" $p_{T}$ [GeV]", 50, 0, 300)
-        eta_axis  = hist.Bin("eta",  r" $\eta$", 25, -2.5, 2.5)
-        phi_axis  = hist.Bin("phi",  r" $\phi$", 30, -3, 3)
-        mass_axis = hist.Bin("mass", r" $m$ [GeV]", 50, 0, 300)
-        mt_axis =  hist.Bin("mt", r" $m_{T}$ [GeV]", 30, 0, 300)
-        dr_axis = hist.Bin("dr","$\Delta$R",20,0,5)
+        pt_axis   = hist.axis.Regular(50, 0, 300, name="pt", label=r"$p_{T}$ [GeV]")
+        #hist.Bin("pt",   r" $p_{T}$ [GeV]", 50, 0, 300)
+        eta_axis  = hist.axis.Regular(25, -2.5, 2.5, name="eta", label=r"$\eta$")
+        #hist.Bin("eta",  r" $\eta$", 25, -2.5, 2.5)
+        phi_axis  = hist.axis.Regular(30, -3, 3, name="phi", label=r"$\phi$")
+        #hist.Bin("phi",  r" $\phi$", 30, -3, 3)
+        mass_axis = hist.axis.Regular(50, 0, 300, name="mass", label=r"$m$ [GeV]")
+        #hist.Bin("mass", r" $m$ [GeV]", 50, 0, 300)
+        mt_axis = hist.axis.Regular(30, 0, 300, name="mt", label=r"$m_{T}$ [GeV]")
+        #hist.Bin("mt", r" $m_{T}$ [GeV]", 30, 0, 300)
+        dr_axis = hist.axis.Regular(20, 0, 5, name="dr", label=r"$\Delta$R")
+        #hist.Bin("dr","$\Delta$R",20,0,5)
         
         # some more variables to check, which enter BDT
         # need to revisit this later, because high Vpt and low Vpt can have different binning
-        jjVPtRatio_axis = hist.Bin("jjVPtRatio",r"$p_{T}(jj) / $p_{T}(V)$ [GeV]",15,0,2)
+        jjVPtRatio_axis = hist.axis.Regular(15, 0, 2, name="jjVPtRatio", label=r"$p_{T}(jj) / $p_{T}(V)$ [GeV]")
+        #hist.Bin("jjVPtRatio",r"$p_{T}(jj) / $p_{T}(V)$ [GeV]",15,0,2)
+        
+        
         #dphi_V_H_axis = hist.Bin("dphi_V_H","$\Delta\Phi(V, H)$",20,0,3.2)
         # jet jet
         #dr_j1_j2_axis = hist.Bin("dr_j1_j2","$\Delta R(j1,j2)$",20,0,5)
@@ -327,9 +346,14 @@ class NanoProcessor(processor.ProcessorABC):
         # or https://github.com/mastrolorenzo/AnalysisTools-1/blob/master/plugins/VHccAnalysis.cc#L4670-L4995
         
         # weights are interesting as well
-        weight_axis = hist.Bin("weight_full","weight_full",100,-5.001, 5.001)
-        genweight_axis = hist.Bin("genWeight","genWeight",100,-0.001, 0.001)
-        sign_genweight_axis = hist.Bin("genWeight_by_abs","genWeight/abs(genWeight)",100,-1.001,1.001)
+        weight_axis = hist.axis.Regular(100, -5.001, 5.001, name="weight_full", label="weight_full")
+        #hist.Bin("weight_full","weight_full",100,-5.001, 5.001)
+        genweight_axis = hist.axis.Regular(100, -0.001, 0.001, name="genWeight", label="genWeight")
+        #hist.Bin("genWeight","genWeight",100,-0.001, 0.001)
+        sign_genweight_axis = hist.axis.Regular(100, -1.001, 1.001, name="genWeight_by_abs", label="genWeight/abs(genWeight)")
+        #hist.Bin("genWeight_by_abs","genWeight/abs(genWeight)",100,-1.001,1.001)
+        
+        
         # MET vars
         #signi_axis = hist.Bin("significance", r"MET $\sigma$",20,0,10)
         #covXX_axis = hist.Bin("covXX",r"MET covXX",20,0,10)
@@ -345,77 +369,100 @@ class NanoProcessor(processor.ProcessorABC):
         btag_axes = []
         for d in disc_list:
             # technically, -1 values are possible, but probably unlikely to matter much after event selection
-            btag_axes.append(hist.Bin(d, d , 20, 0, 1))  
-            
+            btag_axes.append(hist.axis.Regular(20, 0, 1, name=d, label=d)
+                #hist.Bin(d, d , 20, 0, 1)
+            )  
+        #h = (
+        #    Hist.new.Reg(10, -5, 5, overflow=False, underflow=False, name="A")
+        #    .Bool(name="B")
+        #    .Var(range(10), name="C")
+        #    .Int(-5, 5, overflow=False, underflow=False, name="D")
+        #    .IntCat(range(10), name="E")
+        #    .StrCat(["T", "F"], name="F")
+        #    .Double()
+        #)
+        #print(type(dataset_axis))
+        #print(type(lepflav_axis))
+        #print(type(flav_axis))
+        #print(type(njet_axis))
+        #print(type(hist.storage.Weight()))
+        #testHistA = Hist(dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, njet_axis, hist.storage.Weight())    
+        #testHist = Hist(
+        #            #dataset_axis,
+        #            #datasetSplit_axis,
+        #            #lepflav_axis,
+        #            #region_axis,
+        #            njet_axis,
+        #            hist.storage.Weight()
+        #        )    
         _hist_event_dict = {
-                'nj'                       : hist.Hist("Counts",
-                                                       dataset_axis,
+                'nj'                       : Hist(dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        njet_axis),
-                'nAddJets302p5_puid'       : hist.Hist("Counts",
+                'nAddJets302p5_puid'       : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        nAddJets_axis),
-                'nAddJetsFSRsub302p5_puid' : hist.Hist("Counts",
+                'nAddJetsFSRsub302p5_puid' : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        nAddJets_FSRsub_axis),
-                'weight_full'              : hist.Hist("Counts",
+                'weight_full'              : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        weight_axis),
-                'genweight'                : hist.Hist("Counts",
+                'genweight'                : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        genweight_axis),
-                'sign_genweight'           : hist.Hist("Counts",
+                'sign_genweight'           : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        sign_genweight_axis),
-                'jjVPtRatio'               : hist.Hist("Counts",
+                'jjVPtRatio'               : Hist(
                                                        dataset_axis,
                                                        datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
                                                        jjVPtRatio_axis)
             
-                #'dphi_V_H'                 : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dphi_V_H_axis)
-                #'dr_j1_j2'                 : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dr_j1_j2_axis)
-                #'dphi_j1_j2'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j1_j2_axis)
-                #'deta_j1_j2'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, deta_j1_j2_axis)
-                #'dphi_l1_l2'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_l1_l2_axis)
-                #'dphi_j1_l2'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j1_l2_axis)
-                #'dphi_j2_l2'               : hist.Hist("Counts", dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j2_l2_axis)
+                #'dphi_V_H'                 : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dphi_V_H_axis)
+                #'dr_j1_j2'                 : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dr_j1_j2_axis)
+                #'dphi_j1_j2'               : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j1_j2_axis)
+                #'deta_j1_j2'               : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, deta_j1_j2_axis)
+                #'dphi_l1_l2'               : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_l1_l2_axis)
+                #'dphi_j1_l2'               : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j1_l2_axis)
+                #'dphi_j2_l2'               : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, dphi_j2_l2_axis)
                 
-                #'sampleFlavSplit'  : hist.Hist("Counts", dataset_axis,  lepflav_axis, region_axis, sampleFlavSplit_axis),
-                #'nbj' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, nbjet_axis),
-                #'ncj' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, ncjet_axis),
-                #'hj_dr'  : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, dr_axis),
-                #'MET_sumEt' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, sumEt_axis),
-                #'MET_significance' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, signi_axis),
-                #'MET_covXX' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, covXX_axis),
-                #'MET_covXY' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, covXY_axis),
-                #'MET_covYY' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, covYY_axis),
-                #'MET_phi' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, phi_axis),
-                #'MET_pt' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, pt_axis),
-                #'mT1' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, mt_axis),
-                #'mT2' : hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, mt_axis),
-                #'mTh':hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, mt_axis),
-                #'dphi_lep1':hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, phi_axis),
-                #'dphi_lep2':hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, phi_axis),
-                #'dphi_ll':hist.Hist("Counts", dataset_axis, lepflav_axis, region_axis, phi_axis),
+                #'sampleFlavSplit'  : Hist( dataset_axis,  lepflav_axis, region_axis, sampleFlavSplit_axis),
+                #'nbj' : Hist( dataset_axis, lepflav_axis, region_axis, nbjet_axis),
+                #'ncj' : Hist( dataset_axis, lepflav_axis, region_axis, ncjet_axis),
+                #'hj_dr'  : Hist( dataset_axis, lepflav_axis, region_axis, dr_axis),
+                #'MET_sumEt' : Hist( dataset_axis, lepflav_axis, region_axis, sumEt_axis),
+                #'MET_significance' : Hist( dataset_axis, lepflav_axis, region_axis, signi_axis),
+                #'MET_covXX' : Hist( dataset_axis, lepflav_axis, region_axis, covXX_axis),
+                #'MET_covXY' : Hist( dataset_axis, lepflav_axis, region_axis, covXY_axis),
+                #'MET_covYY' : Hist( dataset_axis, lepflav_axis, region_axis, covYY_axis),
+                #'MET_phi' : Hist( dataset_axis, lepflav_axis, region_axis, phi_axis),
+                #'MET_pt' : Hist( dataset_axis, lepflav_axis, region_axis, pt_axis),
+                #'mT1' : Hist( dataset_axis, lepflav_axis, region_axis, mt_axis),
+                #'mT2' : Hist( dataset_axis, lepflav_axis, region_axis, mt_axis),
+                #'mTh':Hist( dataset_axis, lepflav_axis, region_axis, mt_axis),
+                #'dphi_lep1':Hist( dataset_axis, lepflav_axis, region_axis, phi_axis),
+                #'dphi_lep2':Hist( dataset_axis, lepflav_axis, region_axis, phi_axis),
+                #'dphi_ll':Hist( dataset_axis, lepflav_axis, region_axis, phi_axis),
             }
         
         # jets will be ordered by DeepJet (which is DeepFlav for historical reasons)
@@ -424,28 +471,27 @@ class NanoProcessor(processor.ProcessorABC):
         for i in objects:
             # distinguish between jets and other objects, as the structure for jets contains additional flavour axis
             if 'jet' in i: 
-                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts",
-                                                         dataset_axis,
+                _hist_event_dict["%s_pt" %(i)]=Hist(dataset_axis,
                                                          datasetSplit_axis,
                                                          lepflav_axis,
                                                          region_axis,
                                                          flav_axis,
                                                          pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_eta" %(i)]=Hist(
                                                           dataset_axis,
                                                           datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           flav_axis,
                                                           eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_phi" %(i)]=Hist(
                                                           dataset_axis,
                                                           datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           flav_axis,
                                                           phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_mass" %(i)]=Hist(
                                                            dataset_axis,
                                                            datasetSplit_axis,
                                                            lepflav_axis,
@@ -453,25 +499,25 @@ class NanoProcessor(processor.ProcessorABC):
                                                            flav_axis,
                                                            mass_axis)
             else:
-                _hist_event_dict["%s_pt" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_pt" %(i)]=Hist(
                                                          dataset_axis,
                                                          datasetSplit_axis,
                                                          lepflav_axis,
                                                          region_axis,
                                                          pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_eta" %(i)]=Hist(
                                                           dataset_axis,
                                                           datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_phi" %(i)]=Hist(
                                                           dataset_axis,
                                                           datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=hist.Hist("Counts",
+                _hist_event_dict["%s_mass" %(i)]=Hist(
                                                            dataset_axis,
                                                            datasetSplit_axis,
                                                            lepflav_axis,
@@ -481,14 +527,14 @@ class NanoProcessor(processor.ProcessorABC):
         # more information on the discriminators is stored for the first two jets,
         # ordered by DeepJet CvL discriminator and called "leading" and "subleading"
         for disc, axis in zip(disc_list,btag_axes):
-            _hist_event_dict["leading_jetflav_%s" %(disc)] = hist.Hist("Counts",
+            _hist_event_dict["leading_jetflav_%s" %(disc)] = Hist(
                                                                        dataset_axis,
                                                                        datasetSplit_axis,
                                                                        lepflav_axis,
                                                                        region_axis,
                                                                        flav_axis,
                                                                        axis)
-            _hist_event_dict["subleading_jetflav_%s" %(disc)] = hist.Hist("Counts",
+            _hist_event_dict["subleading_jetflav_%s" %(disc)] = Hist(
                                                                           dataset_axis,
                                                                           datasetSplit_axis,
                                                                           lepflav_axis,
@@ -504,7 +550,6 @@ class NanoProcessor(processor.ProcessorABC):
         self._accumulator = processor.dict_accumulator(
             {**_hist_event_dict,   
              'cutflow': processor.defaultdict_accumulator(
-                 # we don't use a lambda function to avoid pickle issues
                  partial(processor.defaultdict_accumulator, int))
             })
         self._accumulator['sumw'] = processor.defaultdict_accumulator(float)
@@ -515,7 +560,7 @@ class NanoProcessor(processor.ProcessorABC):
         return self._accumulator
 
     def process(self, events):
-        output = self.accumulator.identity()
+        output = self.accumulator #.identity()
         dataset = events.metadata['dataset']
         print(dataset)
         # Q: could there be MC that does not have this attribute? Or is it always the case?
@@ -695,7 +740,7 @@ class NanoProcessor(processor.ProcessorABC):
                 # 1, 2 and 3 identical to what was done in AnalysisTools! Do not confuse with BTV / hadron / parton flavour...
                 sampleFlavSplit = 1 * VZ_cc  +  2 * VZ_bb  +  3 * VZ_others
                 
-                print(sampleFlavSplit.type)
+                #print(sampleFlavSplit.type)
                 
                 selection.add('cc',sampleFlavSplit == 1)
                 selection.add('bb',sampleFlavSplit == 2)
@@ -1156,7 +1201,7 @@ class NanoProcessor(processor.ProcessorABC):
                'CR_Z_HF_2LL','CR_Z_HF_2LH',
                'CR_t_tbar_2LL','CR_t_tbar_2LH']
         
-        print(possible_flavSplits)
+        #print(possible_flavSplits)
         
         #### write into histograms (i.e. write output)
         for histname, h in output.items():
@@ -1206,8 +1251,12 @@ class NanoProcessor(processor.ProcessorABC):
                         # print(lepsf)
                         if 'leading_jetflav_' in histname and 'sub' not in histname:
                             #print(dir(leading))
+                            #print(h.axes)
+                            names = [ax.name for ax in h.axes]
                             fields = {l: normalize(leading[histname.replace('leading_jetflav_','')],
-                                                   cut) for l in h.fields if l in dir(leading)}
+                                                   cut) for l in names if l in dir(leading)}
+                            #print(fields)
+                            #sys.exit()
                             if isRealData:
                                 flavor = ak.zeros_like(normalize(leading['pt'],cut))
                             else:
@@ -1220,9 +1269,10 @@ class NanoProcessor(processor.ProcessorABC):
                                    **fields,
                                    weight = weights.weight()[cut] * lepsf)  
                         elif 'subleading_jetflav_' in histname:
-                            #print(dir(leading))
+                            #print(dir(subleading))
+                            names = [ax.name for ax in h.axes]
                             fields = {l: normalize(subleading[histname.replace('subleading_jetflav_','')],
-                                                   cut) for l in h.fields if l in dir(subleading)}
+                                                   cut) for l in names if l in dir(subleading)}
                             if isRealData:
                                 flavor = ak.zeros_like(normalize(subleading['pt'],cut))
                             else:
@@ -1235,8 +1285,9 @@ class NanoProcessor(processor.ProcessorABC):
                                    **fields,
                                    weight = weights.weight()[cut] * lepsf)  
                         elif 'lep1_' in histname:
+                            names = [ax.name for ax in h.axes]
                             fields = {l: ak.fill_none(flatten(lep1cut[histname.replace('lep1_','')]),
-                                                      np.nan) for l in h.fields if l in dir(lep1cut)}
+                                                      np.nan) for l in names if l in dir(lep1cut)}
                             h.fill(dataset = dataset,
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
@@ -1244,8 +1295,9 @@ class NanoProcessor(processor.ProcessorABC):
                                    **fields,
                                    weight = weights.weight()[cut] * lepsf)
                         elif 'lep2_' in histname:
+                            names = [ax.name for ax in h.axes]
                             fields = {l: ak.fill_none(flatten(lep2cut[histname.replace('lep2_','')]),
-                                                      np.nan) for l in h.fields if l in dir(lep2cut)}
+                                                      np.nan) for l in names if l in dir(lep2cut)}
                             h.fill(dataset  =dataset,
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
@@ -1254,7 +1306,7 @@ class NanoProcessor(processor.ProcessorABC):
                                    weight = weights.weight()[cut] * lepsf)
                         #elif 'MET_' in histname:
                         #    fields = {l: normalize(events.MET[histname.replace('MET_','')],
-                        #                           cut) for l in h.fields if l in dir(events.MET)}
+                        #                           cut) for l in names if l in dir(events.MET)}
                         #    h.fill(dataset = dataset,
                         #           datasetSplit = dataset_renamed,
                         #           lepflav = ch,
@@ -1262,8 +1314,9 @@ class NanoProcessor(processor.ProcessorABC):
                         #           **fields,
                         #           weight = weights.weight()[cut] * lepsf) 
                         elif 'll_' in histname:
+                            names = [ax.name for ax in h.axes]
                             fields = {l: ak.fill_none(flatten(llcut[histname.replace('ll_','')]),
-                                                      np.nan) for l in h.fields if l in dir(llcut)}
+                                                      np.nan) for l in names if l in dir(llcut)}
                             #print(max(llcut['pt']))
                             h.fill(dataset = dataset,
                                    datasetSplit = dataset_renamed,
@@ -1272,8 +1325,9 @@ class NanoProcessor(processor.ProcessorABC):
                                    **fields,
                                    weight = weights.weight()[cut] * lepsf) 
                         elif 'jj_' in histname:
+                            names = [ax.name for ax in h.axes]
                             fields = {l: normalize(higgs_cand[histname.replace('jj_','')],
-                                                   cut) for l in h.fields if l in dir(higgs_cand)}
+                                                   cut) for l in names if l in dir(higgs_cand)}
                             h.fill(dataset = dataset,
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,

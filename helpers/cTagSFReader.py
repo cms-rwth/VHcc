@@ -1,7 +1,7 @@
 import uproot
 import numpy as np
 import coffea
-from coffea import hist, processor
+from coffea import processor
 def getSF(flav, CvL, CvB, file="DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root",syst=""):    
 
     #print "Reading from %s. Systematic: %s." %(file,syst)
