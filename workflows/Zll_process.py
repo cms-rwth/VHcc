@@ -4,11 +4,9 @@ from dataclasses import dataclass
 import gzip
 import pickle, os, sys, mplhep as hep, numpy as np
 from select import select
-
 import json
 
-#from coffea import hist, processor # ToDo: move to the better hist
-from coffea import processor # ToDo: move to the better hist
+from coffea import processor
 import hist
 from hist import Hist
 from coffea.nanoevents.methods import vector

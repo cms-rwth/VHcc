@@ -3,6 +3,9 @@
 # End:
 
 from VHcc.workflows.Zll_process_newHist import (
+    NanoProcessor as VH_Zll_newHist,
+)
+from VHcc.workflows.Zll_process import (
     NanoProcessor as VH_Zll,
 )
 
@@ -38,12 +41,12 @@ cfg = {
         },
     },
     # Input and output files
-    "workflow": VH_Zll,
+    "workflow": VH_Zll_newHist,
     "output": "output_vhcc_newHist_zll",
     "run_options": {
         #"executor": "parsl/condor/naf_lite",
         "executor": "futures",
-        "workers": 20,
+        "workers": 10,
         "scaleout": 20,
         "walltime": "03:00:00",
         "mem_per_worker": 2,  # GB

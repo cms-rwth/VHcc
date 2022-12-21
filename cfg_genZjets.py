@@ -8,8 +8,12 @@ from VHcc.workflows.genZjets import (
 
 
 cfg = {
+    "user": {"debug_level": 0},
     "dataset": {
-        "jsons": ["src/VHcc/metadata/genZjets.json"],
+        "jsons": [
+            "src/VHcc/metadata/genZjets.json",
+            "src/VHcc/metadata/test_samples_local_DY_UNLOPS.json",
+        ],
         "campaign": "UL17",
         "year": "2017",
         "filter": {
@@ -19,7 +23,9 @@ cfg = {
                 "DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-            ],
+                "DYJets_UNLOPS"
+                # "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa", # NanoV7 (LHE_VPT variables missing)
+           ],
             "samples_exclude": [],
         },
     },
@@ -30,14 +36,14 @@ cfg = {
         "executor": "parsl/condor",
         #"executor": "futures",
         "workers": 1,
-        "scaleout": 10,
+        "scaleout": 200,
         "walltime": "03:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
         "skipbadfiles": None,
         "voms": None,
-        "limit": 3,
+        "limit": 10,
         "retries": 20,
         "splitjobs": False,
     },

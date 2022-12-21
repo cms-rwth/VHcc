@@ -1,0 +1,71 @@
+output: "test_Zjets"   #  Required, output directory
+scaleToLumi : True
+
+## Required, input files
+input :
+      - output_zjets_v28/output.coffea
+
+mergemap:
+   MiNNLO:
+      list:
+       - DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+       - DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MiNNLO_Supp:
+      list:
+       - DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MLM:
+      list:
+       - DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8
+   FxFx:
+      list:
+       - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+   UNLOPS:
+      list:
+       - DYJets_UNLOPS
+
+## Required, reference dict
+reference:
+   #MiNNLO:
+   #    label: MiNNLO
+   #    color: 'C0'
+    FxFx:
+      label: FxFx
+      color : 'C4'
+
+## Required, compare dict
+compare:
+    MLM:
+      label: MLM
+      color : 'C2'
+    #FxFx:
+    #  label: FxFx
+    #  color : 'C4'
+    MiNNLO:
+       label: MiNNLO
+       color: 'C0'
+    MiNNLO_Supp:
+       label: MiNNLO_Supp
+       color: 'C1'
+    UNLOPS:
+       label: UNLOPS
+       color: 'C5'
+
+## Required, variable set
+variable :
+    ## specify variable to plot
+    all:
+
+    #dijet_m:
+      # Optional, set x label of variable
+      #xlabel: "dR(jj)"
+
+rescale_yields:
+  # MiNNLO: 2
+  MiNNLO_Supp: 2
+  UNLOPS: 2
+
+com : "13"
+lumi : 111
+inbox_text: "" # Optional, text write in anchor text box
+norm : False # Optional, normalize to reference yields
+log : False # Optional, log y axis

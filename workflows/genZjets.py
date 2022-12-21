@@ -28,7 +28,7 @@ class NanoProcessor(processor.ProcessorABC):
         self.cfg = cfg
         self._year = self.cfg.dataset["year"]
         self._campaign = self.cfg.dataset["campaign"]
-        self.verblvl = 0
+        self._debug_level =  self.cfg.user["debug_level"]
         self.proc_type = "ul"
 
         print("Year and campaign:", self._year, self._campaign)
@@ -126,13 +126,16 @@ class NanoProcessor(processor.ProcessorABC):
         if dataset in [
             "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
             "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+            "DYJets_UNLOPS"
         ]:
             weight_nosel = events.genWeight
             #print("Special cases:", dataset)
+        #elif dataset in ["DYJets_UNLOPS"]:
+        #    weight_nosel = np.ones(len(events.genWeight))
         else:
             weight_nosel = np.sign(events.genWeight)
 
-        if self.verblvl > 0:
+        if self._debug_level > 0:
             print("\n", dataset, "wei:", weight_nosel)
 
         output["sumw"] += np.sum(weight_nosel)
@@ -142,7 +145,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         output["wei"].fill(wei=weight_nosel, weight=weight_nosel)
         output["wei_sign"].fill(
-            wei=weight_nosel / np.abs(weight_nosel), weight=weight_nosel
+            wei=weight_nosel / np.abs(weight_nosel), weight=np.abs(weight_nosel)
         )
 
         output["nlep"].fill(nlep=ak.num(leptons), weight=weight_nosel)
@@ -192,9 +195,13 @@ class NanoProcessor(processor.ProcessorABC):
         if dataset in [
             "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
             "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+            "DYJets_UNLOPS",
         ]:
             weight_full = events_2l2j.genWeight
             weight_2l = events_2l.genWeight
+        #elif dataset in ["DYJets_UNLOPS"]:
+        #    weight_full = np.ones(len(events_2l2j.genWeight))
+        #    weight_2l = np.ones(len(events_2l.genWeight))
         else:
             weight_full = np.sign(events_2l2j.genWeight)
             weight_2l = np.sign(events_2l.genWeight)
