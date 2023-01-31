@@ -3,7 +3,8 @@ scaleToLumi : True
 
 ## Required, input files
 input :
-      - output_zjets_v28/output.coffea
+      #- output_zjets_v31/output.coffea
+      - output_zjets_v05/output.coffea
 
 mergemap:
    MiNNLO:
@@ -19,9 +20,9 @@ mergemap:
    FxFx:
       list:
        - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
-   UNLOPS:
-      list:
-       - DYJets_UNLOPS
+   #UNLOPS:
+   #   list:
+   #    - DYJets_UNLOPS
 
 ## Required, reference dict
 reference:
@@ -46,15 +47,16 @@ compare:
     MiNNLO_Supp:
        label: MiNNLO_Supp
        color: 'C1'
-    UNLOPS:
-       label: UNLOPS
-       color: 'C5'
+    #UNLOPS:
+    #   label: UNLOPS
+    #   color: 'C5'
 
 ## Required, variable set
 variable :
     ## specify variable to plot
-    all:
-
+    dijet_dr:
+       axis:
+         lepflav: ee
     #dijet_m:
       # Optional, set x label of variable
       #xlabel: "dR(jj)"

@@ -16,15 +16,17 @@ cfg = {
             "src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json",
             #"src/VHcc/metadata/mcsamples_2017_vjets_ext_Zll_used_nonCorruptedOnly.json",
             #"src/VHcc/metadata/mcsamples_2017_other_Zll_used_nonCorruptedOnly.json",
-            #"src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json",
-            #"src/VHcc/metadata/datasamples_2017_Zll_used.json"
+            "src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json",
+            "src/VHcc/metadata/datasamples_2017_Zll_used.json"
         ],
         "campaign": "UL17",
         "year": "2017",
         "filter": {
             "samples": [
-                #"/DoubleMuon/hqu-NanoTuples-30Apr2020_Run2017B-31Mar2018-v1-b2e5aecd7d318124ef1b7f48a4318be4/USER"
+                "DoubleMuon_Run2017E",
+                "DoubleMuon_Run2017F",
                 "DYJetsToLL_nlo",
+                "ZH125ToCC_ZLL_powheg",
                 #"DY1ToLL_PtZ-250To400",
                 #"DY1ToLL_PtZ-50To150",
                 #"DY1ToLL_PtZ-150To250",
@@ -33,8 +35,6 @@ cfg = {
                 #"DY2ToLL_PtZ-150To250",
                 #"DY2ToLL_PtZ-250To400",
                 #"DY2ToLL_PtZ-400ToInf",
-                #"",
-                #"",
                 #"",
             ],
             "samples_exclude": [],
@@ -54,7 +54,7 @@ cfg = {
         "max": None,
         "skipbadfiles": True,
         "voms": None,
-        "limit": 1,
+        "limit": 5,
         "retries": 20,
         "splitjobs": False,
     },

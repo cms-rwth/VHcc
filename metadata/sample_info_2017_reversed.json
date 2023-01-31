@@ -1015,5 +1015,15 @@
         "kfac": "",
         "doJetFlavorSplit": "",
         "npro": "100000"
+    },
+    "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8": {
+        "dir": "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "type": "667",
+        "xsec": "1.0",
+        "lepflav": "",
+        "kfac": "",
+        "doJetFlavorSplit": "",
+        "npro": "100000"
     }
+
 }

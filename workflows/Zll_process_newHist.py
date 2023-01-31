@@ -562,11 +562,11 @@ class NanoProcessor(processor.ProcessorABC):
             dataset_long = dataset
             dictname = dataset[1:].split('/')[0]
             dataset = info_dict[dictname]
-        print(dataset)    
+        # print(dataset)    
         sample_type, doFlavSplit = dataset_name_to_number(dataset, self._year)
         # length of events is used so many times later on, probably useful to just save it here and then refer to that
         nEvents = len(events)
-        print('Number of events: ', nEvents)
+        # print('Number of events: ', nEvents)
         
         # As far as I understand, this looks like a neat way to give selections a name,
         # while internally, there are boolean arrays for all events

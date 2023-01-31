@@ -21,9 +21,9 @@ cfg = {
                 "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
                 "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
                 "DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                #"DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJets_UNLOPS"
+                #"DYJets_UNLOPS"
                 # "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa", # NanoV7 (LHE_VPT variables missing)
            ],
             "samples_exclude": [],
@@ -33,17 +33,17 @@ cfg = {
     "workflow": zjets,
     "output": "output_zjets",
     "run_options": {
-        "executor": "parsl/condor",
-        #"executor": "futures",
-        "workers": 1,
-        "scaleout": 200,
+        #"executor": "parsl/condor",
+        "executor": "futures",
+        "workers": 10,
+        "scaleout": 20,
         "walltime": "03:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
         "skipbadfiles": None,
         "voms": None,
-        "limit": 10,
+        "limit": 3,
         "retries": 20,
         "splitjobs": False,
     },
