@@ -3,8 +3,8 @@ scaleToLumi : True
 
 ## Required, input files
 input :
-      #- output_zjets_v31/output.coffea
-      - output_zjets_v05/output.coffea
+      #- output_zjets_v73/output.coffea
+      - output_zjets_v08/output.coffea
 
 mergemap:
    MiNNLO:
@@ -26,24 +26,24 @@ mergemap:
 
 ## Required, reference dict
 reference:
-   #MiNNLO:
-   #    label: MiNNLO
-   #    color: 'C0'
-    FxFx:
-      label: FxFx
-      color : 'C4'
+   MiNNLO:
+       label: MiNNLO
+       color: 'C0'
+   # FxFx:
+   #   label: FxFx
+   #   color : 'C4'
 
 ## Required, compare dict
 compare:
     MLM:
       label: MLM
       color : 'C2'
-    #FxFx:
-    #  label: FxFx
-    #  color : 'C4'
-    MiNNLO:
-       label: MiNNLO
-       color: 'C0'
+    FxFx:
+      label: FxFx
+      color : 'C4'
+    #MiNNLO:
+    #   label: MiNNLO
+    #   color: 'C0'
     MiNNLO_Supp:
        label: MiNNLO_Supp
        color: 'C1'
@@ -56,15 +56,38 @@ variable :
     ## specify variable to plot
     dijet_dr:
        axis:
-         lepflav: ee
-    #dijet_m:
-      # Optional, set x label of variable
-      #xlabel: "dR(jj)"
+         lepflav: sum
+         jetflav: sum
+       xlabel: "dR(jj)"
+    dijet_m:
+       axis:
+         lepflav: sum
+         jetflav: sum
+    dijet_pt:
+       axis:
+         lepflav: sum
+         jetflav: sum
+
+    dijet_dr_mjj:
+      axis:
+        lepflav: sum
+        jetflav: jj
+        dijet_mBin: 1
+      xlabel: "dR(jj) in bins of m(jj)"
+
+    dilep_pt:
+      xlabel: "$p_T$(V)"
+    njet25:
+    #wei:
+    nlep:
+    dilep_m:
+    LHE_Vpt:
+    LHE_HT:
 
 rescale_yields:
-  # MiNNLO: 2
+  #MiNNLO: 2
   MiNNLO_Supp: 2
-  UNLOPS: 2
+  #UNLOPS: 2
 
 com : "13"
 lumi : 111

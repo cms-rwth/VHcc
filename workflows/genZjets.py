@@ -34,10 +34,15 @@ class NanoProcessor(processor.ProcessorABC):
         print("Year and campaign:", self._year, self._campaign)
 
         lepflav_axis = Hist.axis.StrCategory(
-            ["ee", "mumu", "ll"], name="lepflav", label="channel"
+            ['mu', 'el', 'emu'], name="lepflav", label="channel"
         )
-        axis = {
-            # "dataset"     : Hist.axis.StrCategory([],      name="dataset", label="Primary dataset", growth=True),
+        
+        jetflav_axis = Hist.axis.StrCategory(
+            ['jj','cj','bj','cc','cb','bb','oo'], name="jetflav", label="Jet flavors"
+        )
+        mBin_axis = Hist.axis.Variable([0,60,120,2000], name="dijet_mBin", label="dijet_mBin")
+        
+        single_axis = {
             "LHE_Vpt": Hist.axis.Regular(
                 100, 0, 400, name="LHE_Vpt", label="LHE V PT [GeV]"
             ),
@@ -47,6 +52,9 @@ class NanoProcessor(processor.ProcessorABC):
             "wei": Hist.axis.Regular(100, -1000, 10000, name="wei", label="wei"),
             "wei_sign": Hist.axis.Regular(50, -2, 2, name="wei", label="wei"),
             "nlep": Hist.axis.Regular(12, 0, 6, name="nlep", label="nlep"),
+        }
+        multi_axis = {
+            # "dataset"     : Hist.axis.StrCategory([],      name="dataset", label="Primary dataset", growth=True),
             "lep_eta": Hist.axis.Regular(50, -5, 5, name="lep_eta", label="lep_eta"),
             "lep_pt": Hist.axis.Regular(50, 0, 500, name="lep_pt", label="lep_pt"),
             "dilep_m": Hist.axis.Regular(50, 50, 120, name="dilep_m", label="dilep_m"),
@@ -64,13 +72,21 @@ class NanoProcessor(processor.ProcessorABC):
             #'dijet_dr_neg': Hist.axis.Regular(50, 0, 5,    name="dijet_dr", label="dijet_dr")
         }
 
-        self._accumulator = processor.dict_accumulator(
-            {
-                observable: Hist.Hist(lepflav_axis, var_axis, name="Counts", storage="Weight")
-                for observable, var_axis in axis.items()
-                if observable != "dataset"
-            }
-        )
+        histDict1 = { 
+            observable: Hist.Hist(lepflav_axis, jetflav_axis, var_axis, name="Counts", storage="Weight") if 'dijet' in observable
+            else Hist.Hist(lepflav_axis, var_axis, name="Counts", storage="Weight") 
+            for observable, var_axis in multi_axis.items()
+        }
+        histDict2 = {
+            observable: Hist.Hist(var_axis, name="Counts", storage="Weight")
+            for observable, var_axis in single_axis.items()
+        }
+
+        histDict2D = {
+            "dijet_dr_mjj": Hist.Hist(lepflav_axis, jetflav_axis, multi_axis['dijet_dr'], mBin_axis, name="Counts", storage="Weight")
+        }
+        self._accumulator = processor.dict_accumulator(histDict1|histDict2|histDict2D)
+
         self._accumulator["cutflow"] = processor.defaultdict_accumulator(
             partial(processor.defaultdict_accumulator, int)
         )
@@ -114,9 +130,12 @@ class NanoProcessor(processor.ProcessorABC):
         #EE = (nEl==2)
         #selection = PackedSelection()
 
-        genjets = events.GenJet
-        jets25 = genjets[(np.abs(genjets.eta) < 2.5) & (genjets.pt > 25)]
 
+        #print(dataset, "gen jets:", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")      
+        #genjets = events.GenJet
+        jets25 = events.GenJet[(np.abs(events.GenJet.eta) < 2.5) & (events.GenJet.pt > 25)]
+
+        '''
         LHEP = events.LHEPart
         LHEjets = LHEP[
             (
@@ -130,6 +149,7 @@ class NanoProcessor(processor.ProcessorABC):
             & (LHEP.status == 1)
         ]
         LHE_Njets = ak.num(LHEjets)
+        '''
 
         # print(dataset)
         if dataset in [
@@ -149,21 +169,21 @@ class NanoProcessor(processor.ProcessorABC):
 
         output["sumw"] += np.sum(weight_nosel)
 
-        output["LHE_Vpt"].fill(lepflav="ll", LHE_Vpt=LHE_Vpt, weight=weight_nosel)
-        output["LHE_HT"].fill(lepflav="ll", LHE_HT=LHE_HT, weight=weight_nosel)
+        output["LHE_Vpt"].fill(LHE_Vpt=LHE_Vpt, weight=weight_nosel)
+        output["LHE_HT"].fill(LHE_HT=LHE_HT, weight=weight_nosel)
 
-        output["wei"].fill(lepflav="ll", wei=weight_nosel, weight=weight_nosel)
-        output["wei_sign"].fill(lepflav="ll", 
+        output["wei"].fill(wei=weight_nosel, weight=weight_nosel)
+        output["wei_sign"].fill( 
             wei=weight_nosel / np.abs(weight_nosel), weight=np.abs(weight_nosel)
         )
 
-        output["nlep"].fill(lepflav="ll", nlep=ak.num(leptons), weight=weight_nosel)
+        output["nlep"].fill(nlep=ak.num(leptons), weight=weight_nosel)
 
         dileptons = ak.combinations(leptons, 2, fields=["i0", "i1"])
 
         pt25 = (dileptons["i0"].pt > 25) | (dileptons["i1"].pt > 25)
         Zmass_cut = ((dileptons["i0"] + dileptons["i1"]).mass - 91.19) < 15
-        Vpt_cut = (dileptons["i0"] + dileptons["i1"]).pt > 10
+        Vpt_cut = (dileptons["i0"] + dileptons["i1"]).pt > self.cfg.user['cuts']['vpt']
         dileptonMask = pt25 & Zmass_cut & Vpt_cut
         good_dileptons = dileptons[dileptonMask]
 
@@ -171,6 +191,16 @@ class NanoProcessor(processor.ProcessorABC):
         vmass = (good_dileptons["i0"] + good_dileptons["i1"]).mass
 
         two_lep = ak.num(good_dileptons) == 1
+
+        lepflav_mu = ak.any( (np.abs(good_dileptons['i0'].pdgId)==13) | (np.abs(good_dileptons['i1'].pdgId)==13), axis=1)
+        lepflav_el = ak.any( (np.abs(good_dileptons['i0'].pdgId)==11) | (np.abs(good_dileptons['i1'].pdgId)==11), axis=1)
+        #lepflav = lepflav_mu*1 + lepflav_el*2
+        lepflav = np.array(['mu' if x&~y else 'el' if y&~x else 'emu' for x,y in zip(lepflav_mu, lepflav_el)])
+        
+        #print(dataset, len(lepflav), lepflav)
+        
+        #print(dataset, len(events))
+
 
         if self.proc_type == "pre":
             # LHE_vpt_cut = (LHE_Vpt>=155) & (LHE_Vpt<=245)
@@ -220,54 +250,74 @@ class NanoProcessor(processor.ProcessorABC):
         # print("weight length:", len(weight), len(weight2))
         # print(leptons.eta[full_selection][:,0:2])
 
-        output["njet25"].fill(lepflav="ll", njet25=ak.num(good_jets[selection_2l]), weight=weight_2l)
+        lepflav2_2l = np.repeat(lepflav[selection_2l], 2)
+        lepflav2_full = np.repeat(lepflav[selection_2l2j], 2)
+
+        output["njet25"].fill(lepflav=lepflav[selection_2l], njet25=ak.num(good_jets[selection_2l]), weight=weight_2l)
 
         dijets = good_jets[selection_2l2j]
+
+        #jetflav = dijets.hadronFlavour + 1*( (dijets.partonFlavour == 0) & (dijets.hadronFlavour == 0))
+        #dijets2 = dijets[ak.argsort(dijets.pt, axis=1, ascending=False)]
+        #print(dataset, len(jetflav), '\n', jetflav)# '\n', dijets.pt, '\n', dijets2.pt)
+
         dijet = dijets[:, 0] + dijets[:, 1]
+        dijetflav = dijets[:,0].hadronFlavour + dijets[:,1].hadronFlavour 
+        #dijetflav = dijets[:,0].hadronFlavour + 1*( (dijets[:,0].partonFlavour == 0) & (dijets[:,0].hadronFlavour == 0)) +\
+        #            dijets[:,1].hadronFlavour + 1*( (dijets[:,0].partonFlavour == 1) & (dijets[:,1].hadronFlavour == 0))
+
+        #dijetflav = jetflav[:, 0] + jetflav[:, 1]
+        #print(dataset, len(dijetflav), len(jetflav),  '\n', jetflav, '\n', dijetflav)
+
+        jetflav = np.array(['jj' if f==0 else 'cj' if f==4 else 'bj' if f==5 else \
+                            'cc' if f==8 else 'cb' if f==9 else 'bb' if f==10 else 'oo' for f in dijetflav])
+        #print(dataset, len(dijetflav), len(jetflav),  '\n', dijetflav, '\n', jetflav[0:30])
 
         dijet_pt = dijet.pt
         dijet_m = dijet.mass
         dijet_dr = dijets[:, 0].delta_r(dijets[:, 1])
 
-        output["dilep_m"].fill(lepflav="ll", 
+        output["dilep_m"].fill(lepflav=lepflav[selection_2l],
             dilep_m=ak.flatten(vmass[selection_2l]), weight=weight_2l
         )
-        output["dilep_pt"].fill(lepflav="ll", 
+        output["dilep_pt"].fill(lepflav=lepflav[selection_2l],
             dilep_pt=ak.flatten(vpt[selection_2l]), weight=weight_2l
         )
 
-        output["lep_eta"].fill(lepflav="ll", 
+        output["lep_eta"].fill(lepflav=lepflav2_2l,
             lep_eta=ak.flatten(leptons.eta[selection_2l][:, 0:2]), weight=weight2_2l
         )
-        output["lep_pt"].fill(lepflav="ll", 
+        output["lep_pt"].fill(lepflav=lepflav2_2l,
             lep_pt=ak.flatten(leptons.pt[selection_2l][:, 0:2]), weight=weight2_2l
         )
 
-        # output['dilep_m'].fill(lepflav="ll", dilep_m=ak.flatten(vmass[selection_2l2j]), weight=weight_full)
-        # output['dilep_pt'].fill(lepflav="ll", dilep_pt=ak.flatten(vpt[selection_2l2j]), weight=weight_full)
+        # output['dilep_m'].fill(lepflav=lepflav[selection_2l], dilep_m=ak.flatten(vmass[selection_2l2j]), weight=weight_full)
+        # output['dilep_pt'].fill(lepflav=lepflav[selection_2l], dilep_pt=ak.flatten(vpt[selection_2l2j]), weight=weight_full)
 
-        # output['lep_eta'].fill(lepflav="ll", lep_eta=ak.flatten(leptons.eta[selection_2l2j][:,0:2]), weight=weight2_full)
-        # output['lep_pt'].fill(lepflav="ll", lep_pt=ak.flatten(leptons.pt[selection_2l2j][:,0:2]), weight=weight2_full)
+        # output['lep_eta'].fill(lepflav=lepflav[selection_2l], lep_eta=ak.flatten(leptons.eta[selection_2l2j][:,0:2]), weight=weight2_full)
+        # output['lep_pt'].fill(lepflav=lepflav[selection_2l], lep_pt=ak.flatten(leptons.pt[selection_2l2j][:,0:2]), weight=weight2_full)
 
-        output["jet_eta"].fill(lepflav="ll", 
+        output["jet_eta"].fill(lepflav=lepflav2_full, 
             jet_eta=ak.flatten(good_jets.eta[selection_2l2j][:, 0:2]),
             weight=weight2_full,
         )
-        output["jet_pt"].fill(lepflav="ll", 
+        output["jet_pt"].fill(lepflav=lepflav2_full,
             jet_pt=ak.flatten(good_jets.pt[selection_2l2j][:, 0:2]), weight=weight2_full
         )
 
-        output["dijet_dr"].fill(lepflav="ll", dijet_dr=dijet_dr, weight=weight_full)
-        output["dijet_dr"].fill(lepflav="mumu", dijet_dr=dijet_dr, weight=weight_full)
-        output["dijet_m"].fill(lepflav="ll", dijet_m=dijet_m, weight=weight_full)
-        output["dijet_pt"].fill(lepflav="ll", dijet_pt=dijet_pt, weight=weight_full)
+        output["dijet_dr"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_dr=dijet_dr, weight=weight_full)
+        output["dijet_m"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_m=dijet_m, weight=weight_full)
+        output["dijet_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_pt=dijet_pt, weight=weight_full)
+
+        output["dijet_dr_mjj"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_dr=dijet_dr, dijet_mBin=dijet_m, weight=weight_full)
 
         ##print("Negative DRs:", dijet_dr[weight<0])
         ##print("Negative wei:", weight[weight<0])
         # neg_wei = np.abs(weight_full[weight_full<0])
         # neg_wei_dr = dijet_dr[weight_full<0]
-        # output['dijet_dr_neg'].fill(lepflav="ll", dijet_dr=neg_wei_dr, weight=neg_wei)
+        # output['dijet_dr_neg'].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav[], dijet_dr=neg_wei_dr, weight=neg_wei)
 
+        #print(dataset, "Output", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")      
         return {dataset: output}
 
     def postprocess(self, accumulator):
