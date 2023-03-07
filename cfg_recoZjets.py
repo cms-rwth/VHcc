@@ -7,7 +7,7 @@ from VHcc.workflows.recoZjets import (NanoProcessor as zjets,)
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 50
+                 "vpt": 15
              }
          },
     "dataset": {
@@ -19,10 +19,10 @@ cfg = {
         "year": "2017",
         "filter": {
             "samples": [
-                #"DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-                #"DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-                #"DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                #"DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
+                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+                "DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "Run2UL_DoubleMuon",
                 "Run2UL_DoubleEG"
            ],
@@ -35,10 +35,10 @@ cfg = {
     "run_options": {
         "executor": "parsl/condor", "workers": 1,
         #"executor": "futures", "workers": 10,
-        "scaleout": 300,
+        "scaleout": 200,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
-        "chunk": 250000,
+        "chunk": 500000,
         "max": None,
         "skipbadfiles": None,
         "voms": None,
@@ -58,6 +58,7 @@ cfg = {
             '( Machine != "lx3a25.physik.rwth-aachen.de") && '
             '( Machine != "lx3a27.physik.RWTH-Aachen.de") && '
             '( Machine != "lx3a46.physik.rwth-aachen.de") && '
+            '( Machine != "lx3a44.physik.rwth-aachen.de") && '
             '( Machine != "lx3a47.physik.RWTH-Aachen.de") && '
             '( Machine != "lx3a55.physik.RWTH-Aachen.de") && '
             '( Machine != "lx3a56.physik.rwth-aachen.de") && '

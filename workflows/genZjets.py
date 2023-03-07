@@ -182,7 +182,7 @@ class NanoProcessor(processor.ProcessorABC):
         dileptons = ak.combinations(leptons, 2, fields=["i0", "i1"])
 
         pt25 = (dileptons["i0"].pt > 25) | (dileptons["i1"].pt > 25)
-        Zmass_cut = ((dileptons["i0"] + dileptons["i1"]).mass - 91.19) < 15
+        Zmass_cut = np.abs((dileptons["i0"] + dileptons["i1"]).mass - 91.19) < 15
         Vpt_cut = (dileptons["i0"] + dileptons["i1"]).pt > self.cfg.user['cuts']['vpt']
         dileptonMask = pt25 & Zmass_cut & Vpt_cut
         good_dileptons = dileptons[dileptonMask]

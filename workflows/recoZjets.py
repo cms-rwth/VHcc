@@ -282,7 +282,7 @@ class NanoProcessor(processor.ProcessorABC):
         dileptons = ak.combinations(leptons, 2, fields=["lep1", "lep2"])
 
         pt_cut = (dileptons["lep1"].pt > 21) | (dileptons["lep2"].pt > 21)
-        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
+        Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
         charge = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
         #charge = True
@@ -310,6 +310,7 @@ class NanoProcessor(processor.ProcessorABC):
                      )
 
         output["ndilep"].fill(ak.num(ll_candidates), weight=weights.weight())
+
         ll_candidates = ak.pad_none(ll_candidates, 1, axis=1)
 
         z_cand = ll_candidates[:, 0]
@@ -338,17 +339,15 @@ class NanoProcessor(processor.ProcessorABC):
             & ak.all( (events.Jet.metric_table(dileptons.lep1) > 0.5) & (events.Jet.metric_table(dileptons.lep2) > 0.5), axis=2)
         )
 
-        njet = ak.sum(jetsel, axis=1)
+        #njet = ak.sum(jetsel, axis=1)
 
-
-        # good_jets = jets
         good_jets = events.Jet[jetsel]
-        #two_jets = ak.num(good_jets) >= 2
         selection.add('diJet',ak.to_numpy(ak.num(good_jets) >= 2))
 
-        # LHE_Njets_cut = (LHE_Njets>=0)
         selection_2l = selection.all("lumi", "trigger", "metfilter", "diLep")
         selection_2l2j = selection.all("lumi", "trigger", "metfilter", "diLep", "diJet")
+
+        #print("NJet", nEvents, len(ak.num(good_jets)), len(ak.num(good_jets[selection_2l])), ak.sum(selection_2l), "vmass:", len(vmass[selection_2l]))
 
         #selection_2l_notrig = selection.all("lumi", "metfilter", "diLep")
         #print(dataset, nEvents, ak.sum(selection_2l_notrig),  ak.sum(selection_2l),  ak.sum(selection_2l2j))

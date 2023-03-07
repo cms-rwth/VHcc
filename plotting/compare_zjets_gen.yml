@@ -1,10 +1,11 @@
-output: "test_Zjets"   #  Required, output directory
+output: "Gen_Zjets"   #  Required, output directory
 scaleToLumi : True
 
 ## Required, input files
 input :
       #- output_zjets_v73/output.coffea
-      - output_zjets_v08/output.coffea
+      #- output_zjets_v08/output.coffea
+      - output_GenZjets_v01/output.coffea
 
 mergemap:
    MiNNLO:
@@ -90,7 +91,7 @@ rescale_yields:
   #UNLOPS: 2
 
 com : "13"
-lumi : 111
+lumi : 1111
 inbox_text: "" # Optional, text write in anchor text box
 norm : False # Optional, normalize to reference yields
 log : False # Optional, log y axis
