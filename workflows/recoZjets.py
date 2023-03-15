@@ -47,19 +47,19 @@ class NanoProcessor(processor.ProcessorABC):
         )
         mBin_axis = Hist.axis.Variable([0,60,120,2000], name="dijet_mBin", label="dijet_mBin")
 
-        pt_axis   = Hist.axis.Regular(50, 0, 300, name="pt", label=r"$p_{T}$ [GeV]")
+        pt_axis   = Hist.axis.Regular(50, 0, 150, name="pt", label=r"$p_{T}$ [GeV]")
         #eta_axis  = Hist.axis.Regular(25, -2.6, 2.6, name="eta", label=r"$\eta$")
         #phi_axis  = Hist.axis.Regular(30, -3.2, 3.2, name="phi", label=r"$\phi$")
         mass_axis = Hist.axis.Regular(50, 0, 300, name="mass", label=r"$m$ [GeV]")
         #mt_axis   = Hist.axis.Regular(30, 0, 300, name="mt", label=r"$m_{T}$ [GeV]")
-        dr_axis   = Hist.axis.Regular(30, 0, 5, name="dr", label=r"$\Delta$R")
+        dr_axis   = Hist.axis.Regular(50, 0, 5, name="dr", label=r"$\Delta$R")
 
         single_axis = {
             "LHE_Vpt": Hist.axis.Regular(
                 100, 0, 400, name="LHE_Vpt", label="LHE V PT [GeV]"
             ),
             "LHE_HT": Hist.axis.Regular(
-                100, 0, 1000, name="LHE_HT", label="LHE HT [GeV]"
+                100, 0, 400, name="LHE_HT", label="LHE HT [GeV]"
             ),
             "wei": Hist.axis.Regular(100, -1000, 10000, name="wei", label="weight"),
             "wei_sign": Hist.axis.Regular(50, -2, 2, name="wei", label="weight"),
@@ -67,14 +67,14 @@ class NanoProcessor(processor.ProcessorABC):
             "ndilep": Hist.axis.Regular(12, 0, 6, name="ndilep", label="Number of di-lepton pairs"),
         }
         multi_axis = {
-            "dilep_m": Hist.axis.Regular(60, 70, 120, name="dilep_m", label="dilep_m"),
+            "dilep_m": Hist.axis.Regular(80, 70, 120, name="dilep_m", label="dilep_m"),
             "dilep_pt": Hist.axis.Regular(
-                100, 0, 600, name="dilep_pt", label="dilep_pt"
+                100, 0, 400, name="dilep_pt", label="dilep_pt"
             ),
             "njet25": Hist.axis.Regular(12, 0, 6, name="njet25", label="njet25"),
 
-            "dijet_m": Hist.axis.Regular(50, 0, 1200, name="dijet_m", label="dijet_m"),
-            "dijet_pt": Hist.axis.Regular(100, 0, 600, name="dijet_pt", label="dijet_pt"
+            "dijet_m": Hist.axis.Regular(50, 0, 800, name="dijet_m", label="dijet_m"),
+            "dijet_pt": Hist.axis.Regular(100, 0, 400, name="dijet_pt", label="dijet_pt"
             ),
             "dijet_dr": Hist.axis.Regular(60, 0, 5, name="dijet_dr", label="dijet_dr"),
             #'dijet_dr_neg': Hist.axis.Regular(50, 0, 5,    name="dijet_dr", label="dijet_dr")
@@ -92,6 +92,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         histDict3 = { "lep1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep1 Pt", storage="Weight"),
                       "lep2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep2 Pt", storage="Weight"),
+                      "dilep_dr": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR(Lep1,Lep2)", storage="Weight"),
                       "jet1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet1 Pt", storage="Weight"),
                       "jet2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet2 Pt", storage="Weight"),
                       "jet1_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR(Jet1,Lep)", storage="Weight"),
@@ -230,8 +231,10 @@ class NanoProcessor(processor.ProcessorABC):
 
 
         if isRealData:
-            LHE_Vpt = np.random.lognormal(5, 100, nEvents)
-            LHE_HT  = np.random.lognormal(5, 100, nEvents)
+            LHE_Vpt = np.ones(nEvents)
+            LHE_HT  = np.ones(nEvents)
+            #LHE_Vpt = np.random.lognormal(5, 100, nEvents)
+            #LHE_HT  = np.random.lognormal(5, 100, nEvents)
         else:
             LHE_Vpt = events.LHE["Vpt"]
             LHE_HT  = events.LHE["HT"]
@@ -250,7 +253,8 @@ class NanoProcessor(processor.ProcessorABC):
 
         muons = events.Muon
         # looseId >= 1 or looseId seems to be the same...
-        musel = ((muons.pt > 20) & (abs(muons.eta) < 2.4) & (muons.looseId >= 1) & (muons.pfRelIso04_all<0.25))
+        musel = ((muons.pt > 20) & (abs(muons.eta) < 2.4) & (muons.tightId >= 1) & (muons.pfRelIso04_all<0.25) &
+                 (abs(muons.dxy) < 0.06) & (abs(muons.dz)<0.2) )
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(muons.dxy)<0.06)&(abs(muons.dz)<0.2) and tightId for 1L
         muons = muons[musel]
         #muons = muons[ak.argsort(muons.pt, axis=1, ascending=False)]
@@ -260,8 +264,8 @@ class NanoProcessor(processor.ProcessorABC):
 
 
         electrons = events.Electron
-        elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & (abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442) &
-                  (electrons.mvaFall17V2Iso_WP90==1) & (electrons.pfRelIso03_all<0.25))
+        elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
+                  (electrons.mvaFall17V2Iso_WP80==1) & (electrons.pfRelIso03_all<0.25) & (abs(electrons.dxy) < 0.05) & ( (abs(electrons.dz) < 0.1)))
         electrons = electrons[elesel]
         #electrons = electrons[ak.argsort(electrons.pt, axis=1, ascending=False)]
         electrons["lep_flav"] = 11*electrons.charge
@@ -281,13 +285,13 @@ class NanoProcessor(processor.ProcessorABC):
 
         dileptons = ak.combinations(leptons, 2, fields=["lep1", "lep2"])
 
-        pt_cut = (dileptons["lep1"].pt > 21) | (dileptons["lep2"].pt > 21)
+        pt_cut = (dileptons["lep1"].pt > 30) | (dileptons["lep2"].pt > 20)
         Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
-        charge = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
-        #charge = True
+        #charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
+        charge_cut = True
 
-        dileptonMask = pt_cut & Zmass_cut & Vpt_cut & charge
+        dileptonMask = pt_cut & Zmass_cut & Vpt_cut & charge_cut
         good_dileptons = dileptons[dileptonMask]
 
         #print('good_dileptons', ak.num(good_dileptons), good_dileptons)
@@ -331,14 +335,14 @@ class NanoProcessor(processor.ProcessorABC):
         del trigger_mm
         del trigger
 
-        jetsel = (
+        jetsel = ak.fill_none(
             (events.Jet.pt > 25)
             & (abs(events.Jet.eta) <= 2.4)
             & ((events.Jet.puId > 6) | (events.Jet.pt > 50))
             & (events.Jet.jetId > 5)
-            & ak.all( (events.Jet.metric_table(dileptons.lep1) > 0.5) & (events.Jet.metric_table(dileptons.lep2) > 0.5), axis=2)
-        )
-
+            & (events.Jet.delta_r(z_cand.lep1) > 0.5) & (events.Jet.delta_r(z_cand.lep2) > 0.5), True)
+        
+        #print('z_cand:', z_cand.lep1.pt, '\n deltar:', events.Jet.delta_r(z_cand.lep1) > 0.5)
         #njet = ak.sum(jetsel, axis=1)
 
         good_jets = events.Jet[jetsel]

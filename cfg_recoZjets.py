@@ -7,13 +7,14 @@ from VHcc.workflows.recoZjets import (NanoProcessor as zjets,)
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 15
+                 "vpt": 5
              }
          },
     "dataset": {
         "jsons": [
             "src/VHcc/metadata/genZjets.json",
             "src/VHcc/metadata/run2UL17_files.json"
+            #"src/VHcc/metadata/run2UL17_test.json"
         ],
         "campaign": "UL17",
         "year": "2017",
@@ -33,16 +34,15 @@ cfg = {
     "workflow": zjets,
     "output": "output_recoZjets_Data",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1,
-        #"executor": "futures", "workers": 10,
-        "scaleout": 200,
+        "executor": "parsl/condor", "workers": 1,  "limit": None,
+        #"executor": "futures", "workers": 10,  "limit": 1,
+        "scaleout": 300,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
-        "skipbadfiles": None,
+        "skipbadfiles": True,
         "voms": None,
-        "limit": None,
         "retries": 20,
         "splitjobs": False,
         "requirements": (
