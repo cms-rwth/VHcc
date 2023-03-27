@@ -16,6 +16,7 @@ from functools import partial
 import psutil
 from BTVNanoCommissioning.utils.correction import (
     met_filters,
+    load_pu,
 )
 processor.NanoAODSchema.warn_missing_crossrefs = False
 
@@ -34,8 +35,8 @@ class NanoProcessor(processor.ProcessorABC):
         self._campaign = self.cfg.dataset["campaign"]
         self._debug_level =  self.cfg.user["debug_level"]
         self._met_filters = met_filters[self._campaign]
-        self.proc_type = "ul"
-
+        self._pu = load_pu(self._campaign, self.cfg.weights_config["PU"])
+        
         print("Year and campaign:", self._year, self._campaign)
 
         lepflav_axis = Hist.axis.StrCategory(
@@ -53,6 +54,7 @@ class NanoProcessor(processor.ProcessorABC):
         mass_axis = Hist.axis.Regular(50, 0, 300, name="mass", label=r"$m$ [GeV]")
         #mt_axis   = Hist.axis.Regular(30, 0, 300, name="mt", label=r"$m_{T}$ [GeV]")
         dr_axis   = Hist.axis.Regular(50, 0, 5, name="dr", label=r"$\Delta$R")
+        npv_axis  = Hist.axis.Integer(0,100, name="npv", label="N primary vertices")
 
         single_axis = {
             "LHE_Vpt": Hist.axis.Regular(
@@ -67,15 +69,13 @@ class NanoProcessor(processor.ProcessorABC):
             "ndilep": Hist.axis.Regular(12, 0, 6, name="ndilep", label="Number of di-lepton pairs"),
         }
         multi_axis = {
-            "dilep_m": Hist.axis.Regular(80, 70, 120, name="dilep_m", label="dilep_m"),
-            "dilep_pt": Hist.axis.Regular(
-                100, 0, 400, name="dilep_pt", label="dilep_pt"
-            ),
+            "dilep_m": Hist.axis.Regular(40, 70, 110, name="dilep_m", label="dilep_m"),
+            "dilep_pt": Hist.axis.Regular(100, 0, 400, name="dilep_pt", label="dilep_pt"),
+            "dilep_dr": Hist.axis.Regular(60, 0, 5, name="dilep_dr", label="dilep_dr"),
             "njet25": Hist.axis.Regular(12, 0, 6, name="njet25", label="njet25"),
 
             "dijet_m": Hist.axis.Regular(50, 0, 800, name="dijet_m", label="dijet_m"),
-            "dijet_pt": Hist.axis.Regular(100, 0, 400, name="dijet_pt", label="dijet_pt"
-            ),
+            "dijet_pt": Hist.axis.Regular(100, 0, 400, name="dijet_pt", label="dijet_pt"),
             "dijet_dr": Hist.axis.Regular(60, 0, 5, name="dijet_dr", label="dijet_dr"),
             #'dijet_dr_neg': Hist.axis.Regular(50, 0, 5,    name="dijet_dr", label="dijet_dr")
         }
@@ -90,13 +90,14 @@ class NanoProcessor(processor.ProcessorABC):
             for observable, var_axis in single_axis.items()
         }
 
-        histDict3 = { "lep1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep1 Pt", storage="Weight"),
-                      "lep2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep2 Pt", storage="Weight"),
-                      "dilep_dr": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR(Lep1,Lep2)", storage="Weight"),
-                      "jet1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet1 Pt", storage="Weight"),
-                      "jet2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet2 Pt", storage="Weight"),
-                      "jet1_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR(Jet1,Lep)", storage="Weight"),
-                      "jet2_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR(Jet2,Lep)", storage="Weight"),
+        histDict3 = { "lep1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep1_Pt", storage="Weight"),
+                      "lep2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep2_Pt", storage="Weight"),
+                      "jet1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet1_Pt", storage="Weight"),
+                      "jet2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet2_Pt", storage="Weight"),
+                      "jet1_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR_Jet1_Lep", storage="Weight"),
+                      "jet2_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR_Jet2_Lep", storage="Weight"),
+                      "npv0": Hist.Hist(npv_axis, lepflav_axis,  name="npv0", storage="Weight"),
+                      "npv1": Hist.Hist(npv_axis, lepflav_axis,  name="npv1", storage="Weight"),
                   }
 
         histDict2D = {
@@ -123,8 +124,8 @@ class NanoProcessor(processor.ProcessorABC):
             '2017': [
                 'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
                 'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
-                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',#allowMissingBranch=1
-                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8'   #allowMissingBranch=1
+                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8'
             ],
             '2018': [
                 #'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
@@ -177,12 +178,12 @@ class NanoProcessor(processor.ProcessorABC):
         if isRealData:
             weights.add('genWeight', np.ones(nEvents))
         else:
-            if dataset in ["DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8"]:
-                weights.add('genWeight', events.genWeight)
-                #weight_nosel = events.genWeight
-            else:
-                weights.add('genWeight', np.sign(events.genWeight))
-                #weight_nosel = np.sign(events.genWeight)
+            weights.add('genWeight', np.sign(events.genWeight))
+            #if dataset in ["DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8"]:
+            #    weights.add('genWeight', events.genWeight)
+            #else:
+            #    weights.add('genWeight', np.sign(events.genWeight))
+
 
         if isRealData:
             output['sumw'] += nEvents
@@ -191,7 +192,6 @@ class NanoProcessor(processor.ProcessorABC):
 
         if self._debug_level > 0:
             print("\n", dataset, "wei:", weights.weight())
-
 
         selection = PackedSelection()
 
@@ -288,8 +288,8 @@ class NanoProcessor(processor.ProcessorABC):
         pt_cut = (dileptons["lep1"].pt > 30) | (dileptons["lep2"].pt > 20)
         Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
-        #charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
-        charge_cut = True
+        charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
+        #charge_cut = True
 
         dileptonMask = pt_cut & Zmass_cut & Vpt_cut & charge_cut
         good_dileptons = dileptons[dileptonMask]
@@ -310,6 +310,7 @@ class NanoProcessor(processor.ProcessorABC):
             "eta": (good_dileptons.lep1+good_dileptons.lep2).eta,
             "phi": (good_dileptons.lep1+good_dileptons.lep2).phi,
             "mass": (good_dileptons.lep1+good_dileptons.lep2).mass,
+            "dr": good_dileptons.lep1.delta_r(good_dileptons.lep2),
         }, with_name="PtEtaPhiMLorentzVector"
                      )
 
@@ -318,7 +319,7 @@ class NanoProcessor(processor.ProcessorABC):
         ll_candidates = ak.pad_none(ll_candidates, 1, axis=1)
 
         z_cand = ll_candidates[:, 0]
-        vpt = (z_cand.lep1 + z_cand.lep2).pt
+        #vpt = (z_cand.lep1 + z_cand.lep2).pt
         vmass = (z_cand.lep1 + z_cand.lep2).mass
 
         lepflav_mu = ak.fill_none((np.abs(z_cand.lep1.lep_flav)==13) | (np.abs(z_cand.lep2.lep_flav)==13), False)
@@ -341,7 +342,7 @@ class NanoProcessor(processor.ProcessorABC):
             & ((events.Jet.puId > 6) | (events.Jet.pt > 50))
             & (events.Jet.jetId > 5)
             & (events.Jet.delta_r(z_cand.lep1) > 0.5) & (events.Jet.delta_r(z_cand.lep2) > 0.5), True)
-        
+
         #print('z_cand:', z_cand.lep1.pt, '\n deltar:', events.Jet.delta_r(z_cand.lep1) > 0.5)
         #njet = ak.sum(jetsel, axis=1)
 
@@ -349,6 +350,7 @@ class NanoProcessor(processor.ProcessorABC):
         selection.add('diJet',ak.to_numpy(ak.num(good_jets) >= 2))
 
         selection_2l = selection.all("lumi", "trigger", "metfilter", "diLep")
+        #selection_2l = selection.all("lumi", "diLep")
         selection_2l2j = selection.all("lumi", "trigger", "metfilter", "diLep", "diJet")
 
         #print("NJet", nEvents, len(ak.num(good_jets)), len(ak.num(good_jets[selection_2l])), ak.sum(selection_2l), "vmass:", len(vmass[selection_2l]))
@@ -365,7 +367,18 @@ class NanoProcessor(processor.ProcessorABC):
         output["njet25"].fill(lepflav=lepflav[selection_2l], njet25=ak.num(good_jets[selection_2l]), weight=weights.weight()[selection_2l])
 
         output["dilep_m"].fill(lepflav=lepflav[selection_2l], dilep_m=vmass[selection_2l], weight=weights.weight()[selection_2l])
-        output["dilep_pt"].fill(lepflav=lepflav[selection_2l], dilep_pt=vpt[selection_2l], weight=weights.weight()[selection_2l])
+        output["dilep_pt"].fill(lepflav=lepflav[selection_2l], dilep_pt=z_cand[selection_2l].pt, weight=weights.weight()[selection_2l])
+        output["dilep_dr"].fill(lepflav=lepflav[selection_2l], dilep_dr=z_cand[selection_2l].dr, weight=weights.weight()[selection_2l] )
+
+
+        #print("NPVs:", events.PV.npvs)
+        output["npv0"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
+        if not isRealData:
+            weights.add("puweight", self._pu["PU"](events.Pileup.nTrueInt),
+                        self._pu["PUup"](events.Pileup.nTrueInt),
+                        self._pu["PUdn"](events.Pileup.nTrueInt))
+        output["npv1"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
+
 
         good_jets = good_jets[selection_2l2j]
 

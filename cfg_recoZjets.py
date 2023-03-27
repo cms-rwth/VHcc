@@ -7,7 +7,7 @@ from VHcc.workflows.recoZjets import (NanoProcessor as zjets,)
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 5
+                 "vpt": 2
              }
          },
     "dataset": {
@@ -30,12 +30,26 @@ cfg = {
             "samples_exclude": [],
         },
     },
-    # Input and output files
+
+    "weights": {
+        "common":{
+            "inclusive":{
+                "lumiMasks":"Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+                "PU": "puweight_UL17.histo.root",
+                "JME": "mc_compile_jec.pkl.gz",
+                "BTV": { "DeepJetC": "DeepJet_ctagSF_Summer20UL17_interp.root"},
+                "LSF": {
+                    "ele_Rereco_above20 EGamma_SF2D": "egammaEffi_ptAbove20.txt_EGM2D_UL2017.histo.root",
+                },
+            },
+        },
+    },
+
     "workflow": zjets,
-    "output": "output_recoZjets_Data",
+    "output": "output/recoZjets_All",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1,  "limit": None,
-        #"executor": "futures", "workers": 10,  "limit": 1,
+        #"executor": "parsl/condor", "workers": 1,  "limit": None,
+        "executor": "futures", "workers": 10,  "limit": 4,
         "scaleout": 300,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
