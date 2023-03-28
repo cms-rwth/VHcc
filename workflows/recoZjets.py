@@ -15,18 +15,9 @@ from coffea.analysis_tools import Weights, PackedSelection
 from functools import partial
 import psutil
 from BTVNanoCommissioning.utils.correction import (
-    met_filters,
-    load_pu,
+    met_filters, load_pu, muSFs, eleSFs,
 )
 processor.NanoAODSchema.warn_missing_crossrefs = False
-
-
-def isClean(obj_A, obj_B, drmin=0.4):
-    # From: https://github.com/oshadura/topcoffea/blob/master/topcoffea/modules/objects.py
-    objB_near, objB_DR = obj_A.nearest(obj_B, return_metric=True)
-    mask = ak.fill_none(objB_DR > drmin, True)
-    return mask
-
 
 class NanoProcessor(processor.ProcessorABC):
     def __init__(self, cfg):
@@ -336,6 +327,27 @@ class NanoProcessor(processor.ProcessorABC):
         del trigger_mm
         del trigger
 
+
+        
+        output["npv0"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
+
+        if not isRealData:
+            #print("NPVs:", events.PV.npvs)
+            weights.add("puweight", self._pu["PU"](events.Pileup.nTrueInt),
+                        self._pu["PUup"](events.Pileup.nTrueInt),
+                        self._pu["PUdn"](events.Pileup.nTrueInt))
+        output["npv1"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
+
+        if not isRealData and "LSF" in self.cfg.weights_config.keys():
+            print('applying LSF weights')
+            weights.add("mu1sf", np.where(lepflav=='mu', muSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
+            weights.add("mu2sf", np.where(lepflav=='mu', muSFs(z_cand.lep2, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
+            print(muSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"])[0:30].to_numpy())
+
+            weights.add("el1sf", np.where(lepflav=='el', eleSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
+            weights.add("el2sf", np.where(lepflav=='el', eleSFs(z_cand.lep2, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
+            print(eleSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"])[0:30].to_numpy())
+
         jetsel = ak.fill_none(
             (events.Jet.pt > 25)
             & (abs(events.Jet.eta) <= 2.4)
@@ -369,15 +381,6 @@ class NanoProcessor(processor.ProcessorABC):
         output["dilep_m"].fill(lepflav=lepflav[selection_2l], dilep_m=vmass[selection_2l], weight=weights.weight()[selection_2l])
         output["dilep_pt"].fill(lepflav=lepflav[selection_2l], dilep_pt=z_cand[selection_2l].pt, weight=weights.weight()[selection_2l])
         output["dilep_dr"].fill(lepflav=lepflav[selection_2l], dilep_dr=z_cand[selection_2l].dr, weight=weights.weight()[selection_2l] )
-
-
-        #print("NPVs:", events.PV.npvs)
-        output["npv0"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
-        if not isRealData:
-            weights.add("puweight", self._pu["PU"](events.Pileup.nTrueInt),
-                        self._pu["PUup"](events.Pileup.nTrueInt),
-                        self._pu["PUdn"](events.Pileup.nTrueInt))
-        output["npv1"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
 
 
         good_jets = good_jets[selection_2l2j]

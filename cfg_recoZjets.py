@@ -39,7 +39,17 @@ cfg = {
                 "JME": "mc_compile_jec.pkl.gz",
                 "BTV": { "DeepJetC": "DeepJet_ctagSF_Summer20UL17_interp.root"},
                 "LSF": {
+                    # "ele_Trig TrigSF": "Ele32_L1DoubleEG_TrigSF_vhcc.histo.root",
                     "ele_Rereco_above20 EGamma_SF2D": "egammaEffi_ptAbove20.txt_EGM2D_UL2017.histo.root",
+                    "ele_Rereco_below20 EGamma_SF2D": "egammaEffi_ptBelow20.txt_EGM2D_UL2017.histo.root",
+                    "ele_ID EGamma_SF2D": "egammaEffi.txt_EGM2D_MVA90iso_UL17.histo.root",
+                    "mu_ID NUM_TightID_DEN_TrackerMuons_abseta_pt": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.histo.root",
+                    "mu_Iso NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.histo.root",
+                    "ele_Rereco_above20_error EGamma_SF2D_error": "egammaEffi_ptAbove20.txt_EGM2D_UL2017.histo.root",
+                    "ele_Rereco_below20_error EGamma_SF2D_error": "egammaEffi_ptBelow20.txt_EGM2D_UL2017.histo.root",
+                    "ele_ID_error EGamma_SF2D_error": "egammaEffi.txt_EGM2D_MVA90iso_UL17.histo.root",
+                    "mu_ID_error NUM_TightID_DEN_TrackerMuons_abseta_pt_error": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.histo.root",
+                    "mu_Iso_error NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt_error": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.histo.root",
                 },
             },
         },
@@ -49,7 +59,7 @@ cfg = {
     "output": "output/recoZjets_All",
     "run_options": {
         #"executor": "parsl/condor", "workers": 1,  "limit": None,
-        "executor": "futures", "workers": 10,  "limit": 4,
+        "executor": "futures", "workers": 10,  "limit": 1,
         "scaleout": 300,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
