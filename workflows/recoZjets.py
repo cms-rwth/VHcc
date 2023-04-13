@@ -15,7 +15,7 @@ from coffea.analysis_tools import Weights, PackedSelection
 from functools import partial
 import psutil
 from BTVNanoCommissioning.utils.correction import (
-    met_filters, load_pu, muSFs, eleSFs,
+    met_filters, load_lumi, load_SF, muSFs, eleSFs, puwei,
 )
 processor.NanoAODSchema.warn_missing_crossrefs = False
 
@@ -25,9 +25,14 @@ class NanoProcessor(processor.ProcessorABC):
         self._year = self.cfg.dataset["year"]
         self._campaign = self.cfg.dataset["campaign"]
         self._debug_level =  self.cfg.user["debug_level"]
-        self._met_filters = met_filters[self._campaign]
-        self._pu = load_pu(self._campaign, self.cfg.weights_config["PU"])
+        self._met_filters = met_filters['2017_UL']
+        #self._pu = load_pu(self._campaign, self.cfg.weights_config["PU"])
+        self.isCorr = True
         
+        self.systematics = self.cfg.systematic        
+        self.SF_map = load_SF(self._campaign, self.cfg.weights_config)
+        print('SF_map:', self.SF_map)
+
         print("Year and campaign:", self._year, self._campaign)
 
         lepflav_axis = Hist.axis.StrCategory(
@@ -249,7 +254,7 @@ class NanoProcessor(processor.ProcessorABC):
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(muons.dxy)<0.06)&(abs(muons.dz)<0.2) and tightId for 1L
         muons = muons[musel]
         #muons = muons[ak.argsort(muons.pt, axis=1, ascending=False)]
-        muons["lep_flav"] = 13*muons.charge
+        muons["lep_flav"] = 13
         #muons = ak.pad_none(muons, 2, axis=1)
         nmu   = ak.sum(musel, axis=1)
 
@@ -259,7 +264,7 @@ class NanoProcessor(processor.ProcessorABC):
                   (electrons.mvaFall17V2Iso_WP80==1) & (electrons.pfRelIso03_all<0.25) & (abs(electrons.dxy) < 0.05) & ( (abs(electrons.dz) < 0.1)))
         electrons = electrons[elesel]
         #electrons = electrons[ak.argsort(electrons.pt, axis=1, ascending=False)]
-        electrons["lep_flav"] = 11*electrons.charge
+        electrons["lep_flav"] = 11
         #electrons = ak.pad_none(electrons, 2, axis=1)
         nel       = ak.sum(elesel, axis=1)
 
@@ -313,8 +318,8 @@ class NanoProcessor(processor.ProcessorABC):
         #vpt = (z_cand.lep1 + z_cand.lep2).pt
         vmass = (z_cand.lep1 + z_cand.lep2).mass
 
-        lepflav_mu = ak.fill_none((np.abs(z_cand.lep1.lep_flav)==13) | (np.abs(z_cand.lep2.lep_flav)==13), False)
-        lepflav_el = ak.fill_none((np.abs(z_cand.lep1.lep_flav)==11) | (np.abs(z_cand.lep2.lep_flav)==11), False)
+        lepflav_mu = ak.fill_none((z_cand.lep1.lep_flav==13) | (z_cand.lep2.lep_flav==13), False)
+        lepflav_el = ak.fill_none((z_cand.lep1.lep_flav==11) | (z_cand.lep2.lep_flav==11), False)
         #lepflav = lepflav_mu*1 + lepflav_el*2
         lepflav = np.array(['mu' if x&~y else 'el' if y&~x else 'emu' for x,y in zip(lepflav_mu, lepflav_el)])
 
@@ -327,26 +332,29 @@ class NanoProcessor(processor.ProcessorABC):
         del trigger_mm
         del trigger
 
-
         
-        output["npv0"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
-
-        if not isRealData:
+        selection_2l = selection.all("lumi", "trigger", "metfilter", "diLep")
+        #selection_2l = selection.all("lumi", "diLep")
+        output["npv0"].fill(npv=events[selection_2l].PV.npvs, lepflav=lepflav[selection_2l], weight=weights.weight()[selection_2l])
+        
+        if self.isCorr and not isRealData:
             #print("NPVs:", events.PV.npvs)
-            weights.add("puweight", self._pu["PU"](events.Pileup.nTrueInt),
-                        self._pu["PUup"](events.Pileup.nTrueInt),
-                        self._pu["PUdn"](events.Pileup.nTrueInt))
-        output["npv1"].fill(npv=events.PV.npvs, lepflav=lepflav, weight=weights.weight())
+            #print('self.SF_map', self.SF_map)
+            if "PU" in self.SF_map.keys():
+                weights.add("puweight", puwei(self.SF_map, events.Pileup.nTrueInt),
+                            puwei(self.SF_map, events.Pileup.nTrueInt, "up"),
+                            puwei(self.SF_map, events.Pileup.nTrueInt, "down") )
 
-        if not isRealData and "LSF" in self.cfg.weights_config.keys():
-            print('applying LSF weights')
-            weights.add("mu1sf", np.where(lepflav=='mu', muSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
-            weights.add("mu2sf", np.where(lepflav=='mu', muSFs(z_cand.lep2, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
-            print(muSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"])[0:30].to_numpy())
+            muSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            muSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
+            eleSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            eleSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
 
-            weights.add("el1sf", np.where(lepflav=='el', eleSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
-            weights.add("el2sf", np.where(lepflav=='el', eleSFs(z_cand.lep2, self._campaign, self.cfg.weights_config["LSF"]), 1.0))
-            print(eleSFs(z_cand.lep1, self._campaign, self.cfg.weights_config["LSF"])[0:30].to_numpy())
+        output["npv1"].fill(npv=events[selection_2l].PV.npvs, lepflav=lepflav[selection_2l], weight=weights.weight()[selection_2l])
+
+        #if self.isCorr and not isRealData and "LSF" in self.cfg.weights_config.keys():
+        #    print('Applying LSF weights:  not working')
+
 
         jetsel = ak.fill_none(
             (events.Jet.pt > 25)
@@ -359,10 +367,9 @@ class NanoProcessor(processor.ProcessorABC):
         #njet = ak.sum(jetsel, axis=1)
 
         good_jets = events.Jet[jetsel]
+
         selection.add('diJet',ak.to_numpy(ak.num(good_jets) >= 2))
 
-        selection_2l = selection.all("lumi", "trigger", "metfilter", "diLep")
-        #selection_2l = selection.all("lumi", "diLep")
         selection_2l2j = selection.all("lumi", "trigger", "metfilter", "diLep", "diJet")
 
         #print("NJet", nEvents, len(ak.num(good_jets)), len(ak.num(good_jets[selection_2l])), ak.sum(selection_2l), "vmass:", len(vmass[selection_2l]))
@@ -384,6 +391,8 @@ class NanoProcessor(processor.ProcessorABC):
 
 
         good_jets = good_jets[selection_2l2j]
+
+        good_jets = good_jets[ak.argsort(good_jets.pt, axis=1, ascending=False)]
 
         dijet = good_jets[:, 0] + good_jets[:, 1]
         if isRealData:

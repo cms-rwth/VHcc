@@ -6,7 +6,7 @@ input :
 #       - output_recoZjets_Data_v11/output.coffea
 #       - output_recoZjets_Data_v14/output.coffea
 #       - output_recoZjets_Data_v48/output.coffea
-       - output/recoZjets_All_v13/output.coffea
+       - output/recoZjets_All_v59/output.coffea
 
 mergemap:
    MiNNLO:
@@ -131,6 +131,6 @@ variable :
 
 com : "13"
 lumi : 41480
-inbox_text: "Private Work" # Optional, text write in anchor text box
-norm : False # Optional, normalize to reference yields
-log : False # Optional, log y axis
+inbox_text: "Private Work"
+norm : False
+log : False # log y axis
