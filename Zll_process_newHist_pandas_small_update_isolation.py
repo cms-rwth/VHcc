@@ -585,9 +585,9 @@ class NanoProcessor(processor.ProcessorABC):
         nEvents = len(events)
         print('Number of events: ', nEvents)
         if 'ZH' in dataset:
-            ttyp = 'signal_04_mid'
+            ttyp = 'signal_05_late'
         else:
-            ttyp = 'back_04_mid'
+            ttyp = 'back_05_late'
         folder_save = f'condor_{ttyp}'
         if not os.path.exists(f"./{folder_save}"):
             os.mkdir(f"./{folder_save}")
@@ -595,8 +595,7 @@ class NanoProcessor(processor.ProcessorABC):
             os.mkdir(f"./{folder_save}/{dataset}")
         if not os.path.exists(f"./{folder_save}/{dataset}/{filename}"):
             os.mkdir(f"./{folder_save}/{dataset}/{filename}")
-        with open(f"./{folder_save}/event_nr.txt", "a") as myfile:
-            myfile.write(f"Nr of events in {filename} from {start} to {stop}: " + str(nEvents) + "  " + '\n')
+        
         
         # As far as I understand, this looks like a neat way to give selections a name,
         # while internally, there are boolean arrays for all events
@@ -786,7 +785,14 @@ class NanoProcessor(processor.ProcessorABC):
         
         
         
-        
+        names_events = []
+        values_events = []
+        names_events.append("Filename")
+        names_events.append("Start")
+        names_events.append("Stop")
+        values_events.append(f"{filename}")
+        values_events.append(f"{start}")
+        values_events.append(f"{stop}")
         
         # =================================================================================
         #
@@ -802,21 +808,102 @@ class NanoProcessor(processor.ProcessorABC):
         ## muon twiki: https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2
         #event_mu = events.Muon[ak.argsort(events.Muon.pt, axis=1, ascending=False)]
         event_mu = events.Muon
+        nEvent_mu = len(event_mu)
+        ###################################################################################
+        nEvent_mu = ak.sum(event_mu.looseId, axis = 1)
+        nEvent_mu = ak.sum((nEvent_mu == 2))
+        names_events.append("Number of 2 mu events")
+        values_events.append(nEvent_mu)
+        ###################################################################################
         # looseId >= 1 or looseId seems to be the same...
         musel = ((event_mu.pt > 20) & (abs(event_mu.eta) < 2.4) & (event_mu.looseId >= 1) & (event_mu.pfRelIso04_all<0.25)) #(event_mu.looseId >= 1) (event_mu.mvaId >= 3)
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(event_mu.dxy)<0.06)&(abs(event_mu.dz)<0.2) and tightId for 1L
+        
+        ###################################################################################
+        ############### Cutflow every single cut ##########################################
+        ###################################################################################
+        n_event_mu_pt = ak.sum((event_mu.pt > 20), axis = 1) ###, axis = 1
+        n_event_mu_pt = ak.sum((n_event_mu_pt == 2))
+        names_events.append("Number of mu events pt cut")
+        values_events.append(n_event_mu_pt)
+        ###################################################################################        
+        n_event_mu_eta = ak.sum((abs(event_mu.eta) < 2.4), axis = 1)
+        n_event_mu_eta = ak.sum((n_event_mu_eta == 2))
+        names_events.append("Number of mu events eta cut")
+        values_events.append(n_event_mu_eta)
+        ###################################################################################
+        n_event_mu_looseId = ak.sum((event_mu.looseId >= 1), axis = 1) 
+        n_event_mu_looseId = ak.sum((n_event_mu_looseId == 2))
+        names_events.append("Number of mu events looseId cut")
+        values_events.append(n_event_mu_looseId)
+        ###################################################################################
+        n_event_mu_iso = ak.sum((event_mu.pfRelIso04_all<0.25), axis = 1)
+        n_event_mu_iso = ak.sum((n_event_mu_iso == 2))
+        names_events.append("Number of mu events iso cut")
+        values_events.append(n_event_mu_iso)
+        ###################################################################################
+
+        ###################################################################################
+        ############### Cutflow cuts applied gradually ####################################
+        ###################################################################################
+        musel_pt_eta = ((event_mu.pt > 20) & (abs(event_mu.eta) < 2.4))
+        nmu_pt_eta = ak.sum(musel_pt_eta,axis=1)
+        names_events.append("Mu selection pt eta")
+        values_events.append(ak.sum(nmu_pt_eta == 2))
+        ###################################################################################
+        musel_plus_looseid = ((event_mu.pt > 20) & (abs(event_mu.eta) < 2.4) & (event_mu.looseId >= 1))
+        nmu_plus_looseid = ak.sum(musel_plus_looseid,axis=1)
+        names_events.append("Mu selection pt eta looseId")
+        values_events.append(ak.sum(nmu_plus_looseid == 2))
+        ###################################################################################
+           
         event_mu = event_mu[musel]
+        n_event_mu_sel = len(event_mu)
         event_mu = event_mu[ak.argsort(event_mu.pt, axis=1, ascending=False)]
         event_mu["lep_flav"] = 13*event_mu.charge
         event_mu= ak.pad_none(event_mu,2,axis=1)
         nmu = ak.sum(musel,axis=1)
+        names_events.append("Final mu selection")
+        values_events.append(ak.sum(nmu == 2))
         # ToDo: PtCorrGeoFit
         
         # ## Electron cuts
         ## # electron twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
         #event_e = events.Electron[ak.argsort(events.Electron.pt, axis=1,ascending=False)]
         event_e = events.Electron
+        nEvent_ele = len(event_e)
+        ###################################################################################
+        nEvent_ele = ak.sum((abs(event_e.pt)>=0), axis = 1)
+        nEvent_ele = ak.sum((nEvent_ele == 2))
+        names_events.append("Number of 2 ele events")
+        values_events.append(nEvent_ele)
+        ###################################################################################
         elesel = ((event_e.pt > 20) & (abs(event_e.eta) < 2.5) & (event_e.mvaFall17V2Iso_WP90==1) & (event_e.pfRelIso03_all<0.25))
+        ###################################################################################
+        
+        ###################################################################################
+        ############### Cutflow every single cut ##########################################
+        ###################################################################################
+        n_event_ele_pt = ak.sum((event_e.pt > 20), axis = 1) 
+        n_event_ele_pt = ak.sum((n_event_ele_pt == 2))
+        names_events.append("Number of ele events pt cut")
+        values_events.append(n_event_ele_pt)
+        ###################################################################################
+        n_event_ele_eta = ak.sum((abs(event_e.eta) < 2.5), axis = 1) 
+        n_event_ele_eta = ak.sum((n_event_ele_eta == 2))
+        names_events.append("Number of ele events eta cut")
+        values_events.append(n_event_ele_eta)
+        ###################################################################################
+        n_event_ele_mvaIso = ak.sum((event_e.mvaFall17V2Iso_WP90==1), axis = 1) 
+        n_event_ele_mvaIso = ak.sum((n_event_ele_mvaIso == 2))
+        names_events.append("Number of ele events mva Iso cut")
+        values_events.append(n_event_ele_mvaIso)
+        ###################################################################################
+        n_event_ele_pfrelIso = ak.sum((event_e.pfRelIso03_all<0.25), axis = 1) 
+        n_event_ele_pfrelIso = ak.sum((n_event_ele_pfrelIso == 2))
+        names_events.append("Number of ele events pf Rel Iso cut")
+        values_events.append(n_event_ele_pfrelIso)
+        ###################################################################################
         # but 30GeV and WP80 for 1L
         event_e = event_e[elesel]
         # something I saw in a recent presentation, and also in AT code:
@@ -828,7 +915,26 @@ class NanoProcessor(processor.ProcessorABC):
         event_e = event_e[ak.argsort(event_e.pt, axis=1,ascending=False)]
         event_e["lep_flav"] = 11*event_e.charge
         event_e = ak.pad_none(event_e,2,axis=1)
+        
+        ###################################################################################
+        ############### Cutflow cuts applied gradually ####################################
+        ###################################################################################
+        ele_pt_eta = ((event_e.pt > 20) & (abs(event_e.eta) < 2.5))
+        nele_pt_eta = ak.sum(ele_pt_eta,axis=1)
+        names_events.append("Ele selection pt eta")
+        values_events.append(ak.sum(nele_pt_eta == 2))
+        ###################################################################################
+        esel_plus_mvaId = ((event_e.pt > 20) & (abs(event_e.eta) < 2.5) & (event_e.mvaFall17V2Iso_WP90==1))
+        nele_plus_mvaId = ak.sum(esel_plus_mvaId,axis=1)
+        names_events.append("Ele selection pt eta mvaId")
+        values_events.append(ak.sum(nele_plus_mvaId == 2))
+        ###################################################################################
+
+
+
         nele = ak.sum(elesel,axis=1)
+        names_events.append("Final ele selection")
+        values_events.append(ak.sum(nele == 2))
         # sorting after selecting should be faster (less computations on average)
         
         # for this channel (Zll / 2L)
@@ -1022,7 +1128,12 @@ class NanoProcessor(processor.ProcessorABC):
         #jets["btagDeepFlavCvL"] = deepflavcvsltag(jets)
         #jets["btagDeepFlavCvB"] = deepflavcvsbtag(jets)
         jets = jets[ak.argsort(jets.btagDeepFlavCvL, axis=1, ascending=False)]
-
+        ###################################################################################
+        nEvent_jets = ak.sum((jets.btagDeepFlavCvL>=0), axis = 1)
+        nEvent_jets = ak.sum((nEvent_jets >= 2))
+        names_events.append("Number of 2+ jet events")
+        values_events.append(nEvent_jets)
+        ###################################################################################
         
         # Jets are considered only if the following identification conditions hold, as mentioned in AN
         # - Here is some documentation related to puId and jetId:
@@ -1030,9 +1141,89 @@ class NanoProcessor(processor.ProcessorABC):
         #     https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
         jet_conditions = (((abs(jets.eta) < 2.4) & (jets.pt > 20) & (jets.puId > 0)) \
                      | ((jets.pt>50) & (jets.jetId>5))) & ak.all(jets.metric_table(ll_cand.lep1)>0.4, axis =2) & ak.all(jets.metric_table(ll_cand.lep2)>0.4, axis = 2)
+
+        ###################################################################################
+        ############### Cutflow every single cut ##########################################
+        ###################################################################################
+        n_event_jet_eta = ak.sum((abs(jets.eta) < 2.4), axis = 1) 
+        n_event_jet_eta = ak.sum((n_event_jet_eta >= 2))
+        names_events.append("Number of jet events eta cut")
+        values_events.append(n_event_jet_eta)
+        ###################################################################################
+        n_event_jet_pt = ak.sum((jets.pt > 20), axis = 1) 
+        n_event_jet_pt = ak.sum((n_event_jet_pt >= 2))
+        names_events.append("Number of jet events pt cut")
+        values_events.append(n_event_jet_pt)
+        ###################################################################################
+        n_event_jet_puId = ak.sum((jets.puId > 0), axis = 1) 
+        n_event_jet_puId = ak.sum((n_event_jet_puId >= 2))
+        names_events.append("Number of jet events puId cut")
+        values_events.append(n_event_jet_puId)
+        ###################################################################################
+        n_event_jet_pt_strong = ak.sum((jets.pt>50), axis = 1) 
+        n_event_jet_pt_strong = ak.sum((n_event_jet_pt_strong >= 2))
+        names_events.append("Number of jet events pt strong cut")
+        values_events.append(n_event_jet_pt_strong)
+        ###################################################################################
+        n_event_jet_jetId = ak.sum((jets.jetId>5), axis = 1) 
+        n_event_jet_jetId = ak.sum((n_event_jet_jetId >= 2))
+        names_events.append("Number of jet events jet_id cut")
+        values_events.append(n_event_jet_jetId)
+        ###################################################################################
+        n_event_jet_lepton_clean_1 = ak.sum(ak.all(jets.metric_table(ll_cand.lep1)>0.4, axis =2), axis = 1) 
+        n_event_jet_lepton_clean_1 = ak.sum((n_event_jet_lepton_clean_1 >= 2))
+        names_events.append("Number of jet events lepton clean 1 cut")
+        values_events.append(n_event_jet_lepton_clean_1)
+        ###################################################################################
+        n_event_jet_lepton_clean_2 = ak.sum(ak.all(jets.metric_table(ll_cand.lep2)>0.4, axis =2), axis = 1) 
+        n_event_jet_lepton_clean_2 = ak.sum((n_event_jet_lepton_clean_2 >= 2))
+        names_events.append("Number of jet events lepton clean 2 cut")
+        values_events.append(n_event_jet_lepton_clean_2)
+        ###################################################################################
+        
+        ###################################################################################
+        ############### Cutflow cuts applied gradually ####################################
+        ###################################################################################
+        jets_pt_eta = ((abs(jets.eta) < 2.4) & (jets.pt > 20))
+        njet_pt_eta = ak.sum(jets_pt_eta,axis=1)
+        names_events.append("Number of jets selection pt eta")
+        values_events.append(ak.sum(njet_pt_eta >= 2))
+        ###################################################################################
+        jsel_plus_puId = ((abs(jets.eta) < 2.4) & (jets.pt > 20) & (jets.puId > 0))
+        njets_plus_puId = ak.sum(jsel_plus_puId,axis=1)
+        names_events.append("Number of jets selection pt eta puId")
+        values_events.append(ak.sum(njets_plus_puId >= 2))
+        ###################################################################################
+        jsel_plus_jetId = ((jets.pt>50) & (jets.jetId>5))
+        njets_plus_jetId = ak.sum(jsel_plus_jetId,axis=1)
+        names_events.append("Number of jets selection pt jetId")
+        values_events.append(ak.sum(njets_plus_jetId >= 2))
+        ###################################################################################
+        jsel_no_cleaning = (((abs(jets.eta) < 2.4) & (jets.pt > 20) & (jets.puId > 0)) \
+                     | ((jets.pt>50) & (jets.jetId>5)))
+        njets_no_cleaning = ak.sum(jsel_no_cleaning,axis=1)
+        names_events.append("Number of jets full selection no cleaning")
+        values_events.append(ak.sum(njets_no_cleaning >= 2))
+        ###################################################################################
+        jsel_one_cleaning = (((abs(jets.eta) < 2.4) & (jets.pt > 20) & (jets.puId > 0)) \
+                     | ((jets.pt>50) & (jets.jetId>5))) & ak.all(jets.metric_table(ll_cand.lep1)>0.4, axis =2)
+        njets_one_cleaning = ak.sum(jsel_one_cleaning,axis=1)
+        names_events.append("Number of jets full selection cleaning 1 lepton")
+        values_events.append(ak.sum(njets_one_cleaning >= 2))
+        ###################################################################################
+        jsel_two_cleaning = (((abs(jets.eta) < 2.4) & (jets.pt > 20) & (jets.puId > 0)) \
+                     | ((jets.pt>50) & (jets.jetId>5))) & ak.all(jets.metric_table(ll_cand.lep2)>0.4, axis =2)
+        njets_two_cleaning = ak.sum(jsel_two_cleaning,axis=1)
+        names_events.append("Number of jets full selection cleaning 2 lepton")
+        values_events.append(ak.sum(njets_two_cleaning >= 2))
+        ###################################################################################
+
+        
         # Count how many jets exist that pass this selection
         njet = ak.sum(jet_conditions,axis=1)
         selection.add('jetsel',ak.to_numpy(njet>=2))
+        names_events.append("Number of jet events final cut")
+        values_events.append(ak.sum((njet >= 2)))
         
         
         # =================================================================================
@@ -1263,6 +1454,9 @@ class NanoProcessor(processor.ProcessorABC):
         selection.add('CR_t_tbar_2LH',ak.to_numpy(req_cr_t_tbar_vpt_high))
         
         
+        with open(f"./{folder_save}/event_nr.txt", "a") as myfile:
+            myfile.write(f"Nr of events in {filename} from {start} to {stop}: " + str(nEvents) + "  " + '\n')
+            myfile.write(f"Nr of muon events in {filename} from {start} to {stop} with pt, eta, looseId, iso cuts : " + str(nEvent_mu) + " " +  str(n_event_mu_pt) + " " + str(n_event_mu_eta) + " " + str(n_event_mu_looseId) + " " + str(n_event_mu_iso) + " " + str(n_event_mu_pt) + ' ' + str(n_event_mu_sel) + "  " + '\n')
         
         
         
@@ -1645,6 +1839,37 @@ class NanoProcessor(processor.ProcessorABC):
         df_wei = pd.DataFrame([], columns = ['weights'])
         df_wei['weights'] = list_weights
         weight = np.array(list_weights)
+
+        try:
+            df_muons = pd.read_csv(f'{folder_save}/muons.csv')
+        except FileNotFoundError:
+            df_muons = pd.DataFrame([], columns = ['pt', 'looseid', 'looseid_cut'])
+        df_muons_this_file = pd.DataFrame([], columns = ['pt', 'looseid', 'looseid_cut'])
+        df_muons_this_file['looseid'] = pd.Series(np.array(ak.ravel(event_mu.looseId)))
+        df_muons_this_file['looseid_cut'] = pd.Series(np.array(ak.ravel((event_mu.looseId>2))))
+        df_muons_this_file['pt'] = pd.Series(np.array(ak.ravel(event_mu.pt)))
+        df_muons = pd.concat([df_muons, df_muons_this_file], ignore_index = True)
+        df_muons.to_csv(f'{folder_save}/muons.csv', sep=',', encoding='utf-8', index=False)
+        
+        try:
+            df_cutflow = pd.read_csv(f'{folder_save}/cutflow.csv')
+        except FileNotFoundError:
+            df_cutflow = pd.DataFrame([], columns = names_events)
+
+        
+        
+        
+        elements_start = df_cutflow["Start"]
+        df_cutflow.loc[f"{filename}_{start}_{stop}"] = values_events
+        if "Sum" in elements_start.values:
+            df_cutflow = df_cutflow[:-2]
+            df_cutflow.loc[f"{filename}_{start}_{stop}"] = values_events
+            df_cutflow.loc[f"Sum over file"] = [np.sum(df_cutflow[name]) if name not in names_events[:3] else "Sum" for name in names_events]
+        elif "Sum" not in elements_start.values:
+            df_cutflow.loc[f"Sum over file"] = [np.sum(df_cutflow[name]) if name not in names_events[:3] else "Sum" for name in names_events]
+        
+        
+        df_cutflow.to_csv(f'{folder_save}/cutflow.csv', sep=',', encoding='utf-8', index=False)
         
         
         #df_weights_full = pd.concat([df_weights, df_wei], ignore_index = True)
@@ -1667,13 +1892,13 @@ class NanoProcessor(processor.ProcessorABC):
 
         for var in lists_of_vars.keys():
             try:
-                else_var_array = np.load(f'{folder_save}/{dataset}/{filename}/test_{var}_full.npy')
+                else_var_array = np.load(f'{folder_save}/{dataset}/{filename}/test_{var}__{start}_{stop}_full.npy')
             except FileNotFoundError:
                 else_var_array = np.array([])
             finally:
                 else_v_curr_array = np.array(lists_of_vars[var])
                 else_var_full_array = np.concatenate((else_var_array, else_v_curr_array), axis = None)
-                np.save(f'{folder_save}/{dataset}/{filename}/test_{var}_full.npy', else_var_full_array, allow_pickle = False)
+                np.save(f'{folder_save}/{dataset}/{filename}/test_{var}_{start}_{stop}_full.npy', else_var_full_array, allow_pickle = False)
             
         #df_else_full = pd.concat([df_else_everything, df_else], ignore_index = True)
         
