@@ -248,7 +248,6 @@ class NanoProcessor(processor.ProcessorABC):
         # ==============
 
         muons = events.Muon
-        # looseId >= 1 or looseId seems to be the same...
         musel = ((muons.pt > 20) & (abs(muons.eta) < 2.4) & (muons.tightId >= 1) & (muons.pfRelIso04_all<0.25) &
                  (abs(muons.dxy) < 0.06) & (abs(muons.dz)<0.2) )
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(muons.dxy)<0.06)&(abs(muons.dz)<0.2) and tightId for 1L
@@ -261,7 +260,11 @@ class NanoProcessor(processor.ProcessorABC):
 
         electrons = events.Electron
         elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
-                  (electrons.mvaFall17V2Iso_WP80==1) & (electrons.pfRelIso03_all<0.25) & (abs(electrons.dxy) < 0.05) & ( (abs(electrons.dz) < 0.1)))
+                  (electrons.mvaFall17V2noIso_WPL==1) & (abs(electrons.dxy) < 0.05) & (abs(electrons.dz) < 0.1) & 
+                  (electrons.convVeto==1) & (electrons.lostHits<2) & 
+                  ( ( (electrons.sieie<0.011) & (abs(electrons.eta) < 1.4442) ) | ( (electrons.sieie<0.030) & (abs(electrons.eta) > 1.5660) ) )
+                  & (electrons.hoe < 0.10) & (electrons.eInvMinusPInv>-0.04) & (electrons.tightCharge>=1) & (electrons.mvaTTH>0.25)
+        )
         electrons = electrons[elesel]
         #electrons = electrons[ak.argsort(electrons.pt, axis=1, ascending=False)]
         electrons["lep_flav"] = 11
@@ -282,7 +285,8 @@ class NanoProcessor(processor.ProcessorABC):
         dileptons = ak.combinations(leptons, 2, fields=["lep1", "lep2"])
 
         pt_cut = (dileptons["lep1"].pt > 30) | (dileptons["lep2"].pt > 20)
-        Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
+        #Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
+        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 60) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 120)
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
         charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
         #charge_cut = True
@@ -345,10 +349,10 @@ class NanoProcessor(processor.ProcessorABC):
                             puwei(self.SF_map, events.Pileup.nTrueInt, "up"),
                             puwei(self.SF_map, events.Pileup.nTrueInt, "down") )
 
-            muSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
-            muSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
-            eleSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
-            eleSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
+            #muSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            #muSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
+            #eleSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            #eleSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
 
         output["npv1"].fill(npv=events[selection_2l].PV.npvs, lepflav=lepflav[selection_2l], weight=weights.weight()[selection_2l])
 

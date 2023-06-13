@@ -12,21 +12,11 @@ cfg = {
          },
     "dataset": {
         "jsons": [
-            "src/VHcc/metadata/genZjets.json",
-            "src/VHcc/metadata/run2UL17_files.json"
-            #"src/VHcc/metadata/run2UL17_test.json"
+            "src/VHcc/metadata/run2UL18_files.json"
         ],
-        "campaign": "2017_UL",
-        "year": "2017",
+        "campaign": "2018_UL",
+        "year": "2018",
         "filter": {
-            "samples": [
-                "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-                "DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "Run2UL_DoubleMuon",
-                "Run2UL_DoubleEG"
-           ],
             "samples_exclude": [],
         },
     },
@@ -34,34 +24,22 @@ cfg = {
     "weights": {
         "common":{
             "inclusive":{
-                "lumiMasks":"Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+                "lumiMasks": "Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
                 "PU": None,
                 "JME": "jec_compiled.pkl.gz",
                 #"BTV": { "DeepJetC": "DeepJet_ctagSF_Summer20UL17_interp.root"},
                 "LSF": {
-                    "ele_ID 2017": "wp90iso",
-                    "ele_Reco 2017": "RecoAbove20",
-                    "ele_Reco_low 2017": "RecoBelow20",
-                    "mu_Reco 2017_UL": "NUM_TrackerMuons_DEN_genTracks",
+                    "ele_ID 2018": "wp80iso",
+                    "ele_Reco 2018": "RecoAbove20",
+                    "ele_Reco_low 2018": "RecoBelow20",
+                    ##"mvaEleID-Fall17-noIso-V2-wp80", ??
+                    "mu_Reco 2018_UL": "NUM_TrackerMuons_DEN_genTracks",
                     #"mu_HLT 2017_UL": "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight",
-                    "mu_ID 2017_UL": "NUM_TightID_DEN_TrackerMuons",
-                    "mu_Iso 2017_UL": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "mu_ID 2018_UL": "NUM_TightID_DEN_TrackerMuons",
+                    "mu_Iso 2018_UL": "NUM_TightRelIso_DEN_TightIDandIPCut",
                     #"mu_ID_low NUM_TightID_DEN_TrackerMuons": "Efficiency_muon_trackerMuon_Run2017_UL_ID.histo.json",
                     #"mu_Reco_low NUM_TrackerMuons_DEN_genTracks": "Efficiency_muon_generalTracks_Run2017_UL_trackerMuon.histo.json",
                 },
-                #"LSF": {
-                #    # "ele_Trig TrigSF": "Ele32_L1DoubleEG_TrigSF_vhcc.histo.root",
-                #    "ele_Rereco_above20 EGamma_SF2D": "egammaEffi_ptAbove20.txt_EGM2D_UL2017.histo.root",
-                #    "ele_Rereco_below20 EGamma_SF2D": "egammaEffi_ptBelow20.txt_EGM2D_UL2017.histo.root",
-                #    "ele_ID EGamma_SF2D": "egammaEffi.txt_EGM2D_MVA90iso_UL17.histo.root",
-                #    "mu_ID NUM_TightID_DEN_TrackerMuons_abseta_pt": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.histo.root",
-                #    "mu_Iso NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.histo.root",
-                #    "ele_Rereco_above20_error EGamma_SF2D_error": "egammaEffi_ptAbove20.txt_EGM2D_UL2017.histo.root",
-                #    "ele_Rereco_below20_error EGamma_SF2D_error": "egammaEffi_ptBelow20.txt_EGM2D_UL2017.histo.root",
-                #    "ele_ID_error EGamma_SF2D_error": "egammaEffi.txt_EGM2D_MVA90iso_UL17.histo.root",
-                #    "mu_ID_error NUM_TightID_DEN_TrackerMuons_abseta_pt_error": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.histo.root",
-                #    "mu_Iso_error NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt_error": "Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.histo.root",
-                #},
             },
         },
     },
@@ -70,11 +48,10 @@ cfg = {
         "weights": False,
     },
     "workflow": zjets,
-    "output": "output/recoZjets_All",
+    "output": "output/recoZjets_UL18",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1,  "limit": None,
-        #"executor": "dask/condor", "workers": 1,  "limit": 3,
-        #"executor": "futures", "workers": 10,  "limit": 1,
+        #"executor": "parsl/condor", "workers": 1,  "limit": None,
+        "executor": "futures", "workers": 10,  "limit": 1,
         "scaleout": 350,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
