@@ -5,22 +5,29 @@ scaleToLumi : True
 input :
       #- output_zjets_v73/output.coffea
       #- output_zjets_v08/output.coffea
-      - output_GenZjets_v01/output.coffea
+      #- output_GenZjets_v01/output.coffea
+      # - output_GenZjets_v21/output.coffea  # using 2016 samples
+      - output_GenZjets_v27/output.coffea  # using 2016 samples, with VPT>0 cut
 
 mergemap:
    MiNNLO:
-      list:
-       - DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
-       - DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
-   MiNNLO_Supp:
+     list:
+        - DYJetsToMuMu_M-50_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+      ##- DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+      ##- DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MiNNLO_Zpt_priv:
       list:
        - DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MiNNLO_Zpt_offi:
+      list:
+       - DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
    MLM:
       list:
        - DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8
    FxFx:
       list:
        - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+
    #UNLOPS:
    #   list:
    #    - DYJets_UNLOPS
@@ -30,9 +37,9 @@ reference:
    MiNNLO:
        label: MiNNLO
        color: 'C0'
-   # FxFx:
-   #   label: FxFx
-   #   color : 'C4'
+   #FxFx:
+   #  label: FxFx
+   #  color : 'C4'
 
 ## Required, compare dict
 compare:
@@ -42,15 +49,18 @@ compare:
     FxFx:
       label: FxFx
       color : 'C4'
-    #MiNNLO:
-    #   label: MiNNLO
-    #   color: 'C0'
-    MiNNLO_Supp:
-       label: MiNNLO_Supp
+    MiNNLO:
+       label: MiNNLO
+       color: 'C0'
+    MiNNLO_Zpt_priv:
+       label: MiNNLO_Zpt_priv
        color: 'C1'
+    MiNNLO_Zpt_offi:
+       label: MiNNLO_Zpt_offi
+       color: 'C5'
     #UNLOPS:
     #   label: UNLOPS
-    #   color: 'C5'
+    #   color: 'C6'
 
 ## Required, variable set
 variable :
@@ -60,34 +70,37 @@ variable :
          lepflav: sum
          jetflav: sum
        xlabel: "dR(jj)"
-    dijet_m:
-       axis:
-         lepflav: sum
-         jetflav: sum
-    dijet_pt:
-       axis:
-         lepflav: sum
-         jetflav: sum
-
-    dijet_dr_mjj:
-      axis:
-        lepflav: sum
-        jetflav: jj
-        dijet_mBin: 1
-      xlabel: "dR(jj) in bins of m(jj)"
-
-    dilep_pt:
-      xlabel: "$p_T$(V)"
-    njet25:
-    #wei:
-    nlep:
-    dilep_m:
-    LHE_Vpt:
-    LHE_HT:
+###     dijet_m:
+###        axis:
+###          lepflav: sum
+###          jetflav: sum
+###     dijet_pt:
+###        axis:
+###          lepflav: sum
+###          jetflav: sum
+### 
+###     dijet_dr_mjj:
+###       axis:
+###         lepflav: sum
+###         jetflav: jj
+###         dijet_mBin: 1
+###       xlabel: "dR(jj) in bins of m(jj)"
+### 
+###     dilep_pt:
+###       xlabel: "$p_T$(V)"
+###     njet25:
+###     nlep:
+###     dilep_m:
+###     LHE_Vpt:
+###     LHE_HT:
+### 
 
 rescale_yields:
+  MLM: 0.7
+  FxFx: 0.5
   #MiNNLO: 2
-  MiNNLO_Supp: 2
+  #MiNNLO_Zpt_priv: 2
+  #MiNNLO_Zpt_offi: 2
   #UNLOPS: 2
 
 com : "13"

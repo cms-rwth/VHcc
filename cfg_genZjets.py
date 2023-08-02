@@ -10,13 +10,14 @@ from VHcc.workflows.genZjets import (
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 100
+                 "vpt": 0
              }
          },
     "dataset": {
         "jsons": [
-            "src/VHcc/metadata/genZjets.json",
-            "src/VHcc/metadata/test_samples_local_DY_UNLOPS.json",
+            "src/VHcc/metadata/genZjets_2016.json",
+            #"src/VHcc/metadata/genZjets.json",
+            #"src/VHcc/metadata/test_samples_local_DY_UNLOPS.json",
         ],
         "campaign": "UL17",
         "year": "2017",
@@ -24,9 +25,12 @@ cfg = {
             "samples": [
                 "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
                 "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-                "DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                ##"DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos", #2017 sample 
+                "DYJetsToMuMu_M-50_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos", # 2016 sample
+                ##"DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                #"DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7",
                 #"DYJets_UNLOPS"
                 # "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa", # NanoV7 (LHE_VPT variables missing)
            ],
@@ -37,16 +41,15 @@ cfg = {
     "workflow": zjets,
     "output": "output_GenZjets",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1,
-        #"executor": "futures", "workers": 5,
-        "scaleout": 50,
+        "executor": "parsl/condor", "workers": 1, "limit": None,
+        #"executor": "futures", "workers": 8, "limit": 1,
+        "scaleout": 300,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
         "skipbadfiles": None,
         "voms": None,
-        "limit": None,
         "retries": 20,
         "splitjobs": False,
         "requirements": (

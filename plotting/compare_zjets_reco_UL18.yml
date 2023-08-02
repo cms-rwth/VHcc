@@ -3,8 +3,7 @@ scaleToLumi : True
 
 ## Required, input files
 input :
-       - output/recoZjets_UL18_v02/output.coffea
-
+       - output/recoZjets_UL18_v05/output.coffea
 
 mergemap:
    MiNNLO:
@@ -24,100 +23,102 @@ mergemap:
        - DoubleMuon_Run2018D-UL2018_MiniAODv2_NanoAODv9-v2
 
 reference:
-   MiNNLO:
-       label: MiNNLO
-       color: 'C0'
-   # FxFx:
-   #   label: FxFx
-   #   color : 'C4'
-
+   #MiNNLO:
+   #    label: MiNNLO
+   #    color: 'C0'
+   FxFx:
+     label: FxFx
+     color : 'C4'
+   # DATA:
+   #  label: Data
+   #  color: Black
 ## Required, compare dict
 compare:
     MLM:
       label: MLM
       color : 'C2'
-    FxFx:
-      label: FxFx
-      color : 'C4'
+    #FxFx:
+    #  label: FxFx
+    #  color : 'C4'
+    MiNNLO:
+       label: MiNNLO
+       color: 'C0'
     DATA:
       label: Data
-      color : 'C5'
-    #MiNNLO:
-    #   label: MiNNLO
-    #   color: 'C0'
+      color : Black
 
 ## Required, variable set
 variable :
     dijet_dr:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
       xlabel: "dR(jj)"
 
     dijet_m:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     dijet_pt:
        axis:
-         lepflav: el
+         lepflav: mu
          jetflav: sum
 
     dijet_dr_mjj:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
         dijet_mBin: 1
       xlabel: "dR(jj) in [bin 1] of m(jj)"
 
     dilep_pt:
       axis:
-        lepflav: el
+        lepflav: mu
       xlabel: "$p_T$(V)"
 
     dilep_dr:
       axis:
-        lepflav: el
+        lepflav: mu
       xlabel: "dR(lep1, lep2)"
     njet25:
       axis:
-        lepflav: el
+        lepflav: mu
 
     lep1_pt:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
 
     lep2_pt:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     jet1_pt:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     jet2_pt:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     jet1_dRlep:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     jet2_dRlep:
       axis:
-        lepflav: el
+        lepflav: mu
         jetflav: sum
     dilep_m:
       axis:
-        lepflav: el
+        lepflav: mu
     nlep:
     npv0:
       axis:
-        lepflav: el
+        lepflav: mu
     npv1:
       axis:
-        lepflav: el
+        lepflav: mu
 
 #    ndilep:
 #    LHE_Vpt:

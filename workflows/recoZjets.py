@@ -25,7 +25,7 @@ class NanoProcessor(processor.ProcessorABC):
         self._year = self.cfg.dataset["year"]
         self._campaign = self.cfg.dataset["campaign"]
         self._debug_level =  self.cfg.user["debug_level"]
-        self._met_filters = met_filters['2017_UL']
+        self._met_filters = met_filters[self._campaign]
         #self._pu = load_pu(self._campaign, self.cfg.weights_config["PU"])
         self.isCorr = True
         
@@ -126,8 +126,8 @@ class NanoProcessor(processor.ProcessorABC):
             '2018': [
                 #'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
                 #'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
-                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',#allowMissingBranch=1 but this is the only used one in 2018?!
-                #'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8'#allowMissingBranch=1
+                'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+                #'Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8'
             ],
         }
 
@@ -174,13 +174,14 @@ class NanoProcessor(processor.ProcessorABC):
         if isRealData:
             weights.add('genWeight', np.ones(nEvents))
         else:
-            weights.add('genWeight', np.sign(events.genWeight))
-            #if dataset in ["DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8"]:
-            #    weights.add('genWeight', events.genWeight)
-            #else:
-            #    weights.add('genWeight', np.sign(events.genWeight))
-
-
+            if dataset in [
+                    "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                    "DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos"
+            ]:
+                weights.add('genWeight', events.genWeight)
+            else:
+                weights.add('genWeight', np.sign(events.genWeight))
+           
         if isRealData:
             output['sumw'] += nEvents
         else:

@@ -36,12 +36,12 @@ class NanoProcessor(processor.ProcessorABC):
         lepflav_axis = Hist.axis.StrCategory(
             ['mu', 'el', 'emu'], name="lepflav", label="channel"
         )
-        
+
         jetflav_axis = Hist.axis.StrCategory(
             ['jj','cj','bj','cc','cb','bb','oo'], name="jetflav", label="Jet flavors"
         )
         mBin_axis = Hist.axis.Variable([0,60,120,2000], name="dijet_mBin", label="dijet_mBin")
-        
+
         single_axis = {
             "LHE_Vpt": Hist.axis.Regular(
                 100, 0, 400, name="LHE_Vpt", label="LHE V PT [GeV]"
@@ -72,9 +72,9 @@ class NanoProcessor(processor.ProcessorABC):
             #'dijet_dr_neg': Hist.axis.Regular(50, 0, 5,    name="dijet_dr", label="dijet_dr")
         }
 
-        histDict1 = { 
+        histDict1 = {
             observable: Hist.Hist(lepflav_axis, jetflav_axis, var_axis, name="Counts", storage="Weight") if 'dijet' in observable
-            else Hist.Hist(lepflav_axis, var_axis, name="Counts", storage="Weight") 
+            else Hist.Hist(lepflav_axis, var_axis, name="Counts", storage="Weight")
             for observable, var_axis in multi_axis.items()
         }
         histDict2 = {
@@ -126,12 +126,12 @@ class NanoProcessor(processor.ProcessorABC):
 
         #nEl = ak.sum(leptons[np.abs(leptons.pdgId)==11])
         #nMu = ak.sum(leptons[np.abs(leptons.pdgId)==13])
-        #EE = (nEl==2)        
+        #EE = (nEl==2)
         #EE = (nEl==2)
         #selection = PackedSelection()
 
 
-        #print(dataset, "gen jets:", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")      
+        #print(dataset, "gen jets:", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")
         #genjets = events.GenJet
         jets25 = events.GenJet[(np.abs(events.GenJet.eta) < 2.5) & (events.GenJet.pt > 25)]
 
@@ -153,9 +153,10 @@ class NanoProcessor(processor.ProcessorABC):
 
         # print(dataset)
         if dataset in [
-            "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-            "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-            "DYJets_UNLOPS"
+                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+                "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJets_UNLOPS"
         ]:
             weight_nosel = events.genWeight
             #print("Special cases:", dataset)
@@ -173,7 +174,7 @@ class NanoProcessor(processor.ProcessorABC):
         output["LHE_HT"].fill(LHE_HT=LHE_HT, weight=weight_nosel)
 
         output["wei"].fill(wei=weight_nosel, weight=weight_nosel)
-        output["wei_sign"].fill( 
+        output["wei_sign"].fill(
             wei=weight_nosel / np.abs(weight_nosel), weight=np.abs(weight_nosel)
         )
 
@@ -196,9 +197,9 @@ class NanoProcessor(processor.ProcessorABC):
         lepflav_el = ak.any( (np.abs(good_dileptons['i0'].pdgId)==11) | (np.abs(good_dileptons['i1'].pdgId)==11), axis=1)
         #lepflav = lepflav_mu*1 + lepflav_el*2
         lepflav = np.array(['mu' if x&~y else 'el' if y&~x else 'emu' for x,y in zip(lepflav_mu, lepflav_el)])
-        
+
         #print(dataset, len(lepflav), lepflav)
-        
+
         #print(dataset, len(events))
 
 
@@ -234,6 +235,7 @@ class NanoProcessor(processor.ProcessorABC):
         if dataset in [
             "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
             "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+            "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
             "DYJets_UNLOPS",
         ]:
             weight_full = events_2l2j.genWeight
@@ -262,7 +264,7 @@ class NanoProcessor(processor.ProcessorABC):
         #print(dataset, len(jetflav), '\n', jetflav)# '\n', dijets.pt, '\n', dijets2.pt)
 
         dijet = dijets[:, 0] + dijets[:, 1]
-        dijetflav = dijets[:,0].hadronFlavour + dijets[:,1].hadronFlavour 
+        dijetflav = dijets[:,0].hadronFlavour + dijets[:,1].hadronFlavour
         #dijetflav = dijets[:,0].hadronFlavour + 1*( (dijets[:,0].partonFlavour == 0) & (dijets[:,0].hadronFlavour == 0)) +\
         #            dijets[:,1].hadronFlavour + 1*( (dijets[:,0].partonFlavour == 1) & (dijets[:,1].hadronFlavour == 0))
 
@@ -297,7 +299,7 @@ class NanoProcessor(processor.ProcessorABC):
         # output['lep_eta'].fill(lepflav=lepflav[selection_2l], lep_eta=ak.flatten(leptons.eta[selection_2l2j][:,0:2]), weight=weight2_full)
         # output['lep_pt'].fill(lepflav=lepflav[selection_2l], lep_pt=ak.flatten(leptons.pt[selection_2l2j][:,0:2]), weight=weight2_full)
 
-        output["jet_eta"].fill(lepflav=lepflav2_full, 
+        output["jet_eta"].fill(lepflav=lepflav2_full,
             jet_eta=ak.flatten(good_jets.eta[selection_2l2j][:, 0:2]),
             weight=weight2_full,
         )
@@ -317,7 +319,7 @@ class NanoProcessor(processor.ProcessorABC):
         # neg_wei_dr = dijet_dr[weight_full<0]
         # output['dijet_dr_neg'].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav[], dijet_dr=neg_wei_dr, weight=neg_wei)
 
-        #print(dataset, "Output", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")      
+        #print(dataset, "Output", psutil.Process(getpid()).memory_info().rss / 1024 ** 2, "MB")
         return {dataset: output}
 
     def postprocess(self, accumulator):

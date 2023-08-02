@@ -778,5 +778,8 @@
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/37F78DEF-3DD0-524C-A371-CEAA397CF9C8.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/F70DC8C3-4F7F-1A41-BD50-DBBE04964A18.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/39E72295-DE9A-1548-A916-B63E1EF1ABAB.root"
+    ],
+    "DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7": [
+        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/60000/497AD23B-7A83-FB4C-A70E-52BB92F1EB54.root"
     ]
 }

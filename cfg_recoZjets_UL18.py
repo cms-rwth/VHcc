@@ -50,8 +50,8 @@ cfg = {
     "workflow": zjets,
     "output": "output/recoZjets_UL18",
     "run_options": {
-        #"executor": "parsl/condor", "workers": 1,  "limit": None,
-        "executor": "futures", "workers": 10,  "limit": 1,
+        "executor": "parsl/condor", "workers": 1,  "limit": None,
+        #"executor": "futures", "workers": 10,  "limit": 4,
         "scaleout": 350,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
