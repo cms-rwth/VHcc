@@ -1,0 +1,136 @@
+output: "Reco_Zjets_UL18"
+scaleToLumi : True
+
+## Required, input files
+input :
+       - output/recoZjets_UL18_v05/output.coffea
+
+mergemap:
+   MiNNLO:
+      list:
+       - DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MLM:
+      list:
+       - DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8
+   FxFx:
+      list:
+       - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+   DATA:
+      list:
+       - DoubleMuon_Run2018A-UL2018_MiniAODv2_NanoAODv9-v1
+       - DoubleMuon_Run2018B-UL2018_MiniAODv2_NanoAODv9-v1
+       - DoubleMuon_Run2018C-UL2018_MiniAODv2_NanoAODv9-v1
+       - DoubleMuon_Run2018D-UL2018_MiniAODv2_NanoAODv9-v2
+
+reference:
+   #MiNNLO:
+   #    label: MiNNLO
+   #    color: 'C0'
+   FxFx:
+     label: FxFx
+     color : 'C4'
+   # DATA:
+   #  label: Data
+   #  color: Black
+## Required, compare dict
+compare:
+    MLM:
+      label: MLM
+      color : 'C2'
+    #FxFx:
+    #  label: FxFx
+    #  color : 'C4'
+    MiNNLO:
+       label: MiNNLO
+       color: 'C0'
+    DATA:
+      label: Data
+      color : Black
+
+## Required, variable set
+variable :
+    dijet_dr:
+      axis:
+        lepflav: mu
+        jetflav: sum
+      xlabel: "dR(jj)"
+
+    dijet_m:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    dijet_pt:
+       axis:
+         lepflav: mu
+         jetflav: sum
+
+    dijet_dr_mjj:
+      axis:
+        lepflav: mu
+        jetflav: sum
+        dijet_mBin: 1
+      xlabel: "dR(jj) in [bin 1] of m(jj)"
+
+    dilep_pt:
+      axis:
+        lepflav: mu
+      xlabel: "$p_T$(V)"
+
+    dilep_dr:
+      axis:
+        lepflav: mu
+      xlabel: "dR(lep1, lep2)"
+    njet25:
+      axis:
+        lepflav: mu
+
+    lep1_pt:
+      axis:
+        lepflav: mu
+        jetflav: sum
+
+    lep2_pt:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    jet1_pt:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    jet2_pt:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    jet1_dRlep:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    jet2_dRlep:
+      axis:
+        lepflav: mu
+        jetflav: sum
+    dilep_m:
+      axis:
+        lepflav: mu
+    nlep:
+    npv0:
+      axis:
+        lepflav: mu
+    npv1:
+      axis:
+        lepflav: mu
+
+#    ndilep:
+#    LHE_Vpt:
+#    LHE_HT:
+#    wei:
+
+#rescale_yields:
+#  #MiNNLO: 2
+#  MLM: 1.5
+
+com : "13"
+lumi : 59830
+inbox_text: "Private Work"
+norm : False
+log : False # log y axis

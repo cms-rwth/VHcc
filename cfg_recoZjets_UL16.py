@@ -2,10 +2,7 @@
 # python-indent-offset: 4
 # End:
 
-from VHcc.workflows.genZjets import (
-    NanoProcessor as zjets,
-)
-
+from VHcc.workflows.recoZjets import (NanoProcessor as zjets,)
 
 cfg = {
     "user": {"debug_level": 0,
@@ -15,40 +12,50 @@ cfg = {
          },
     "dataset": {
         "jsons": [
-            "src/VHcc/metadata/genZjets_2016.json",
-            #"src/VHcc/metadata/genZjets.json",
-            #"src/VHcc/metadata/test_samples_local_DY_UNLOPS.json",
+            "src/VHcc/metadata/run2UL16_files.json",
+            "src/VHcc/metadata/run2UL16_files_inDESY.json"
         ],
-        "campaign": "UL17",
-        "year": "2017",
+        "campaign": "2016preVFP_UL",
+        "year": "2016",
         "filter": {
-            "samples": [
-                "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-                ##"DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos", #2017 sample 
-                "DYJetsToMuMu_M-50_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos", # 2016 sample
-                ##"DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
-                #"DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7",
-                #"DYJets_UNLOPS"
-                # "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa", # NanoV7 (LHE_VPT variables missing)
-           ],
             "samples_exclude": [],
         },
     },
-    # Input and output files
+
+    "weights": {
+        "common":{
+            "inclusive":{
+                "lumiMasks": "Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+                "PU": None,
+                "JME": "jec_compiled.pkl.gz",
+                #"BTV": { "DeepJetC": "DeepJet_ctagSF_Summer20UL17_interp.root"},
+                "LSF": {
+                    "ele_ID 2016": "wp80iso",
+                    "ele_Reco 2016": "RecoAbove20",
+                    "ele_Reco_low 2016": "RecoBelow20",
+                    "mu_Reco 2016_UL": "NUM_TrackerMuons_DEN_genTracks",
+                    "mu_ID 2016_UL": "NUM_TightID_DEN_TrackerMuons",
+                    "mu_Iso 2016_UL": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                  
+                },
+            },
+        },
+    },
+    "systematic": {
+        "JERC": False,
+        "weights": False,
+    },
     "workflow": zjets,
-    "output": "output_GenZjets",
+    "output": "output/recoZjets_UL16",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1, "limit": None,
-        #"executor": "futures", "workers": 8, "limit": 1,
-        "scaleout": 300,
+        "executor": "parsl/condor", "workers": 1,  "limit": None,
+        #"executor": "futures", "workers": 10,  "limit": 1,
+        "scaleout": 400,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
-        "skipbadfiles": None,
+        "skipbadfiles": True,
         "voms": None,
         "retries": 20,
         "splitjobs": False,
@@ -159,8 +166,7 @@ cfg = {
             '( Machine != "lxcip56.physik.rwth-aachen.de") && '
             '( Machine != "lxcip57.physik.rwth-aachen.de") && '
             '( Machine != "lxcip58.physik.rwth-aachen.de") && '
-            '( Machine != "lxcip59.physik.rwth-aachen.de")'
+            '( Machine != "lxcip59.physik.rwth-aachen.de")'            
         ),
-
     },
 }

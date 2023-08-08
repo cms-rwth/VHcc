@@ -4,9 +4,11 @@ from dataclasses import dataclass
 import gzip
 import pickle, os, sys, mplhep as hep, numpy as np
 from select import select
+
 import json
 
-from coffea import processor
+#from coffea import hist, processor # ToDo: move to the better hist
+from coffea import processor # ToDo: move to the better hist
 import hist
 from hist import Hist
 from coffea.nanoevents.methods import vector
@@ -204,7 +206,7 @@ class NanoProcessor(processor.ProcessorABC):
                     #'BadPFMuonDzFilter', # not in EOY
                     #'hfNoisyHitsFilter', # not in EOY
                     'eeBadScFilter',
-                    'ecalBadCalibFilterV2',
+                    #'ecalBadCalibFilterV2',
                 ],
                 'mc': [
                     'goodVertices',
@@ -216,7 +218,7 @@ class NanoProcessor(processor.ProcessorABC):
                     #'BadPFMuonDzFilter', # not in EOY
                     #'hfNoisyHitsFilter', # not in EOY
                     #'eeBadScFilter', # not suggested in EOY MC
-                    'ecalBadCalibFilterV2',
+                    #'ecalBadCalibFilterV2',
                 ],
             },
             '2018': {
@@ -363,7 +365,7 @@ class NanoProcessor(processor.ProcessorABC):
         # axis.StrCategory([], name='region', growth=True),
         #disc_list = [ 'btagDeepCvL', 'btagDeepCvB','btagDeepFlavCvB','btagDeepFlavCvL']#,'particleNetAK4_CvL','particleNetAK4_CvB']
         # As far as I can tell, we only need DeepFlav currently
-        disc_list = ['btagDeepFlavC','btagDeepFlavB','btagDeepFlavCvL','btagDeepFlavCvB']
+        disc_list = ['btagDeepFlavCvL','btagDeepFlavCvB']
         btag_axes = []
         for d in disc_list:
             # technically, -1 values are possible, but probably unlikely to matter much after event selection
@@ -394,47 +396,34 @@ class NanoProcessor(processor.ProcessorABC):
         #            hist.storage.Weight()
         #        )    
         _hist_event_dict = {
-                'nj'                       : Hist(dataset_axis,
-                                                       datasetSplit_axis,
+                'nj'                       : Hist(datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
-                                                       njet_axis),
-                'nAddJets302p5_puid'       : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
+                                                       njet_axis, hist.storage.Weight()),
+                'nAddJets302p5_puid'       : Hist(datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
-                                                       nAddJets_axis),
-                'nAddJetsFSRsub302p5_puid' : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
+                                                       nAddJets_axis, hist.storage.Weight()),
+                'nAddJetsFSRsub302p5_puid' : Hist(datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
-                                                       nAddJets_FSRsub_axis),
-                'weight_full'              : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
+                                                       nAddJets_FSRsub_axis, hist.storage.Weight()),
+               # 'weight_full'              : Hist(datasetSplit_axis,
+               #                                        lepflav_axis,
+               #                                        region_axis,
+               #                                        weight_axis, hist.storage.Weight()),
+               # 'genweight'                : Hist(datasetSplit_axis,
+               #                                        lepflav_axis,
+               #                                        region_axis,
+               #                                        genweight_axis, hist.storage.Weight()),
+               # 'sign_genweight'           : Hist(datasetSplit_axis,
+               #                                        lepflav_axis,
+               #                                        region_axis,
+               #                                        sign_genweight_axis, hist.storage.Weight()),
+                'jjVPtRatio'               : Hist(datasetSplit_axis,
                                                        lepflav_axis,
                                                        region_axis,
-                                                       weight_axis),
-                'genweight'                : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
-                                                       lepflav_axis,
-                                                       region_axis,
-                                                       genweight_axis),
-                'sign_genweight'           : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
-                                                       lepflav_axis,
-                                                       region_axis,
-                                                       sign_genweight_axis),
-                'jjVPtRatio'               : Hist(
-                                                       dataset_axis,
-                                                       datasetSplit_axis,
-                                                       lepflav_axis,
-                                                       region_axis,
-                                                       jjVPtRatio_axis)
+                                                       jjVPtRatio_axis, hist.storage.Weight())
             
                 #'dphi_V_H'                 : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dphi_V_H_axis)
                 #'dr_j1_j2'                 : Hist( dataset_axis, datasetSplit_axis, lepflav_axis, region_axis, ,dr_j1_j2_axis)
@@ -469,88 +458,89 @@ class NanoProcessor(processor.ProcessorABC):
         for i in objects:
             # distinguish between jets and other objects, as the structure for jets contains additional flavour axis
             if 'jet' in i: 
-                _hist_event_dict["%s_pt" %(i)]=Hist(dataset_axis,
-                                                         datasetSplit_axis,
+                _hist_event_dict["%s_pt" %(i)]=Hist(datasetSplit_axis,
                                                          lepflav_axis,
                                                          region_axis,
                                                          flav_axis,
-                                                         pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=Hist(
-                                                          dataset_axis,
-                                                          datasetSplit_axis,
+                                                         pt_axis, hist.storage.Weight())
+                _hist_event_dict["%s_eta" %(i)]=Hist(datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           flav_axis,
-                                                          eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=Hist(
-                                                          dataset_axis,
-                                                          datasetSplit_axis,
+                                                          eta_axis, hist.storage.Weight())
+                _hist_event_dict["%s_phi" %(i)]=Hist(datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
                                                           flav_axis,
-                                                          phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=Hist(
-                                                           dataset_axis,
-                                                           datasetSplit_axis,
+                                                          phi_axis, hist.storage.Weight())
+                _hist_event_dict["%s_mass" %(i)]=Hist(datasetSplit_axis,
                                                            lepflav_axis,
                                                            region_axis,
                                                            flav_axis,
-                                                           mass_axis)
+                                                           mass_axis, hist.storage.Weight())
             else:
-                _hist_event_dict["%s_pt" %(i)]=Hist(
-                                                         dataset_axis,
-                                                         datasetSplit_axis,
+                _hist_event_dict["%s_pt" %(i)]=Hist(datasetSplit_axis,
                                                          lepflav_axis,
                                                          region_axis,
-                                                         pt_axis)
-                _hist_event_dict["%s_eta" %(i)]=Hist(
-                                                          dataset_axis,
-                                                          datasetSplit_axis,
+                                                         pt_axis, hist.storage.Weight())
+                _hist_event_dict["%s_eta" %(i)]=Hist(datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
-                                                          eta_axis)
-                _hist_event_dict["%s_phi" %(i)]=Hist(
-                                                          dataset_axis,
-                                                          datasetSplit_axis,
+                                                          eta_axis, hist.storage.Weight())
+                _hist_event_dict["%s_phi" %(i)]=Hist(datasetSplit_axis,
                                                           lepflav_axis,
                                                           region_axis,
-                                                          phi_axis)
-                _hist_event_dict["%s_mass" %(i)]=Hist(
-                                                           dataset_axis,
-                                                           datasetSplit_axis,
+                                                          phi_axis, hist.storage.Weight())
+                _hist_event_dict["%s_mass" %(i)]=Hist(datasetSplit_axis,
                                                            lepflav_axis,
                                                            region_axis,
-                                                           mass_axis)
+                                                           mass_axis, hist.storage.Weight())
         
         # more information on the discriminators is stored for the first two jets,
         # ordered by DeepJet CvL discriminator and called "leading" and "subleading"
         for disc, axis in zip(disc_list,btag_axes):
-            _hist_event_dict["leading_jetflav_%s" %(disc)] = Hist(
-                                                                       dataset_axis,
-                                                                       datasetSplit_axis,
+            _hist_event_dict["leading_jetflav_%s" %(disc)] = Hist(datasetSplit_axis,
                                                                        lepflav_axis,
                                                                        region_axis,
                                                                        flav_axis,
-                                                                       axis)
-            _hist_event_dict["subleading_jetflav_%s" %(disc)] = Hist(
-                                                                          dataset_axis,
-                                                                          datasetSplit_axis,
+                                                                       axis, hist.storage.Weight())
+            _hist_event_dict["subleading_jetflav_%s" %(disc)] = Hist(datasetSplit_axis,
                                                                           lepflav_axis,
                                                                           region_axis,
                                                                           flav_axis,
-                                                                          axis)
+                                                                          axis, hist.storage.Weight())
             
         self.event_hists = list(_hist_event_dict.keys())
         
         # this can be used to not only store histograms, but also features on a per-event basis (arrays)
         if self._export_array:
             _hist_event_dict['array'] = processor.defaultdict_accumulator(array_accumulator)
-        self._accumulator = processor.dict_accumulator(
-            {**_hist_event_dict,   
-             'cutflow': processor.defaultdict_accumulator(
-                 partial(processor.defaultdict_accumulator, int))
-            })
-        self._accumulator['sumw'] = processor.defaultdict_accumulator(float)
+        #self._accumulator = processor.dict_accumulator(
+        #    {**_hist_event_dict,   
+        #     #'cutflow': processor.defaultdict_accumulator(
+        #     #    partial(processor.defaultdict_accumulator, int))
+        #    })
+        #self._accumulator['sumw'] = processor.defaultdict_accumulator(float)
+        
+        #self._accumulator = processor.dict_accumulator(
+        #    {
+        #        observable: Hist.Hist(var_axis, name="Counts", storage="Weight")
+        #        for observable, var_axis in axis.items()
+        #        if observable != "dataset"
+        #    }
+        #)
+        #self._accumulator["cutflow"] = processor.defaultdict_accumulator(
+        #    partial(processor.defaultdict_accumulator, int)
+        #)
+        #self._accumulator["sumw"] = 0
+        
+        self.make_output = lambda: {
+            "cutflow": processor.defaultdict_accumulator(
+                partial(processor.defaultdict_accumulator, int)
+            ),
+            "sumw": 0,
+            **_hist_event_dict
+        }
 
 
     @property
@@ -558,9 +548,10 @@ class NanoProcessor(processor.ProcessorABC):
         return self._accumulator
 
     def process(self, events):
-        output = self.accumulator #.identity()
+        #output = self.accumulator #.identity()
+        output = self.make_output()
         dataset = events.metadata['dataset']
-        print(dataset)
+        #print(dataset)
         # Q: could there be MC that does not have this attribute? Or is it always the case?
         isRealData = not hasattr(events, "genWeight")
         
@@ -571,11 +562,11 @@ class NanoProcessor(processor.ProcessorABC):
             dataset_long = dataset
             dictname = dataset[1:].split('/')[0]
             dataset = info_dict[dictname]
-            
+        # print(dataset)    
         sample_type, doFlavSplit = dataset_name_to_number(dataset, self._year)
         # length of events is used so many times later on, probably useful to just save it here and then refer to that
         nEvents = len(events)
-        print('Number of events: ', nEvents)
+        # print('Number of events: ', nEvents)
         
         # As far as I understand, this looks like a neat way to give selections a name,
         # while internally, there are boolean arrays for all events
@@ -584,7 +575,7 @@ class NanoProcessor(processor.ProcessorABC):
         
         # this is either counting events in data with weight 1, or weighted (MC)
         if isRealData:
-            output['sumw'][dataset] += nEvents
+            output['sumw'] += nEvents
         else:
             # instead of taking the weights themselves, the sign is used:
             # https://cms-talk.web.cern.ch/t/huge-event-weights-in-dy-powhegminnlo/8718/7
@@ -593,7 +584,7 @@ class NanoProcessor(processor.ProcessorABC):
             # somehow it seems to average out, although I don't see why this is guaranteed
             # must have to do with "LO without interference" where the values are indeed same
             # and if they are not same, the differences are consired to be negligible
-            output['sumw'][dataset] += ak.sum(events.genWeight/abs(events.genWeight))
+            output['sumw'] += ak.sum(events.genWeight/abs(events.genWeight))
             
             
         req_lumi=np.ones(nEvents, dtype='bool')
@@ -877,25 +868,27 @@ class NanoProcessor(processor.ProcessorABC):
         
         # For EOY: recalculate CvL & CvB here, because the branch does not exist in older files
         # adapted from PostProcessor
-        def deepflavcvsltag(jet):
-            btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
-            return ak.where((jet.btagDeepFlavB >= 0.) & (jet.btagDeepFlavB < 1.) & (jet.btagDeepFlavC >= 0.) & (btagDeepFlavL >= 0.),
-                            jet.btagDeepFlavC/(1.-jet.btagDeepFlavB),
-                            (-1.) * ak.ones_like(jet.btagDeepFlavB))
-        
-        def deepflavcvsbtag(jet):
-            btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
-            return ak.where((jet.btagDeepFlavB > 0.) & (jet.btagDeepFlavC > 0.) & (btagDeepFlavL >= 0.),
-                            jet.btagDeepFlavC/(jet.btagDeepFlavC+jet.btagDeepFlavB),
-                            (-1.) * ak.ones_like(jet.btagDeepFlavB))
-        
+        # Starting from NanoV9 this is not necessary:
+        ### def deepflavcvsltag(jet):
+        ###     btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
+        ###     return ak.where((jet.btagDeepFlavB >= 0.) & (jet.btagDeepFlavB < 1.) & (jet.btagDeepFlavC >= 0.) & (btagDeepFlavL >= 0.),
+        ###                     jet.btagDeepFlavC/(1.-jet.btagDeepFlavB),
+        ###                     (-1.) * ak.ones_like(jet.btagDeepFlavB))
+        ### 
+        ### def deepflavcvsbtag(jet):
+        ###     btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
+        ###     return ak.where((jet.btagDeepFlavB > 0.) & (jet.btagDeepFlavC > 0.) & (btagDeepFlavL >= 0.),
+        ###                     jet.btagDeepFlavC/(jet.btagDeepFlavC+jet.btagDeepFlavB),
+        ###                     (-1.) * ak.ones_like(jet.btagDeepFlavB))
+        ### 
         # Alternative ways:
         # - depending on the Nano version, there might already be bTagDeepFlavCvL available
         # - one could instead use DeepCSV via bTagDeepCvL
         # - not necessarily use CvL, other combination possible ( CvB | pt | BDT? )
         
-        jets["btagDeepFlavCvL"] = deepflavcvsltag(jets)
-        jets["btagDeepFlavCvB"] = deepflavcvsbtag(jets)
+        #jets["btagDeepFlavCvL"] = deepflavcvsltag(jets)
+        #jets["btagDeepFlavCvB"] = deepflavcvsbtag(jets)
+
         jets = jets[ak.argsort(jets.btagDeepFlavCvL, axis=1, ascending=False)]
 
         
@@ -1203,6 +1196,7 @@ class NanoProcessor(processor.ProcessorABC):
         
         #### write into histograms (i.e. write output)
         for histname, h in output.items():
+            #print("Writing histogram: ", histname)
             for s in possible_flavSplits:
                 dataset_renamed = dataset if s == 'already_split_sample' else dataset + s
                 for ch in lepflav:
@@ -1259,7 +1253,9 @@ class NanoProcessor(processor.ProcessorABC):
                                 flavor = ak.zeros_like(normalize(leading['pt'],cut))
                             else:
                                 flavor = normalize(leading.hadronFlavour,cut)
-                            h.fill(dataset = dataset,
+                                
+                            #print(h.axes, dataset_renamed, ch, r, flavor)
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
@@ -1275,7 +1271,7 @@ class NanoProcessor(processor.ProcessorABC):
                                 flavor = ak.zeros_like(normalize(subleading['pt'],cut))
                             else:
                                 flavor = normalize(subleading.hadronFlavour,cut)
-                            h.fill(dataset = dataset,
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
@@ -1286,7 +1282,7 @@ class NanoProcessor(processor.ProcessorABC):
                             names = [ax.name for ax in h.axes]
                             fields = {l: ak.fill_none(flatten(lep1cut[histname.replace('lep1_','')]),
                                                       np.nan) for l in names if l in dir(lep1cut)}
-                            h.fill(dataset = dataset,
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
@@ -1296,7 +1292,7 @@ class NanoProcessor(processor.ProcessorABC):
                             names = [ax.name for ax in h.axes]
                             fields = {l: ak.fill_none(flatten(lep2cut[histname.replace('lep2_','')]),
                                                       np.nan) for l in names if l in dir(lep2cut)}
-                            h.fill(dataset  =dataset,
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
@@ -1305,7 +1301,7 @@ class NanoProcessor(processor.ProcessorABC):
                         #elif 'MET_' in histname:
                         #    fields = {l: normalize(events.MET[histname.replace('MET_','')],
                         #                           cut) for l in names if l in dir(events.MET)}
-                        #    h.fill(dataset = dataset,
+                        #    h.fill(
                         #           datasetSplit = dataset_renamed,
                         #           lepflav = ch,
                         #           region = r,
@@ -1316,7 +1312,7 @@ class NanoProcessor(processor.ProcessorABC):
                             fields = {l: ak.fill_none(flatten(llcut[histname.replace('ll_','')]),
                                                       np.nan) for l in names if l in dir(llcut)}
                             #print(max(llcut['pt']))
-                            h.fill(dataset = dataset,
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
@@ -1326,68 +1322,78 @@ class NanoProcessor(processor.ProcessorABC):
                             names = [ax.name for ax in h.axes]
                             fields = {l: normalize(higgs_cand[histname.replace('jj_','')],
                                                    cut) for l in names if l in dir(higgs_cand)}
-                            h.fill(dataset = dataset,
+                            h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,
                                    region = r,
                                    **fields,
                                    weight = weights.weight()[cut] * lepsf) 
                         else:
-                            output['nj'].fill(dataset = dataset,
+                            output['nj'].fill(
                                               datasetSplit = dataset_renamed,
                                               lepflav = ch,
                                               region = r,
                                               nj = normalize(ak.num(jet_conditions),cut),
                                               weight = weights.weight()[cut]*lepsf)
                             # check?
-                            output['nAddJets302p5_puid'].fill(dataset = dataset,
+                            output['nAddJets302p5_puid'].fill(
                                                               datasetSplit = dataset_renamed,
                                                               lepflav = ch,
                                                               region = r,
-                                                              nAddJets302p5_puid = normalize(ak.num(jet_conditions)
-                                                                                             -2,
+                                                              nAddJets302p5_puid = normalize(ak.where((ak.num(jet_conditions) > 2),
+                                                                                                    (ak.num(jet_conditions)-2),
+                                                                                                    (ak.zeros_like(ak.num(jet_conditions)))
+                                                                                                    ),
                                                                                              cut),
                                                               weight = weights.weight()[cut]*lepsf)
                             # check?
-                            output['nAddJetsFSRsub302p5_puid'].fill(dataset = dataset,
+                            output['nAddJetsFSRsub302p5_puid'].fill(
                                                                     datasetSplit = dataset_renamed,
                                                                     lepflav = ch,
                                                                     region = r,
-                                                                    nAddJetsFSRsub302p5_puid = normalize(ak.num(jet_conditions)
-                                                                                                         -2
-                                                                                                         -ak.num(jet_conditions&fsr_conditions),
+                                                                    nAddJetsFSRsub302p5_puid = normalize(ak.where((ak.where((ak.num(jet_conditions) > 2),
+                                                                                                                            (ak.num(jet_conditions)-2),
+                                                                                                                            (ak.zeros_like(ak.num(jet_conditions)))
+                                                                                                                            )
+                                                                                                                     -ak.num((~jet_conditions) & (fsr_conditions))) > 0, 
+                                                                                                                 (ak.where((ak.num(jet_conditions) > 2),
+                                                                                                                            (ak.num(jet_conditions)-2),
+                                                                                                                            (ak.zeros_like(ak.num(jet_conditions)))
+                                                                                                                            )
+                                                                                                                     -ak.num((~jet_conditions) & (fsr_conditions))),
+                                                                                                                 (ak.zeros_like(ak.num(jet_conditions)))),
                                                                                                          cut),
                                                                     weight = weights.weight()[cut]*lepsf)
-                            if not isRealData:
-                                output['weight_full'].fill(dataset = dataset,
-                                                           datasetSplit = dataset_renamed,
-                                                           lepflav = ch,
-                                                           region = r,
-                                                           weight_full = weights.weight()[cut]*lepsf)
-                                output['genweight'].fill(dataset = dataset,
-                                                         datasetSplit = dataset_renamed,
-                                                         lepflav = ch,
-                                                         region = r,
-                                                         genWeight = events.genWeight[cut])
-                                output['sign_genweight'].fill(dataset = dataset,
-                                                              datasetSplit = dataset_renamed,
-                                                              lepflav = ch,
-                                                              region = r,
-                                                              genWeight_by_abs = (events.genWeight/abs(events.genWeight))[cut])
-                            #output['jjVPtRatio'].fill(dataset=dataset,
-                            #                          datasetSplit = dataset_renamed,
-                            #                          lepflav = ch,
-                            #                          region = r,
-                            #                          jjVPtRatio = (normalize(higgs_cand['pt'],
-                            #                                                  cut) / ak.fill_none(flatten(llcut['pt']),
-                            #                                                                      np.nan)),
-                            #                          weight = weights.weight()[cut] * lepsf)
+                            #if not isRealData:
+                            #    output['weight_full'].fill(
+                            #                               datasetSplit = dataset_renamed,
+                            #                               lepflav = ch,
+                            #                               region = r,
+                            #                               weight_full = weights.weight()[cut]*lepsf)
+                            #    output['genweight'].fill(
+                            #                             datasetSplit = dataset_renamed,
+                            #                             lepflav = ch,
+                            #                             region = r,
+                            #                             genWeight = events.genWeight[cut])
+                            #    output['sign_genweight'].fill(
+                            #                                  datasetSplit = dataset_renamed,
+                            #                                  lepflav = ch,
+                            #                                  region = r,
+                            #                                  genWeight_by_abs = (events.genWeight/abs(events.genWeight))[cut])
+                            output['jjVPtRatio'].fill(
+                                                      datasetSplit = dataset_renamed,
+                                                      lepflav = ch,
+                                                      region = r,
+                                                      jjVPtRatio = (normalize(higgs_cand['pt'],
+                                                                              cut) / ak.fill_none(flatten(llcut['pt']),
+                                                                                                  np.nan)),
+                                                      weight = weights.weight()[cut] * lepsf)
                             if self._export_array and not isRealData:
                                 output['array'][dataset]['weight'] += processor.column_accumulator(
                                                                         ak.to_numpy(weights.weight()[cut] * lepsf)
                                                                       )
                     
-        return output
+        return {dataset: output}
 
     def postprocess(self, accumulator):
         #print(accumulator)

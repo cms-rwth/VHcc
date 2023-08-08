@@ -12046,7 +12046,7 @@
         "root://xrootd-cms.infn.it///store/group/cmst3/group/vhcc/nanoTuples/v2_30Apr2020/2017/data/SingleElectron/NanoTuples-30Apr2020_Run2017B-31Mar2018-v1/200430_210432/0000/nano_455.root",
         "root://xrootd-cms.infn.it///store/group/cmst3/group/vhcc/nanoTuples/v2_30Apr2020/2017/data/SingleElectron/NanoTuples-30Apr2020_Run2017B-31Mar2018-v1/200430_210432/0000/nano_453.root"
     ],
-    "/DoubleMuon/hqu-NanoTuples-30Apr2020_Run2017F-31Mar2018-v1-b2e5aecd7d318124ef1b7f48a4318be4/USER": [
+    "DoubleMuon_Run2017F": [
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017F-31Mar2018-v1/200620_202801/0000/nano_666.root",
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017F-31Mar2018-v1/200620_202801/0000/nano_137.root",
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017F-31Mar2018-v1/200620_202801/0000/nano_728.root",
@@ -12818,7 +12818,7 @@
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017F-31Mar2018-v1/200620_202801/0000/nano_675.root",
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017F-31Mar2018-v1/200620_202801/0000/nano_209.root"
     ],
-    "/DoubleMuon/hqu-NanoTuples-30Apr2020_Run2017E-31Mar2018-v1-b2e5aecd7d318124ef1b7f48a4318be4/USER": [
+    "DoubleMuon_Run2017E": [
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017E-31Mar2018-v1/200620_202730/0000/nano_54.root",
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017E-31Mar2018-v1/200620_202730/0000/nano_160.root",
         "root://xrootd-cms.infn.it///store/group/phys_higgs/hbb/ntuples/VHcc/NanoV7withAK15/nanoTuples/v2_30Apr2020/2017/data/DoubleMuon/NanoTuples-30Apr2020_Run2017E-31Mar2018-v1/200620_202730/0000/nano_273.root",
