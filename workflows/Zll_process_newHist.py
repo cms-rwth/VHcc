@@ -206,7 +206,7 @@ class NanoProcessor(processor.ProcessorABC):
                     #'BadPFMuonDzFilter', # not in EOY
                     #'hfNoisyHitsFilter', # not in EOY
                     'eeBadScFilter',
-                    'ecalBadCalibFilterV2',
+                    #'ecalBadCalibFilterV2',
                 ],
                 'mc': [
                     'goodVertices',
@@ -218,7 +218,7 @@ class NanoProcessor(processor.ProcessorABC):
                     #'BadPFMuonDzFilter', # not in EOY
                     #'hfNoisyHitsFilter', # not in EOY
                     #'eeBadScFilter', # not suggested in EOY MC
-                    'ecalBadCalibFilterV2',
+                    #'ecalBadCalibFilterV2',
                 ],
             },
             '2018': {
@@ -365,7 +365,7 @@ class NanoProcessor(processor.ProcessorABC):
         # axis.StrCategory([], name='region', growth=True),
         #disc_list = [ 'btagDeepCvL', 'btagDeepCvB','btagDeepFlavCvB','btagDeepFlavCvL']#,'particleNetAK4_CvL','particleNetAK4_CvB']
         # As far as I can tell, we only need DeepFlav currently
-        disc_list = ['btagDeepFlavC','btagDeepFlavB','btagDeepFlavCvL','btagDeepFlavCvB']
+        disc_list = ['btagDeepFlavCvL','btagDeepFlavCvB']
         btag_axes = []
         for d in disc_list:
             # technically, -1 values are possible, but probably unlikely to matter much after event selection
@@ -868,25 +868,27 @@ class NanoProcessor(processor.ProcessorABC):
         
         # For EOY: recalculate CvL & CvB here, because the branch does not exist in older files
         # adapted from PostProcessor
-        def deepflavcvsltag(jet):
-            btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
-            return ak.where((jet.btagDeepFlavB >= 0.) & (jet.btagDeepFlavB < 1.) & (jet.btagDeepFlavC >= 0.) & (btagDeepFlavL >= 0.),
-                            jet.btagDeepFlavC/(1.-jet.btagDeepFlavB),
-                            (-1.) * ak.ones_like(jet.btagDeepFlavB))
-        
-        def deepflavcvsbtag(jet):
-            btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
-            return ak.where((jet.btagDeepFlavB > 0.) & (jet.btagDeepFlavC > 0.) & (btagDeepFlavL >= 0.),
-                            jet.btagDeepFlavC/(jet.btagDeepFlavC+jet.btagDeepFlavB),
-                            (-1.) * ak.ones_like(jet.btagDeepFlavB))
-        
+        # Starting from NanoV9 this is not necessary:
+        ### def deepflavcvsltag(jet):
+        ###     btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
+        ###     return ak.where((jet.btagDeepFlavB >= 0.) & (jet.btagDeepFlavB < 1.) & (jet.btagDeepFlavC >= 0.) & (btagDeepFlavL >= 0.),
+        ###                     jet.btagDeepFlavC/(1.-jet.btagDeepFlavB),
+        ###                     (-1.) * ak.ones_like(jet.btagDeepFlavB))
+        ### 
+        ### def deepflavcvsbtag(jet):
+        ###     btagDeepFlavL = 1.-(jet.btagDeepFlavC+jet.btagDeepFlavB)
+        ###     return ak.where((jet.btagDeepFlavB > 0.) & (jet.btagDeepFlavC > 0.) & (btagDeepFlavL >= 0.),
+        ###                     jet.btagDeepFlavC/(jet.btagDeepFlavC+jet.btagDeepFlavB),
+        ###                     (-1.) * ak.ones_like(jet.btagDeepFlavB))
+        ### 
         # Alternative ways:
         # - depending on the Nano version, there might already be bTagDeepFlavCvL available
         # - one could instead use DeepCSV via bTagDeepCvL
         # - not necessarily use CvL, other combination possible ( CvB | pt | BDT? )
         
-        jets["btagDeepFlavCvL"] = deepflavcvsltag(jets)
-        jets["btagDeepFlavCvB"] = deepflavcvsbtag(jets)
+        #jets["btagDeepFlavCvL"] = deepflavcvsltag(jets)
+        #jets["btagDeepFlavCvB"] = deepflavcvsbtag(jets)
+
         jets = jets[ak.argsort(jets.btagDeepFlavCvL, axis=1, ascending=False)]
 
         
@@ -1194,6 +1196,7 @@ class NanoProcessor(processor.ProcessorABC):
         
         #### write into histograms (i.e. write output)
         for histname, h in output.items():
+            #print("Writing histogram: ", histname)
             for s in possible_flavSplits:
                 dataset_renamed = dataset if s == 'already_split_sample' else dataset + s
                 for ch in lepflav:
@@ -1250,6 +1253,8 @@ class NanoProcessor(processor.ProcessorABC):
                                 flavor = ak.zeros_like(normalize(leading['pt'],cut))
                             else:
                                 flavor = normalize(leading.hadronFlavour,cut)
+                                
+                            #print(h.axes, dataset_renamed, ch, r, flavor)
                             h.fill(
                                    datasetSplit = dataset_renamed,
                                    lepflav = ch,

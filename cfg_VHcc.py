@@ -13,20 +13,17 @@ cfg = {
     "userconfig": {'version':'test_nolepsf'},
     "dataset": {
         "jsons": [
-            "src/VHcc/metadata/mcsamples_2017_vjets_Zll_used_nonCorruptedOnly.json",
-            #"src/VHcc/metadata/mcsamples_2017_vjets_ext_Zll_used_nonCorruptedOnly.json",
-            #"src/VHcc/metadata/mcsamples_2017_other_Zll_used_nonCorruptedOnly.json",
-            "src/VHcc/metadata/mcsamples_2017_higgs_Zll_used.json",
-            "src/VHcc/metadata/datasamples_2017_Zll_used.json"
+            "src/VHcc/metadata/genZjets.json"
         ],
         "campaign": "UL17",
         "year": "2017",
         "filter": {
             "samples": [
-                "DoubleMuon_Run2017E",
-                "DoubleMuon_Run2017F",
-                "DYJetsToLL_nlo",
-                "ZH125ToCC_ZLL_powheg",
+                "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
+                #"DoubleMuon_Run2017E",
+                #"DoubleMuon_Run2017F",
+                #"DYJetsToLL_nlo",
+                #"ZH125ToCC_ZLL_powheg",
                 #"DY1ToLL_PtZ-250To400",
                 #"DY1ToLL_PtZ-50To150",
                 #"DY1ToLL_PtZ-150To250",
@@ -54,7 +51,7 @@ cfg = {
         "max": None,
         "skipbadfiles": True,
         "voms": None,
-        "limit": 5,
+        "limit": 2,
         "retries": 20,
         "splitjobs": False,
     },
