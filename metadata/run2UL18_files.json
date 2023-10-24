@@ -1,5 +1,5 @@
 {
-    "DoubleMuon_Run2018A-UL2018_MiniAODv2_NanoAODv9-v1": [
+    "Run2UL18_DoubleMuon": [
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/C218937D-A2AC-9949-8E65-D14C50F824AF.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/28602F22-B8E2-8246-9B47-13DE07131075.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/E7A0F22A-3B10-5F44-9040-625326E3D6A8.root",
@@ -53,9 +53,7 @@
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/1D732112-F76B-7047-9F88-E49C564E9EE4.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/FC0C7329-8A3F-7E4C-AA7A-6AAC9D3ACC4B.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/7EE4D81B-6DCE-EF46-A285-E8325039081A.root",
-        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/C489C20E-FD93-8B42-9F63-0AB2FB0F5C39.root"
-    ],
-    "DoubleMuon_Run2018B-UL2018_MiniAODv2_NanoAODv9-v1": [
+        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018A/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/C489C20E-FD93-8B42-9F63-0AB2FB0F5C39.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/0505F2F0-6F6D-0240-946A-9C2B65BFFA02.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/C21C3C23-5723-D545-A3B4-74B0D5524A6F.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/838866CF-18AE-8A45-8780-76F2E359D4C0.root",
@@ -75,9 +73,7 @@
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/A9522567-DBC2-474B-B5CD-3667BB1ED13C.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/7956F3EF-D268-564F-95EC-99DA4D5E7ADF.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/31F4F5F6-70B9-B341-BAF0-04FB8B240192.root",
-        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/26A32EF4-689F-B742-BCA5-60E60FAE1D95.root"
-    ],
-    "DoubleMuon_Run2018C-UL2018_MiniAODv2_NanoAODv9-v1": [
+        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018B/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/270000/26A32EF4-689F-B742-BCA5-60E60FAE1D95.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/BEC3C6F4-9380-E040-9C59-9463BF55F2C1.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/DFBE6815-4CA5-CF43-A85D-DAA41A4D3C6F.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/AB8372D5-3DCC-BD4A-9CBF-B4A8770A5E7B.root",
@@ -102,9 +98,7 @@
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/D94B3276-1B33-4146-A4D8-23C6B6B103EF.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/286E20FA-9976-8141-A3AD-9A3A6500973A.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/1CB51AE7-FEC7-0646-A024-34A0C878144F.root",
-        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/320966A8-5E75-E840-B758-495FC010F3F9.root"
-    ],
-    "DoubleMuon_Run2018D-UL2018_MiniAODv2_NanoAODv9-v2": [
+        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018C/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v1/130000/320966A8-5E75-E840-B758-495FC010F3F9.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018D/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/2430000/B89C80DB-31C1-D745-8A5A-2D4304DAD4A4.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018D/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/2430000/9F9ED48C-D000-9347-BE50-FB5FC28A4E9F.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/data/Run2018D/DoubleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/2430000/9B9119EC-F96B-A348-9DF7-FD54B28E0151.root",
@@ -778,8 +772,5 @@
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/37F78DEF-3DD0-524C-A371-CEAA397CF9C8.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/F70DC8C3-4F7F-1A41-BD50-DBBE04964A18.root",
         "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/30000/39E72295-DE9A-1548-A916-B63E1EF1ABAB.root"
-    ],
-    "DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7": [
-        "root://grid-cms-xrootd.physik.rwth-aachen.de//store/mc/RunIISummer20UL18NanoAODv9/DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/60000/497AD23B-7A83-FB4C-A70E-52BB92F1EB54.root"
     ]
 }

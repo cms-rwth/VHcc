@@ -1,0 +1,117 @@
+output: "Gen_Zjets_MiNNLO"   #  Required, output directory
+scaleToLumi : False
+norm : True
+
+## Required, input files
+input :
+#  - output_GenZjets_v17/output.coffea  # VPT>0; added LHE_Njets bins
+  - output_GenZjets_v21/output.coffea  # VPT>60; and 2l2j for dilep plots
+
+mergemap:
+   MiNNLO:
+     list:
+      ##  - DYJetsToMuMu_M-50_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+      - DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+      - DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   #MiNNLO_Zpt_priv:
+   #   list:
+   #    - DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+   MiNNLO_Zpt_offi:
+      list:
+       - DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
+       - DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
+   #MLM:
+   #   list:
+   #    - DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8
+   #FxFx:
+   #   list:
+   #    - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+
+## Required, reference dict
+reference:
+   MiNNLO:
+     label: MiNNLO
+     color: 'C0'
+
+## Required, compare dict
+compare:
+    #MLM:
+    #  label: "MLM x1.33"
+    #  color : 'C2'
+    #FxFx:
+    #  label: FxFx
+    #  color : 'C4'
+    #MiNNLO:
+    #   label: MiNNLO
+    #   color: 'C0'
+    #MiNNLO_Zpt_priv:
+    #   label: MiNNLO_Zpt_priv
+    #   color: 'C1'
+    MiNNLO_Zpt_offi:
+       label: MiNNLO Zpt weight
+       color: 'C5'
+
+## Required, variable set
+variable:
+   ## specify variable to plot
+   dijet_dr:
+     axis:
+       lepflav: sum
+       jetflav: sum
+     xlabel: "dR(jj)"
+
+   dijet_m:
+      axis:
+        lepflav: sum
+        jetflav: sum
+      #rebin: 2
+      xlabel: $M(jj)$
+
+   dijet_pt:
+      axis:
+        lepflav: sum
+        jetflav: sum
+      xlabel: $p_T(jj)$
+
+   dijet_dr_mjj:
+     axis:
+       lepflav: sum
+       jetflav: sum
+       dijet_mBin: 0
+     xlabel: "dR(jj) in bin 0 of m(jj)"
+
+   #dijet_dr_NJet:
+   #  axis:
+   #    lepflav: sum
+   #    jetflav: sum
+   #    dijet_NJetBin: 1
+   #  xlabel: "dR(jj) in bin LHE_NJet=1"
+
+   dilep_m:
+      xlabel: $M(\ell\ell)$
+
+   dilep_pt:
+      xlabel: $p_T(\ell\ell)$
+
+   njet25:
+     xlabel: Njets (with $p_T>25; |\eta|<2.4$)
+   nlep:
+   LHE_Vpt:
+   LHE_HT:
+
+ratio_ylim:
+  min: 0.9
+  max: 1.1
+
+rescale_yields:
+  MLM: 1.33
+  #FxFx: 0.5
+  #MiNNLO: 2
+  #MiNNLO_Zpt_priv: 2
+  #MiNNLO_Zpt_offi: 2
+
+com : "13"
+lumi : 140000
+inbox_text: "Private Work" # Optional, text write in anchor text box
+label: Simulation 
+log : False # Optional, log y axis

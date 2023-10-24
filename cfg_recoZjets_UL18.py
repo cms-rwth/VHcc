@@ -12,11 +12,24 @@ cfg = {
          },
     "dataset": {
         "jsons": [
-            "src/VHcc/metadata/run2UL18_files.json"
+            #"src/VHcc/metadata/run2UL18_files.json",
+            "src/VHcc/metadata/run2UL18_files_Test.json",
+            "src/VHcc/metadata/run2UL18_files_PoCo_SingleMuon.json",
+            "src/VHcc/metadata/run2UL18_files_PoCo_EGamma.json",
         ],
         "campaign": "2018_UL",
         "year": "2018",
         "filter": {
+            "samples": [
+                "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
+                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+                #"DYJetsToMuMu_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                #"DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                #"Run2UL18_DoubleMuon",
+                #"Run2UL18_SingleMuon",
+                #"Run2UL18_EGamma_GT36"
+           ],
+
             "samples_exclude": [],
         },
     },
@@ -50,8 +63,8 @@ cfg = {
     "workflow": zjets,
     "output": "output/recoZjets_UL18",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1,  "limit": None,
-        #"executor": "futures", "workers": 10,  "limit": 4,
+        #"executor": "parsl/condor", "workers": 1,  "limit": None,
+        "executor": "futures", "workers": 10,  "limit": 10,
         "scaleout": 350,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB

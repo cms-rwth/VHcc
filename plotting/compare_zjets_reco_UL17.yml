@@ -1,14 +1,16 @@
-output: "Reco_Zjets"
+output: "Reco_Zjets_UL17_ZMuMu"
 scaleToLumi : True
 
 ## Required, input files
 input :
-#       - output_recoZjets_Data_v11/output.coffea
-#       - output_recoZjets_Data_v14/output.coffea
-#       - output_recoZjets_Data_v48/output.coffea
-#       - output/recoZjets_All_v01/output.coffea  # With LepSFs (mu and ele wp90)
-#       - output/recoZjets_All_v03/output.coffea   # No LepSFs
-       - output/recoZjets_All_v13/output.coffea   # New ELE ID, same as Meng
+# - output_recoZjets_Data_v11/output.coffea
+# - output_recoZjets_Data_v14/output.coffea
+# - output_recoZjets_Data_v48/output.coffea
+# - output/recoZjets_All_v01/output.coffea  # With LepSFs (mu and ele wp90)
+# - output/recoZjets_All_v03/output.coffea   # No LepSFs
+# - output/recoZjets_All_v13/output.coffea   # New ELE ID, same as Meng
+# - output/recoZjets_UL17_v02/output.coffea   # Another update of ELE ID, sip3d cut and SF for noiso ID (No Zpt cut)
+  - output/recoZjets_UL17_v24/output.coffea  # Zpt > 60 cut
 
 mergemap:
    MiNNLO:
@@ -23,116 +25,135 @@ mergemap:
        - DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
    DATA:
       list:
-       - Run2UL_DoubleMuon
-       - Run2UL_DoubleEG
+        - "DoubleMuon_Run2017B-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleMuon_Run2017C-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleMuon_Run2017D-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleMuon_Run2017E-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleMuon_Run2017F-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleEG_Run2017B-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleEG_Run2017C-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleEG_Run2017D-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleEG_Run2017E-UL2017_MiniAODv2_NanoAODv9-v1"
+        - "DoubleEG_Run2017F-UL2017_MiniAODv2_NanoAODv9-v1"
 
 reference:
-   MiNNLO:
-       label: MiNNLO
-       color: 'C0'
+   #MiNNLO:
+   #    label: MiNNLO
+   #    color: 'C0'
    # FxFx:
    #   label: FxFx
    #   color : 'C4'
+   # MLM:
+   #   label: MLM
+   #   color : 'C2'
+    DATA:
+      label: Data
+      color : Black
 
 ## Required, compare dict
 compare:
     MLM:
-      label: MLM
+      label: MLM x1.33
       color : 'C2'
     FxFx:
       label: FxFx
       color : 'C4'
-    DATA:
-      label: Data
-      color : 'C5'
-    #MiNNLO:
-    #   label: MiNNLO
-    #   color: 'C0'
+    MiNNLO:
+       label: MiNNLO
+       color: 'C0'
+    #DATA:
+    #  label: Data
+    #  color : Black
 
 ## Required, variable set
 variable :
     dijet_dr:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
       xlabel: "dR(jj)"
 
     dijet_m:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     dijet_pt:
        axis:
-         lepflav: el
+         lepflav: sum
          jetflav: sum
 
     dijet_dr_mjj:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
         dijet_mBin: 1
       xlabel: "dR(jj) in [bin 1] of m(jj)"
 
     dilep_pt:
       axis:
-        lepflav: el
+        lepflav: sum
       xlabel: "$p_T$(V)"
 
     dilep_dr:
       axis:
-        lepflav: el
+        lepflav: sum
       xlabel: "dR(lep1, lep2)"
     njet25:
       axis:
-        lepflav: el
+        lepflav: sum
 
     lep1_pt:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
 
     lep2_pt:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     jet1_pt:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     jet2_pt:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     jet1_dRlep:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     jet2_dRlep:
       axis:
-        lepflav: el
+        lepflav: sum
         jetflav: sum
     dilep_m:
       axis:
-        lepflav: el
+        lepflav: sum
     nlep:
     npv0:
       axis:
-        lepflav: el
+        lepflav: sum
     npv1:
       axis:
-        lepflav: el
+        lepflav: sum
 
 #    ndilep:
 #    LHE_Vpt:
 #    LHE_HT:
 #    wei:
 
-#rescale_yields:
+rescale_yields:
 #  #MiNNLO: 2
-#  MLM: 1.5
+  MLM: 1.33
 
+ratio_ylim:
+  min: 0.5
+  max: 1.5
 com : "13"
 lumi : 41480
+year : 2017
 inbox_text: "Private Work"
+label : Preliminary
 norm : False
 log : False # log y axis

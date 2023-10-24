@@ -41,13 +41,14 @@ class NanoProcessor(processor.ProcessorABC):
             ['jj','cj','bj','cc','cb','bb','oo'], name="jetflav", label="Jet flavors"
         )
         mBin_axis = Hist.axis.Variable([0,60,120,2000], name="dijet_mBin", label="dijet_mBin")
+        NJetLHE_axis = Hist.axis.IntCategory([0,1,2,3,4], name="dijet_NJetBin", label="dijet_NJetBin")
 
         single_axis = {
             "LHE_Vpt": Hist.axis.Regular(
-                100, 0, 400, name="LHE_Vpt", label="LHE V PT [GeV]"
+                50, 0, 400, name="LHE_Vpt", label="LHE V PT [GeV]"
             ),
             "LHE_HT": Hist.axis.Regular(
-                100, 0, 1000, name="LHE_HT", label="LHE HT [GeV]"
+                50, 0, 1000, name="LHE_HT", label="LHE HT [GeV]"
             ),
             "wei": Hist.axis.Regular(100, -1000, 10000, name="wei", label="wei"),
             "wei_sign": Hist.axis.Regular(50, -2, 2, name="wei", label="wei"),
@@ -57,16 +58,16 @@ class NanoProcessor(processor.ProcessorABC):
             # "dataset"     : Hist.axis.StrCategory([],      name="dataset", label="Primary dataset", growth=True),
             "lep_eta": Hist.axis.Regular(50, -5, 5, name="lep_eta", label="lep_eta"),
             "lep_pt": Hist.axis.Regular(50, 0, 500, name="lep_pt", label="lep_pt"),
-            "dilep_m": Hist.axis.Regular(50, 50, 120, name="dilep_m", label="dilep_m"),
+            "dilep_m": Hist.axis.Regular(100, 50, 120, name="dilep_m", label="dilep_m"),
             "dilep_pt": Hist.axis.Regular(
-                100, 0, 600, name="dilep_pt", label="dilep_pt"
+                100, 0, 400, name="dilep_pt", label="dilep_pt"
             ),
             "njet25": Hist.axis.Regular(12, 0, 6, name="njet25", label="njet25"),
             "jet_eta": Hist.axis.Regular(50, -5, 5, name="jet_eta", label="jet_eta"),
-            "jet_pt": Hist.axis.Regular(50, 0, 500, name="jet_pt", label="jet_pt"),
-            "dijet_m": Hist.axis.Regular(50, 0, 1200, name="dijet_m", label="dijet_m"),
+            "jet_pt": Hist.axis.Regular(50, 0, 400, name="jet_pt", label="jet_pt"),
+            "dijet_m": Hist.axis.Regular(100, 0, 600, name="dijet_m", label="dijet_m"),
             "dijet_pt": Hist.axis.Regular(
-                100, 0, 600, name="dijet_pt", label="dijet_pt"
+                100, 0, 500, name="dijet_pt", label="dijet_pt"
             ),
             "dijet_dr": Hist.axis.Regular(50, 0, 5, name="dijet_dr", label="dijet_dr"),
             #'dijet_dr_neg': Hist.axis.Regular(50, 0, 5,    name="dijet_dr", label="dijet_dr")
@@ -83,7 +84,8 @@ class NanoProcessor(processor.ProcessorABC):
         }
 
         histDict2D = {
-            "dijet_dr_mjj": Hist.Hist(lepflav_axis, jetflav_axis, multi_axis['dijet_dr'], mBin_axis, name="Counts", storage="Weight")
+            "dijet_dr_mjj": Hist.Hist(lepflav_axis, jetflav_axis, multi_axis['dijet_dr'], mBin_axis, name="Counts", storage="Weight"),
+            "dijet_dr_NJet": Hist.Hist(lepflav_axis, jetflav_axis, multi_axis['dijet_dr'], NJetLHE_axis, name="Counts", storage="Weight")
         }
         self._accumulator = processor.dict_accumulator(histDict1|histDict2|histDict2D)
 
@@ -105,9 +107,15 @@ class NanoProcessor(processor.ProcessorABC):
         # print(output)
 
         dataset = events.metadata["dataset"]
-        LHE_Vpt = events.LHE["Vpt"]
-        LHE_HT = events.LHE["HT"]
-        # LHE_Njets = events.LHE['LHE_Njets'] # Does not exist in NanoV2
+        if "LHE" in events.fields:
+            LHE_Vpt = events.LHE["Vpt"]
+            LHE_HT = events.LHE["HT"]
+            LHE_Njets = events.LHE['Njets'] # Does not exist in NanoV2
+        else:
+            #print("\t No LHE in this dataset:", dataset, events.genWeight)
+            LHE_Vpt = np.ones(len(events.genWeight))
+            LHE_HT = np.ones(len(events.genWeight))
+            LHE_Njets = np.ones(len(events.genWeight))
         # print(LHE_Vpt)
         # We can define a new key for cutflow (in this case 'all events').
         # Then we can put values into it. We need += because it's per-chunk (demonstrated below)
@@ -151,11 +159,14 @@ class NanoProcessor(processor.ProcessorABC):
         LHE_Njets = ak.num(LHEjets)
         '''
 
-        # print(dataset)
+        #print(dataset, events.genWeight)
+
         if dataset in [
                 "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
                 "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa",
                 "DYJets_UNLOPS"
         ]:
             weight_nosel = events.genWeight
@@ -233,10 +244,12 @@ class NanoProcessor(processor.ProcessorABC):
         output["cutflow"][dataset]["events_2l2j"] += len(events_2l2j)
 
         if dataset in [
-            "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-            "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-            "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
-            "DYJets_UNLOPS",
+                "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+                "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
+                "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa",
+                "DYJets_UNLOPS",
         ]:
             weight_full = events_2l2j.genWeight
             weight_2l = events_2l.genWeight
@@ -279,9 +292,11 @@ class NanoProcessor(processor.ProcessorABC):
         dijet_m = dijet.mass
         dijet_dr = dijets[:, 0].delta_r(dijets[:, 1])
 
-        output["dilep_m"].fill(lepflav=lepflav[selection_2l],
-            dilep_m=ak.flatten(vmass[selection_2l]), weight=weight_2l
-        )
+        
+        # Plots with 2L selection
+        #output["dilep_m"].fill(lepflav=lepflav[selection_2l],
+        #    dilep_m=ak.flatten(vmass[selection_2l]), weight=weight_2l
+        #)
         output["dilep_pt"].fill(lepflav=lepflav[selection_2l],
             dilep_pt=ak.flatten(vpt[selection_2l]), weight=weight_2l
         )
@@ -293,11 +308,10 @@ class NanoProcessor(processor.ProcessorABC):
             lep_pt=ak.flatten(leptons.pt[selection_2l][:, 0:2]), weight=weight2_2l
         )
 
-        # output['dilep_m'].fill(lepflav=lepflav[selection_2l], dilep_m=ak.flatten(vmass[selection_2l2j]), weight=weight_full)
-        # output['dilep_pt'].fill(lepflav=lepflav[selection_2l], dilep_pt=ak.flatten(vpt[selection_2l2j]), weight=weight_full)
+        # Plots with 2L2J selection
 
-        # output['lep_eta'].fill(lepflav=lepflav[selection_2l], lep_eta=ak.flatten(leptons.eta[selection_2l2j][:,0:2]), weight=weight2_full)
-        # output['lep_pt'].fill(lepflav=lepflav[selection_2l], lep_pt=ak.flatten(leptons.pt[selection_2l2j][:,0:2]), weight=weight2_full)
+        output['dilep_m'].fill(lepflav=lepflav[selection_2l2j], dilep_m=ak.flatten(vmass[selection_2l2j]), weight=weight_full)
+        output['dilep_pt'].fill(lepflav=lepflav[selection_2l2j], dilep_pt=ak.flatten(vpt[selection_2l2j]), weight=weight_full)
 
         output["jet_eta"].fill(lepflav=lepflav2_full,
             jet_eta=ak.flatten(good_jets.eta[selection_2l2j][:, 0:2]),
@@ -312,6 +326,8 @@ class NanoProcessor(processor.ProcessorABC):
         output["dijet_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_pt=dijet_pt, weight=weight_full)
 
         output["dijet_dr_mjj"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_dr=dijet_dr, dijet_mBin=dijet_m, weight=weight_full)
+
+        output["dijet_dr_NJet"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav, dijet_dr=dijet_dr, dijet_NJetBin=LHE_Njets[selection_2l2j], weight=weight_full)
 
         ##print("Negative DRs:", dijet_dr[weight<0])
         ##print("Negative wei:", weight[weight<0])

@@ -143,6 +143,14 @@ class NanoProcessor(processor.ProcessorABC):
                 'Ele23_Ele12_CaloIdL_TrackIdL_IsoVL'
             ],
         }
+
+        self._SingleMu_hlt = {
+            '2018': ['IsoMu24']
+        }
+        self._SingleEl_hlt = {
+            '2018': ['Ele32_WPTight_Gsf', 'Ele28_eta2p1_WPTight_Gsf_HT150']
+        }
+
         self._lumiMasks = {
             '2016': LumiMask('src/VHcc/data/Lumimask/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'),
             '2017': LumiMask('src/VHcc/data/Lumimask/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'),
@@ -201,8 +209,8 @@ class NanoProcessor(processor.ProcessorABC):
         # -----------------
         # Trigger selection
         # =================
-        trigger_ee = np.zeros(nEvents, dtype='bool')
         trigger_mm = np.zeros(nEvents, dtype='bool')
+        trigger_ee = np.zeros(nEvents, dtype='bool')
 
         for t in self._mumu_hlt[self._year]:
             if t in events.HLT.fields:
@@ -216,7 +224,22 @@ class NanoProcessor(processor.ProcessorABC):
         selection.add('trigger_mm', ak.to_numpy(trigger_mm))
         #del trigger_ee
         #del trigger_mm
+        
+        """
+        trigger_SingleMu = np.zeros(nEvents, dtype='bool')
+        trigger_SingleEl = np.zeros(nEvents, dtype='bool')
 
+        for t in self._SingleMu_hlt[self._year]:
+            if t in events.HLT.fields:
+                trigger_SingleMu = trigger_SingleMu | events.HLT[t]
+
+        for t in self._SingleEl_hlt[self._year]:
+            if t in events.HLT.fields:
+                trigger_SingleEl = trigger_SingleEl | events.HLT[t]
+
+        #selection.add('trigger_SingleMu', ak.to_numpy(trigger_SingleMu))
+        #selection.add('trigger_SingleEl', ak.to_numpy(trigger_SingleEl))
+        """
         # ----------
         # MET filetrs
         #===========
@@ -249,7 +272,7 @@ class NanoProcessor(processor.ProcessorABC):
         # ==============
 
         muons = events.Muon
-        musel = ((muons.pt > 20) & (abs(muons.eta) < 2.4) & (muons.tightId >= 1) & (muons.pfRelIso04_all<0.25) &
+        musel = ((muons.pt > 18) & (abs(muons.eta) < 2.4) & (muons.tightId >= 1) & (muons.pfRelIso04_all<0.25) &
                  (abs(muons.dxy) < 0.06) & (abs(muons.dz)<0.2) )
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(muons.dxy)<0.06)&(abs(muons.dz)<0.2) and tightId for 1L
         muons = muons[musel]
@@ -260,12 +283,15 @@ class NanoProcessor(processor.ProcessorABC):
 
 
         electrons = events.Electron
-        elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
-                  (electrons.mvaFall17V2noIso_WPL==1) & (abs(electrons.dxy) < 0.05) & (abs(electrons.dz) < 0.1) & 
-                  (electrons.convVeto==1) & (electrons.lostHits<2) & 
-                  ( ( (electrons.sieie<0.011) & (abs(electrons.eta) < 1.4442) ) | ( (electrons.sieie<0.030) & (abs(electrons.eta) > 1.5660) ) )
-                  & (electrons.hoe < 0.10) & (electrons.eInvMinusPInv>-0.04) & (electrons.tightCharge>=1) & (electrons.mvaTTH>0.25)
-        )
+        elesel = ((electrons.pt > 18) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
+                  (electrons.mvaFall17V2Iso_WP80==1) & (electrons.pfRelIso03_all<0.06) 
+              )
+        #elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
+        #          (electrons.mvaFall17V2noIso_WPL==1) & (abs(electrons.dxy) < 0.05) & (abs(electrons.dz) < 0.1) & 
+        #          (electrons.sip3d<8)  & (electrons.convVeto==1) & (electrons.lostHits<2) & 
+        #          ( ( (electrons.sieie<0.011) & (abs(electrons.eta) < 1.4442) ) | ( (electrons.sieie<0.030) & (abs(electrons.eta) > 1.5660) ) )
+        #          & (electrons.hoe < 0.10) & (electrons.eInvMinusPInv>-0.04) & (electrons.tightCharge>=1) & (electrons.mvaTTH>0.25)
+        #) # Selection from: Meng https://indico.cern.ch/event/1142322/
         electrons = electrons[elesel]
         #electrons = electrons[ak.argsort(electrons.pt, axis=1, ascending=False)]
         electrons["lep_flav"] = 11
@@ -285,7 +311,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         dileptons = ak.combinations(leptons, 2, fields=["lep1", "lep2"])
 
-        pt_cut = (dileptons["lep1"].pt > 30) | (dileptons["lep2"].pt > 20)
+        pt_cut = (dileptons["lep1"].pt > 33) | (dileptons["lep2"].pt > 18)
         #Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
         Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 60) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 120)
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
