@@ -193,7 +193,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         dileptons = ak.combinations(leptons, 2, fields=["i0", "i1"])
 
-        pt25 = (dileptons["i0"].pt > 25) | (dileptons["i1"].pt > 25)
+        pt25 = (dileptons["i0"].pt > 25) & (dileptons["i1"].pt > 25)
         Zmass_cut = np.abs((dileptons["i0"] + dileptons["i1"]).mass - 91.19) < 15
         Vpt_cut = (dileptons["i0"] + dileptons["i1"]).pt > self.cfg.user['cuts']['vpt']
         dileptonMask = pt25 & Zmass_cut & Vpt_cut
@@ -301,12 +301,8 @@ class NanoProcessor(processor.ProcessorABC):
             dilep_pt=ak.flatten(vpt[selection_2l]), weight=weight_2l
         )
 
-        output["lep_eta"].fill(lepflav=lepflav2_2l,
-            lep_eta=ak.flatten(leptons.eta[selection_2l][:, 0:2]), weight=weight2_2l
-        )
-        output["lep_pt"].fill(lepflav=lepflav2_2l,
-            lep_pt=ak.flatten(leptons.pt[selection_2l][:, 0:2]), weight=weight2_2l
-        )
+        output["lep1_pt"].fill(lepflav=lepflav_2l, lep_pt=leptons.pt[selection_2l][:, 0], weight=weight_2l)
+        output["lep1_eta"].fill(lepflav=lepflav_2l,lep_eta=leptons.eta[selection_2l][:, 0], weight=weight_2l)
 
         # Plots with 2L2J selection
 

@@ -10,7 +10,7 @@ from VHcc.workflows.genZjets import (
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 60
+                 "vpt": 0
              }
          },
     "dataset": {
@@ -44,8 +44,8 @@ cfg = {
     "workflow": zjets,
     "output": "output_GenZjets",
     "run_options": {
-        "executor": "parsl/condor", "workers": 1, "limit": None,
-        #"executor": "futures", "workers": 10, "limit": 1,
+        #"executor": "parsl/condor", "workers": 1, "limit": None,
+        "executor": "futures", "workers": 10, "limit": 1,
         "scaleout": 200,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB

@@ -31,7 +31,7 @@ class NanoProcessor(processor.ProcessorABC):
         
         self.systematics = self.cfg.systematic        
         self.SF_map = load_SF(self._campaign, self.cfg.weights_config)
-        print('SF_map:', self.SF_map)
+        #print('SF_map:', self.SF_map)
 
         print("Year and campaign:", self._year, self._campaign)
 
@@ -45,7 +45,7 @@ class NanoProcessor(processor.ProcessorABC):
         mBin_axis = Hist.axis.Variable([0,60,120,2000], name="dijet_mBin", label="dijet_mBin")
 
         pt_axis   = Hist.axis.Regular(50, 0, 150, name="pt", label=r"$p_{T}$ [GeV]")
-        #eta_axis  = Hist.axis.Regular(25, -2.6, 2.6, name="eta", label=r"$\eta$")
+        eta_axis  = Hist.axis.Regular(50, -2.5, 2.5, name="eta", label=r"$\eta$")
         #phi_axis  = Hist.axis.Regular(30, -3.2, 3.2, name="phi", label=r"$\phi$")
         mass_axis = Hist.axis.Regular(50, 0, 300, name="mass", label=r"$m$ [GeV]")
         #mt_axis   = Hist.axis.Regular(30, 0, 300, name="mt", label=r"$m_{T}$ [GeV]")
@@ -86,8 +86,8 @@ class NanoProcessor(processor.ProcessorABC):
             for observable, var_axis in single_axis.items()
         }
 
-        histDict3 = { "lep1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep1_Pt", storage="Weight"),
-                      "lep2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Lep2_Pt", storage="Weight"),
+        histDict3 = { "lep1_pt": Hist.Hist(pt_axis, lepflav_axis, name="Lep1_Pt", storage="Weight"),
+                      "lep2_pt": Hist.Hist(pt_axis, lepflav_axis, name="Lep2_Pt", storage="Weight"),
                       "jet1_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet1_Pt", storage="Weight"),
                       "jet2_pt": Hist.Hist(pt_axis, lepflav_axis, jetflav_axis, name="Jet2_Pt", storage="Weight"),
                       "jet1_dRlep": Hist.Hist(dr_axis, lepflav_axis, jetflav_axis, name="dR_Jet1_Lep", storage="Weight"),
@@ -209,6 +209,7 @@ class NanoProcessor(processor.ProcessorABC):
         # -----------------
         # Trigger selection
         # =================
+        """
         trigger_mm = np.zeros(nEvents, dtype='bool')
         trigger_ee = np.zeros(nEvents, dtype='bool')
 
@@ -237,9 +238,10 @@ class NanoProcessor(processor.ProcessorABC):
             if t in events.HLT.fields:
                 trigger_SingleEl = trigger_SingleEl | events.HLT[t]
 
-        #selection.add('trigger_SingleMu', ak.to_numpy(trigger_SingleMu))
-        #selection.add('trigger_SingleEl', ak.to_numpy(trigger_SingleEl))
-        """
+        selection.add('trigger_SingleMu', ak.to_numpy(trigger_SingleMu))
+        selection.add('trigger_SingleEl', ak.to_numpy(trigger_SingleEl))
+        
+
         # ----------
         # MET filetrs
         #===========
@@ -272,8 +274,8 @@ class NanoProcessor(processor.ProcessorABC):
         # ==============
 
         muons = events.Muon
-        musel = ((muons.pt > 18) & (abs(muons.eta) < 2.4) & (muons.tightId >= 1) & (muons.pfRelIso04_all<0.25) &
-                 (abs(muons.dxy) < 0.06) & (abs(muons.dz)<0.2) )
+        musel = ((muons.pt > 18) & (abs(muons.eta) < 2.4) & (muons.tightId == True) & (muons.pfRelIso04_all<0.25) )
+                 #(abs(muons.dxy) < 0.06) & (abs(muons.dz)<0.2) )
         # but 25GeV and 0.06 for 1L, xy 0.05 z 0.2, &(abs(muons.dxy)<0.06)&(abs(muons.dz)<0.2) and tightId for 1L
         muons = muons[musel]
         #muons = muons[ak.argsort(muons.pt, axis=1, ascending=False)]
@@ -283,7 +285,7 @@ class NanoProcessor(processor.ProcessorABC):
 
 
         electrons = events.Electron
-        elesel = ((electrons.pt > 18) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
+        elesel = ((electrons.pt > 18) & (abs(electrons.eta) < 2.4) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
                   (electrons.mvaFall17V2Iso_WP80==1) & (electrons.pfRelIso03_all<0.06) 
               )
         #elesel = ((electrons.pt > 20) & (abs(electrons.eta) < 2.5) & ((abs(electrons.eta) > 1.5660) | (abs(electrons.eta) < 1.4442)) &
@@ -300,7 +302,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         output["nlep"].fill(nlep=(nmu+nel), weight=weights.weight())
 
-        selection.add('twoLep', ak.to_numpy((nel>=2)|(nmu>=2)))
+        selection.add('twoLep', ak.to_numpy((nel==2)|((nmu==2)&(nel==0))))
 
         # ---------------------
         # Build lepton pairs: the dileptons
@@ -311,9 +313,9 @@ class NanoProcessor(processor.ProcessorABC):
 
         dileptons = ak.combinations(leptons, 2, fields=["lep1", "lep2"])
 
-        pt_cut = (dileptons["lep1"].pt > 33) | (dileptons["lep2"].pt > 18)
+        pt_cut = (dileptons["lep1"].pt > 33) & (dileptons["lep2"].pt > 18)
         #Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
-        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 60) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 120)
+        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 0) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 2000)
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
         charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
         #charge_cut = True
@@ -356,11 +358,14 @@ class NanoProcessor(processor.ProcessorABC):
 
         # Check sizes of arrays:
         #print("Len z cand:", len(z_cand), "nEvents:", nEvents, len(trigger_mm), len(lepflav_mu))
-        trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_mm, trigger_ee)])
+        #trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_mm, trigger_ee)])
+        trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_SingleMu, trigger_SingleEl)])
         #print(dataset, len(lepflav), lepflav)
         selection.add('trigger', ak.to_numpy(trigger))
-        del trigger_ee
-        del trigger_mm
+        #del trigger_ee
+        #del trigger_mm
+        del trigger_SingleMu
+        del trigger_SingleEl
         del trigger
 
         
@@ -376,10 +381,19 @@ class NanoProcessor(processor.ProcessorABC):
                             puwei(self.SF_map, events.Pileup.nTrueInt, "up"),
                             puwei(self.SF_map, events.Pileup.nTrueInt, "down") )
 
-            #muSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
-            #muSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
-            #eleSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
-            #eleSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
+            #print(len(z_cand.lep1), z_cand.lep1)
+            #print("Ndim=", z_cand.lep1.ndim)
+            #print(ak.singletons(z_cand.lep1))
+            #print("type of z_cand.lep1:", ak.type(z_cand.lep1))
+
+            #mu1 = ak.where( abs(z_cand.lep1.lep_flav)==13, z_cand.lep1, None, behavior="PtEtaPhiMCandidate")
+            #print("z_cand pt:", z_cand.lep1.pt)
+            #print('Type of mu1:', type(mu1))
+
+            muSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            muSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
+            eleSFs(z_cand.lep1, self.SF_map, weights, syst=self.systematics["weights"])  
+            eleSFs(z_cand.lep2, self.SF_map, weights, syst=self.systematics["weights"])  
 
         output["npv1"].fill(npv=events[selection_2l].PV.npvs, lepflav=lepflav[selection_2l], weight=weights.weight()[selection_2l])
 
@@ -420,6 +434,10 @@ class NanoProcessor(processor.ProcessorABC):
         output["dilep_pt"].fill(lepflav=lepflav[selection_2l], dilep_pt=z_cand[selection_2l].pt, weight=weights.weight()[selection_2l])
         output["dilep_dr"].fill(lepflav=lepflav[selection_2l], dilep_dr=z_cand[selection_2l].dr, weight=weights.weight()[selection_2l] )
 
+        output["lep1_pt"].fill(lepflav=lepflav[selection_2l],
+                               pt=z_cand[selection_2l].lep1.pt, weight=weights.weight()[selection_2l] )
+        output["lep2_pt"].fill(lepflav=lepflav[selection_2l],
+                               pt=z_cand[selection_2l].lep2.pt, weight=weights.weight()[selection_2l] )
 
         good_jets = good_jets[selection_2l2j]
 
@@ -443,11 +461,11 @@ class NanoProcessor(processor.ProcessorABC):
         dijet_dr = good_jets[:, 0].delta_r(good_jets[:, 1])
 
         #print(len(lepflav[selection_2l2j]), len(jetflav), len(dileptons[selection_2l2j].lep1.pt), len(good_jets[:, 0]), len(weights.weight()[selection_2l2j]))
-
-        output["lep1_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
-                               pt=z_cand[selection_2l2j].lep1.pt, weight=weights.weight()[selection_2l2j] )
-        output["lep2_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
-                               pt=z_cand[selection_2l2j].lep2.pt, weight=weights.weight()[selection_2l2j] )
+        
+        #output["lep1_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
+        #                       pt=z_cand[selection_2l2j].lep1.pt, weight=weights.weight()[selection_2l2j] )
+        #output["lep2_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
+        #                       pt=z_cand[selection_2l2j].lep2.pt, weight=weights.weight()[selection_2l2j] )
         output["jet1_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
                                pt=good_jets[:, 0].pt, weight=weights.weight()[selection_2l2j] )
         output["jet2_pt"].fill(lepflav=lepflav[selection_2l2j], jetflav=jetflav,
