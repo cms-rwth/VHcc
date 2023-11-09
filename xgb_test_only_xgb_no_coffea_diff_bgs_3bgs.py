@@ -17,7 +17,7 @@ import json
 ## Create the folder to save the data if it doesn't exist and read in the dataframe ###
 #######################################################################################
 net_path = "/net/scratch_cms3a/vaulin/"
-folder_save = 'eval_23_07_17_2'
+folder_save = 'eval_23_08_08'
 roi = 'low_mumu'
 if not os.path.exists(f"./plot/{folder_save}"):
     os.mkdir(f"./plot/{folder_save}")
@@ -27,6 +27,17 @@ if not os.path.exists(f"./plot/{folder_save}/ROI_simple"):
 if not os.path.exists(net_path + f"plot/{folder_save}"):
     os.mkdir(net_path + f"plot/{folder_save}")
 df = pd.read_csv(f'./plot/{folder_save}/xgb_training_dataset_{roi}.csv')
+
+
+bgs = ['DY', "ZZ", "WZ", "tt", "ZHtobb"]
+bg_choice = 2
+bg_choice_2 = 0
+bg_choice_3 = 1
+
+eta = 0.03
+#eta = 0.03, 0.12, 0.3, 0.45, 0.8
+
+df = df[(df.target_bg == 0)|(df.target_bg == bg_choice+1)|(df.target_bg == bg_choice_2+1)|(df.target_bg == bg_choice_3+1)] 
 
 time = arrow.now().format("YY_MM_DD")
 plt.style.use(hep.style.ROOT)
@@ -150,9 +161,9 @@ results_zero_train = {'train': {m:[] for m in metrics},
 results_weak_train = {'train': {m:[] for m in metrics},
            'val': {m:[] for m in metrics},
            'test': {m:[] for m in metrics}}
-eta = 0.3
+
 params = {'objective' : 'binary:logistic', 'eval_metric' : 'logloss', 'eta': eta}
-with open(net_path + f"plot/{folder_save}/results_first.json", 'w') as outfile:
+with open(net_path + f"plot/{folder_save}/results_first_{eta}.json", 'w') as outfile:
     json.dump(results, outfile)
 
 
@@ -198,17 +209,17 @@ def convert(x):
         return x.tolist()
     raise TypeError(x)
 
-with open(f"./plot/{folder_save}/results_lr_{eta}.json", 'w') as outfile:
+with open(f"./plot/{folder_save}/results_lr_{eta}_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}.json", 'w') as outfile:
     #json.dump(results, outfile, indent = 4)
     str_j = json.dumps(results, indent = 4, sort_keys = True, default=convert)
     outfile.write(str_j)
 
-with open(f"./plot/{folder_save}/results_zero_train_lr_{eta}.json", 'w') as outfile:
+with open(f"./plot/{folder_save}/results_zero_train_lr_{eta}_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}.json", 'w') as outfile:
     #json.dump(results, outfile, indent = 4)
     str_j = json.dumps(results_zero_train, indent = 4, sort_keys = True, default=convert)
     outfile.write(str_j)
 
-with open(f"./plot/{folder_save}/results_weak_train_lr_{eta}.json", 'w') as outfile:
+with open(f"./plot/{folder_save}/results_weak_train_lr_{eta}_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}.json", 'w') as outfile:
     #json.dump(results, outfile, indent = 4)
     str_j = json.dumps(results_weak_train, indent = 4, sort_keys = True, default=convert)
     outfile.write(str_j)
@@ -252,21 +263,21 @@ fig.update_layout(template = 'plotly_white', title_x = 0.5, xaxis_title = 'FPR (
 fig.update_yaxes(range = [0,1], gridcolor = c_grid, scaleanchor = 'x', scaleratio = 1, linecolor = 'black')
 fig.update_xaxes(range = [0,1], gridcolor = c_grid, constrain = 'domain', linecolor = 'black') 
 
-fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_eff.jpg")
-fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_eff.pdf")
+fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_eff_{eta}.jpg")
+fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_eff_{eta}.pdf")
 
 
 fig = go.Figure([go.Scatter(x = 1 - fpr_mean, y = tpr_upper, line = dict(color = c_line, width = 1), hoverinfo = 'skip', showlegend = False, name = 'upper'),
                  go.Scatter(x = 1 - fpr_mean, y = tpr_lower, fill = 'tonexty', fillcolor = c_fill, line = dict(color = c_line, width = 1), hoverinfo = 'skip', showlegend = False, name = 'lower'),
                  go.Scatter(x = 1 - fpr_mean, y = tpr_mean, line = dict(color = c_line_main, width = 2), hoverinfo = 'skip', showlegend = True, name = f'AUC: {auc:.3f}')])
 
-fig.add_shape(type = 'line', line = dict(dash = 'dash'), x0 = 0, x1 = 1, y0 = 0, y1 = 1)
+fig.add_shape(type = 'line', line = dict(dash = 'dash'), x0 = 0, x1 = 1, y0 = 1, y1 = 0)
 fig.update_layout(template = 'plotly_white', title_x = 0.5, xaxis_title = '1 - FPR (Background rejection)', yaxis_title = 'TPR (signal efficiency)', width = 800, height = 800, legend = dict( yanchor = 'bottom', xanchor = 'right', x = 0.95, y = 0.01,))
 fig.update_yaxes(range = [0,1], gridcolor = c_grid, scaleanchor = 'x', scaleratio = 1, linecolor = 'black')
 fig.update_xaxes(range = [0,1], gridcolor = c_grid, constrain = 'domain', linecolor = 'black') 
 
-fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_rej.jpg")
-fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_rej.pdf")
+fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_rej_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.jpg")
+fig.write_image(f"./plot/{folder_save}/ROI_simple/plotly_ROC_bg_rej_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.pdf")
 
 ##################################################################################################
 ########## Actual hyperparameter tuning ##########################################################
@@ -356,7 +367,7 @@ plt.ylabel("Feature names")
 plt.title('Importance plot')
 plt.legend([''])
 #plt.show()
-plt.savefig(f"./plot/{folder_save}/importance.jpg")
+plt.savefig(f"./plot/{folder_save}/importance_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.jpg")
 
 feature_importance = model.get_score(importance_type = 'weight')
 keys = list(feature_importance.keys())
@@ -379,13 +390,13 @@ ax2.set_xlabel('Feature scores')
 ax2.set_ylabel("Feature names")
 ax2.set_title('Importance plot')
 #plt.show()
-plt.savefig(f"./plot/{folder_save}/ROI_simple/importance_train.jpg")
+plt.savefig(f"./plot/{folder_save}/ROI_simple/importance_train_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.jpg")
 
 plt.figure(figsize=(17,12))
 plot_tree(xgb_cl, fmap = 'feature_map.txt')
 plt.title('Decision tree graph')
 #plt.show()
-plt.savefig(f"./plot/{folder_save}/ROI_simple/boost_tree.jpg", dpi = 1800)
+plt.savefig(f"./plot/{folder_save}/ROI_simple/boost_tree_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.jpg", dpi = 1800)
 ###result = 1/(1+np.exp(leaf_value))) for belonging to calss 1
 #plt.show()'''
 
@@ -393,7 +404,7 @@ plt.figure(figsize=(17,12))
 plot_tree(model_xgb, fmap = 'feature_map.txt')
 plt.title('Decision tree graph')
 #plt.show()
-plt.savefig(f"./plot/{folder_save}/ROI_simple/boost_tree_train.jpg", dpi = 1800)
+plt.savefig(f"./plot/{folder_save}/ROI_simple/boost_tree_train_bg_{bgs[bg_choice]}_{bgs[bg_choice_2]}_{bgs[bg_choice_3]}_{eta}.jpg", dpi = 1800)
 ###result = 1/(1+np.exp(leaf_value))) for belonging to calss 1
 #plt.show()'''
 '''

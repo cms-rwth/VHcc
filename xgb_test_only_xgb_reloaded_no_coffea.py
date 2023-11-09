@@ -14,7 +14,7 @@ from sklearn.model_selection import RepeatedKFold
 import json
 
 net_path = "/net/scratch_cms3a/vaulin/"
-folder_save = 'eval_23_05_02'
+folder_save = 'eval_23_06_26_2'
 if not os.path.exists(f"./plot/{folder_save}"):
     os.mkdir(f"./plot/{folder_save}")
 if not os.path.exists(net_path + f"plot/{folder_save}"):
@@ -133,22 +133,22 @@ def pretty_ROC_Curve(tr_set, kind, type):
     fig.update_yaxes(range = range_plot_y, gridcolor = c_grid, scaleanchor = 'x', scaleratio = 1, linecolor = 'black')
     fig.update_xaxes(range = range_plot_x, gridcolor = c_grid, constrain = 'domain', linecolor = 'black') 
 
-    fig.write_image(net_path + f"plot/{folder_save}/plotly_ROC_bg_rej_reloaded_{type}_lr_{learning_rate}_rangex_{range_plot_x}_rangey_{range_plot_y}_kind_{kind}.jpg")
-    fig.write_image(net_path + f"plot/{folder_save}/plotly_ROC_bg_rej_reloaded_{type}_lr_{learning_rate}_rangex_{range_plot_x}_rangey_{range_plot_y}_kind_{kind}.pdf")
+    fig.write_image(f"./plot/{folder_save}/plotly_ROC_bg_rej_reloaded_{type}_lr_{learning_rate}_rangex_{range_plot_x}_rangey_{range_plot_y}_kind_{kind}.jpg")
+    fig.write_image(f"./plot/{folder_save}/plotly_ROC_bg_rej_reloaded_{type}_lr_{learning_rate}_rangex_{range_plot_x}_rangey_{range_plot_y}_kind_{kind}.pdf")
 
 
-pretty_ROC_Curve(net_path + f"plot/{folder_save}/results_lr_{learning_rate}.json", kind, "full")
+pretty_ROC_Curve(f"./plot/{folder_save}/results_lr_{learning_rate}.json", kind, "full")
 ##############################################################################################################################################################
 ##################### Zero train ROC #########################################################################################################################
 ##############################################################################################################################################################
 
-pretty_ROC_Curve(net_path + f"plot/{folder_save}/results_zero_train_lr_{learning_rate}.json", kind, 'zero')
+pretty_ROC_Curve(f"./plot/{folder_save}/results_zero_train_lr_{learning_rate}.json", kind, 'zero')
 
 ##############################################################################################################################################################
 ##################### Weak train ROC #########################################################################################################################
 ##############################################################################################################################################################
 
-pretty_ROC_Curve(net_path + f"plot/{folder_save}/results_weak_train_lr_{learning_rate}.json", kind, 'weak')
+pretty_ROC_Curve(f"./plot/{folder_save}/results_weak_train_lr_{learning_rate}.json", kind, 'weak')
 
 ##############################################################################################################################################################
 
@@ -223,7 +223,7 @@ plt.ylabel("Feature names")
 plt.title('Importance plot')
 plt.legend([''])
 #plt.show()
-plt.savefig(net_path + f"plot/{folder_save}/importance.jpg")
+plt.savefig(f"./plot/{folder_save}/importance.jpg")
 
 
 feature_importance = model_xgb.get_score(importance_type = 'weight')
@@ -247,14 +247,14 @@ ax2.set_xlabel('Feature scores')
 ax2.set_ylabel("Feature names")
 ax2.set_title('Importance plot')
 #plt.show()
-plt.savefig(net_path + f"plot/{folder_save}/importance_train_lr_{learning_rate}.jpg")
+plt.savefig(f"./plot/{folder_save}/importance_train_lr_{learning_rate}.jpg")
 
 
 plt.figure(figsize=(17,12))
 plot_tree(xgb_cl, fmap = 'feature_map.txt')
 plt.title('Decision tree graph')
 #plt.show()
-plt.savefig(net_path + f"plot/{folder_save}/boost_tree.jpg", dpi = 1800)
+plt.savefig(f"./plot/{folder_save}/boost_tree.jpg", dpi = 1800)
 ###result = 1/(1+np.exp(leaf_value))) for belonging to calss 1
 #plt.show()'''
 
@@ -262,7 +262,7 @@ plt.figure(figsize=(17,12))
 plot_tree(model_xgb, fmap = 'feature_map.txt')
 plt.title('Decision tree graph')
 #plt.show()
-plt.savefig(net_path + f"plot/{folder_save}/boost_tree_train_lr_{learning_rate}.jpg", dpi = 1800)
+plt.savefig(f"./plot/{folder_save}/boost_tree_train_lr_{learning_rate}.jpg", dpi = 1800)
 ###result = 1/(1+np.exp(leaf_value))) for belonging to calss 1
 #plt.show()'''
 
@@ -273,7 +273,7 @@ plt.hist(y_test, bins = 40, facecolor = 'orange', edgecolor = 'orange', fill = F
 plt.title('Classifier output')
 plt.legend(['Train output', 'Train output after threshold','Test data'])
 #plt.show()
-plt.savefig(net_path + f"plot/{folder_save}/class_output_train_lr_{learning_rate}.jpg")
+plt.savefig(f"./plot/{folder_save}/class_output_train_lr_{learning_rate}.jpg")
 ###result = 1/(1+np.exp(leaf_value))) for belonging to calss 1
 #plt.show()'''
 

@@ -12,7 +12,7 @@ from BTVNanoCommissioning.utils.plot_utils import (
    
 )
 net_path = "/net/scratch_cms3a/vaulin/"
-folder_save = 'eval_23_08_02'
+folder_save = 'eval_23_08_06_tt'
 if not os.path.exists(f"./plot/{folder_save}"):
     os.mkdir(f"./plot/{folder_save}")
 if not os.path.exists(f"./plot/{folder_save}/Small_scale"):
@@ -41,7 +41,7 @@ names_sig = ['wei', 'Higgs_mass', 'Higgs_pt', 'Z_pt', 'Z_mass', 'Z_pt_gen', 'Z_m
                  'del_phi_l2_subleading', 'del_phi_l2_leading'] 
 
 roiis = ['high_mumu', 'high_ee', 'low_mumu', 'low_ee']
-roi = 'high_mumu'
+roi = 'high_ee'
 ######################################################################################
 ##### Read np arrays of signal sample ################################################
 ######################################################################################
@@ -111,8 +111,8 @@ df_s_new_np.to_csv(f'./plot/{folder_save}/numpy_data_signal.csv', sep=',', encod
 ##### Read np arrays of background sample ############################################
 ######################################################################################
 data_path = 'condor_back_07_early/'
-paths_np_back = [str(x) for x in Path(data_path + "DYJetsToLL_nlo_vau_bg").glob("**/*.npy") if ("_full" in str(x))] 
-#paths_np_back = [str(x) for x in Path(data_path + "TTTo2L2Nu_vau_bg").glob("**/*.npy") if ("_full" in str(x))] 
+#paths_np_back = [str(x) for x in Path(data_path + "DYJetsToLL_nlo_vau_bg").glob("**/*.npy") if ("_full" in str(x))] 
+paths_np_back = [str(x) for x in Path(data_path + "TTTo2L2Nu_vau_bg").glob("**/*.npy") if ("_full" in str(x))] 
 #paths_np_back = [str(x) for x in Path("./condor_back_04_mid/DYJetsToLL_nlo_vau_bg").glob("**/*.npy") if ("_full" in str(x))] 
 #print(paths_np_back)TTTo2L2Nu_vau_bg
 print(len(paths_np_back))
@@ -164,7 +164,6 @@ for col in names_sig:
 print(df_b_new_np)
 df_b_new_np.to_csv(f'./plot/{folder_save}/numpy_data_bg.csv', sep=',', encoding='utf-8', index=False)
 ######################################################################################
-folder_save = 'eval_23_08_02'
 df = pd.concat([df_s_new_np, df_b_new_np], ignore_index = True)
 print(df)
 print(df.info())
@@ -181,7 +180,7 @@ names_sig_updated = ['m(H)', '$p_t$(H)', '$p_t$(Z)', 'm(Z)', '$p_t$($Z_{gen}$)',
 
 c = 0
 
-
+df_hists = pd.DataFrame([], columns = [f'{col}_{rois}' for col in names_sig for rois in roiis])
 for col in names_sig[1:]:
     
     plt.figure(figsize=(10,10))
@@ -222,6 +221,7 @@ for col in names_sig[1:]:
 
     counts11, bins11 = np.histogram(np.array(df[f'{col}_{roi}'][:len_sig]),bins = 80)
     counts22, bins22 = np.histogram(np.array(df[f'{col}_{roi}'][len_sig:]),bins =80)
+    df_hists[f'{col}_{roi}'] = np.array(counts22)
     ## plot reference
     hep.histplot(
         np.histogram(np.array(df[f'{col}_{roi}'][:len_sig]),bins = 80, weights = np.array(df[f'wei_{roi}'][:len_sig])),
@@ -564,57 +564,135 @@ for col in names_sig[1:]:
     
     c += 1
     
-    
-fig, ((ax), (rax)) = plt.subplots(
-2, 1, figsize=(10, 10), gridspec_kw={"height_ratios": (3, 1)}, sharex=True
-)
-fig.subplots_adjust(hspace=0.06, top=0.92, bottom=0.1, right=0.97)
-hep.cms.label("Private work", com="13.6", data=True, loc=0, ax=ax)
+df_hists.to_csv(f'./plot/{folder_save}/hists_{roi}.csv', sep=',', encoding='utf-8', index=False)
+
+def gaussian(x, height, center, width, offset):
+    return height*np.exp(-(x-center)**2/(2*width**2)) + offset
+  
+def gaussiansin(x, height, center, width, offset, k, w):
+    return height*np.exp(-(x-center)**2/(2*width**2)) + offset + k*np.sin(x*w)
+  
+def chiq2_gauss(x,y,sig,N,a):
+    chiq1 = 0
+    for i in range(0,N):
+        chiq1 += ((y[i]-gaussian(x[i], a[0], a[1], a[2], a[3]))/sig[i])**2
+    chiq1 = chiq1/(N-4)
+    return chiq1
+  
+def chiq2_gausssin(x,y,sig,N,a):
+    chiq1 = 0
+    for i in range(0,N):
+        chiq1 += ((y[i]-gaussiansin(x[i], a[0], a[1], a[2], a[3], a[4], a[5]))/sig[i])**2
+    chiq1 = chiq1/(N-6)
+    return chiq1
+
+import scipy 
 counts2, bins2 = np.histogram(np.array(df[f'del_phi_jj_{roi}'][len_sig:]),bins = 80, weights = np.array(df[f'wei_{roi}'][len_sig:]), density = True)
 
 counts22, bins22 = np.histogram(np.array(df[f'del_phi_jj_{roi}'][len_sig:]),bins = 80)
-## plot compare list
-hep.histplot(
-        np.histogram(np.array(df[f'del_phi_jj_{roi}'][len_sig:]),bins =80),
-        label='DY bg',
-        histtype="step",
-        color='g',
-        yerr=True,
-        ax=ax,
-        density = False,        )
-    # plot ratio of com/Ref
-    
-counts2, bins2 = np.histogram(np.array(df[f'del_phi_jj_{roi}'][len_sig:]),bins = 80, weights = np.array(df[f'wei_{roi}'][len_sig:]), density = True)
-#ratio = np.divide(counts1, counts2, where = (counts2 != 0))
-#sigratio = ratio * np.sqrt(np.where(counts1>0, (counts11/counts1**2) * 1/(np.sum(counts11))**(2) , 0) + np.where(counts2>0, (counts22/counts2**2) * 1/(np.sum(counts22))**(2), 0))
-#plt.errorbar(bins1[:-1], ratio, yerr = np.abs(sigratio), color = "k", fmt = '.', marker = 'o', markeredgecolor = 'k')
-#plt.plot(bins1[:-1], [1]*len(ratio), '--', color = 'black')
-    
-    
-##  plot settings, adjust range
-rax.set_xlabel(f'$\Delta\Phi(j1, j2)$ {roi}')
-ax.set_xlabel(None)
-ax.set_ylabel("Events (normalised)")
-rax.set_ylabel('$\\frac{Signal}{Background}$')
-ax.ticklabel_format(style="sci", scilimits=(-3, 3))
-ax.get_yaxis().get_offset_text().set_position((-0.065, 1.05))
-ax.legend()
-rax.set_ylim(0.0, 2.0)
-xmin, xmax, maxval, minval = autoranger(np.array(df[f'del_phi_jj_{roi}'][:len_sig]))
-rax.set_xlim(minval, maxval)
-at = AnchoredText(
-        "",
-        loc=2,
-        frameon=False,
-    )
-ax.add_artist(at)
-hep.mpl_magic(ax=ax)
-ax.set_ylim(bottom=0)
 
-logext = ""
+from scipy.fft import fft, fftfreq
+from scipy import stats
+
+yf = fft(counts22)
+
+sampling_rate = 40
+
+xf = fftfreq(sampling_rate*2, 1/ sampling_rate)
+
+plt.figure(figsize = (13,8))
+plt.plot(xf, np.abs(yf))
+plt.savefig(f"./plot/{folder_save}/compare_FFT_{roi}.pdf")
+plt.savefig(f"./plot/{folder_save}/compare_FFT_{roi}.jpg")
+
+popt_s ,pcov_s = scipy.optimize.curve_fit(gaussiansin, bins22[:-1], counts22, sigma = np.sqrt(np.array(counts22)), absolute_sigma = True, p0= [100, 1.5, 0.5, 100, 1, 12])
+
+popt_g ,pcov_g = scipy.optimize.curve_fit(gaussian, bins22[:-1], counts22, sigma = np.sqrt(np.array(counts22)), absolute_sigma = True, p0= [100, 1.5, 0.5, 100])
+
+print("params gauss: ", popt_g)
+print("params gauss + sin : ", popt_s)
+
+print('\n Chi^2/dof of gauss sine is', chiq2_gausssin(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_s))
+print('\n Chi^2 of gauss sine is', 6*chiq2_gausssin(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_s))
+
+print('\n Chi^2/dof of gauss peak is', chiq2_gauss(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_g))
+print('\n Chi^2 of gauss peak is', 4*chiq2_gauss(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_g))
+
+p_val_sin = 1- stats.chi2.cdf(x=6*chiq2_gausssin(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_s), df=len(counts22)-6)
+p_val_gauss = 1- stats.chi2.cdf(x=4*chiq2_gauss(bins22[:-1], counts22, np.sqrt(np.array(counts22)), len(bins22[:-1]), popt_g), df=len(counts22)-4)
+
+print("p-value of gauss is: ", p_val_gauss, 1-p_val_gauss)
+print("p-value of gauss + sin is: ", p_val_sin, 1- p_val_sin)
+## plot compare list
+def plot_data(x, y, unc, params, residuals, residuals_errors, pulls, pulls_errors, x_label, y_label, ylims, axes):
+    xlin = np.linspace(0, 3.2)
+    # Plot measurements and fitted parabola
+    axes[0].errorbar(x, y, unc, linestyle='None', color='blue', fmt='.', label='DY bg')
+    axes[0].plot(xlin, gaussian(xlin, *params), color='red', label='Fitted gaussian')
+    axes[0].set_xlabel(x_label)
+    axes[0].set_xlim(0, 3.2)
+    axes[0].set_ylabel(y_label)
+    axes[0].set_ylim(ylims[0], ylims[1])
+    axes[0].legend()
+    axes[0].grid(True)
+    # Plot residuals
+    axes[1].errorbar(x, residuals, yerr=residuals_errors, color='green', capsize=3, fmt='.', ls='')
+    axes[1].axhline(0, color='red', linestyle='--')
+    axes[1].set_xlabel(x_label)
+    axes[1].set_ylabel('Residuals')
+    axes[1].grid(True)
+    # Plot pulls
+    axes[2].errorbar(x, pulls, yerr=pulls_errors, color='purple', capsize=3, fmt='.', ls='')
+    axes[2].axhline(0, color='red', linestyle='--')
+    axes[2].set_xlabel(x_label)
+    axes[2].set_ylabel('Pulls')
+    axes[2].grid(True)
     
-fig.savefig(f"./plot/{folder_save}/Small_scale/compare_{col}_{roi}.pdf")
-fig.savefig(f"./plot/{folder_save}/Small_scale/compare_{col}_{roi}.jpg")
+def plot_data_sin(x, y, unc, params, residuals, residuals_errors, pulls, pulls_errors, x_label, y_label, ylims, axes):
+    xlin = np.linspace(0, 3.2)
+    # Plot measurements and fitted parabola
+    axes[0].errorbar(x, y, unc, linestyle='None', color='blue', fmt='.', label='DY bg')
+    axes[0].plot(xlin, gaussiansin(xlin, *params), color='red', label='Fitted gaussian + sin')
+    axes[0].set_xlabel(x_label)
+    axes[0].set_xlim(0, 3.2)
+    axes[0].set_ylabel(y_label)
+    axes[0].set_ylim(ylims[0], ylims[1])
+    axes[0].legend()
+    axes[0].grid(True)
+    # Plot residuals
+    axes[1].errorbar(x, residuals, yerr=residuals_errors, color='green', capsize=3, fmt='.', ls='')
+    axes[1].axhline(0, color='red', linestyle='--')
+    axes[1].set_xlabel(x_label)
+    axes[1].set_ylabel('Residuals')
+    axes[1].grid(True)
+    # Plot pulls
+    axes[2].errorbar(x, pulls, yerr=pulls_errors, color='purple', capsize=3, fmt='.', ls='')
+    axes[2].axhline(0, color='red', linestyle='--')
+    axes[2].set_xlabel(x_label)
+    axes[2].set_ylabel('Pulls')
+    axes[2].grid(True)
+    
+error_count = np.sqrt(np.array(counts22))
+res_gauss = np.array(counts22) - gaussian(bins22[:-1], *popt_g)
+res_gauss_sin = np.array(counts22) - gaussiansin(bins22[:-1], *popt_s)
+
+pulls_gauss = res_gauss/error_count
+pulls_gauss_sin = res_gauss_sin/error_count
+pulls_err_gauss = np.sqrt(error_count**2)/error_count
+
+fig, axes = plt.subplots(3, 2, figsize=(10, 8), sharex=True)
+yAxisRange = [0, 400]
+# Plot the first column (existing data)
+plot_data(bins22[:-1], counts22, error_count, popt_g, res_gauss, error_count, pulls_gauss, pulls_err_gauss, 'x', 'y', yAxisRange, axes[:, 0])
+# Plot the second column (strange data)
+plot_data_sin(bins22[:-1], counts22, error_count, popt_s, res_gauss_sin, error_count, pulls_gauss_sin, pulls_err_gauss, 'x', 'y (+sin)', yAxisRange, axes[:, 1])
+# Adjust spacing between subplots
+fig.subplots_adjust(hspace=0)
+fig.subplots_adjust(wspace=0.3)
+#plt.show()
+
+fig.savefig(f"./plot/{folder_save}/compare_del_phi_jj_chi_{roi}.pdf")
+fig.savefig(f"./plot/{folder_save}/compare_del_phi_jj_chi_{roi}.jpg")
 
 X = df.drop("target", axis = 1)
 print(X)
