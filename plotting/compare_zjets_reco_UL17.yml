@@ -3,14 +3,12 @@ scaleToLumi : True
 
 ## Required, input files
 input :
-# - output_recoZjets_Data_v11/output.coffea
-# - output_recoZjets_Data_v14/output.coffea
-# - output_recoZjets_Data_v48/output.coffea
-# - output/recoZjets_All_v01/output.coffea  # With LepSFs (mu and ele wp90)
-# - output/recoZjets_All_v03/output.coffea   # No LepSFs
-# - output/recoZjets_All_v13/output.coffea   # New ELE ID, same as Meng
-# - output/recoZjets_UL17_v02/output.coffea   # Another update of ELE ID, sip3d cut and SF for noiso ID (No Zpt cut)
-  - output/recoZjets_UL17_v24/output.coffea  # Zpt > 60 cut
+#  - output/recoZjets_UL17_v02/output.coffea   # Another update of ELE ID, sip3d cut and SF for noiso ID (No Zpt cut)
+#  - output/recoZjets_UL17_v24/output.coffea  # Zpt > 60 cut
+
+## After bug fixes:
+#   - output/recoZjets_UL17_v34/output.coffea  # Zpt>0
+   - output/recoZjets_UL17_v37/output.coffea  # Zpt>60
 
 mergemap:
    MiNNLO:
@@ -50,9 +48,9 @@ reference:
       label: Data
       color : Black
 
-## Required, compare dict
 compare:
     MLM:
+      #label: MLM
       label: MLM x1.33
       color : 'C2'
     FxFx:
@@ -98,6 +96,7 @@ variable :
       axis:
         lepflav: sum
       xlabel: "dR(lep1, lep2)"
+
     njet25:
       axis:
         lepflav: sum
@@ -105,12 +104,10 @@ variable :
     lep1_pt:
       axis:
         lepflav: sum
-        jetflav: sum
-
     lep2_pt:
       axis:
         lepflav: sum
-        jetflav: sum
+
     jet1_pt:
       axis:
         lepflav: sum

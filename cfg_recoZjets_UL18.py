@@ -8,7 +8,9 @@ cfg = {
     "user": {"debug_level": 0,
              "cuts": {
                  "vpt": 0
-             }
+             },
+             "trigger": "double"
+             #"trigger": "single"
          },
     "dataset": {
         "jsons": [

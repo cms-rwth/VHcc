@@ -5,7 +5,9 @@ norm : True
 ## Required, input files
 input :
 #  - output_GenZjets_v17/output.coffea  # VPT>0; added LHE_Njets bins
-  - output_GenZjets_v21/output.coffea  # VPT>60; and 2l2j for dilep plots
+#  - output_GenZjets_v21/output.coffea  # VPT>60; and 2l2j for dilep plots
+#  - output/output_GenZjets_v28/output.coffea
+  - /user/andreypz/cernbox/projects/Hcc/VplusJets/plots_2023_11_09_GenPlots_ZPt0/output.coffea
 
 mergemap:
    MiNNLO:

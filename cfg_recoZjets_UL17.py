@@ -8,7 +8,9 @@ cfg = {
     "user": {"debug_level": 0,
              "cuts": {
                  "vpt": 60
-             }
+             },
+             "trigger": "double"
+             #"trigger": "single"
          },
     "dataset": {
         "jsons": [
@@ -48,7 +50,7 @@ cfg = {
                 "LSF": {
                     "ele_Reco 2017": "RecoAbove20",
                     "ele_Reco_low 2017": "RecoBelow20",
-                    "ele_ID 2017": "wp80noiso",
+                    "ele_ID 2017": "wp80iso",
                     "mu_Reco 2017_UL": "NUM_TrackerMuons_DEN_genTracks",
                     "mu_HLT 2017_UL": "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight",
                     "mu_ID 2017_UL": "NUM_TightID_DEN_TrackerMuons",
@@ -69,12 +71,12 @@ cfg = {
     "run_options": {
         "executor": "parsl/condor", "workers": 1,  "limit": None,
         #"executor": "futures", "workers": 10,  "limit": 1,
-        "scaleout": 200,
+        "scaleout": 250,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,
         "max": None,
-        "skipbadfiles": True,
+        "skipbadfiles": False,
         "voms": None,
         "retries": 20,
         "splitjobs": False,

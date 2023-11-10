@@ -10,7 +10,7 @@ from VHcc.workflows.genZjets import (
 cfg = {
     "user": {"debug_level": 0,
              "cuts": {
-                 "vpt": 0
+                 "vpt": 60
              }
          },
     "dataset": {
@@ -32,8 +32,6 @@ cfg = {
                 "DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos",
                 "DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos",
-                #"DYToLL_NLO_5FS_TuneCH3_13TeV_matchbox_herwig7",
-                #"DYJets_UNLOPS"
                 "DYjetstomumu_01234jets_Pt-0ToInf_13TeV-sherpa", # NanoV7 2016 sample
                 "DYJetsToLL_M-50_TuneCH3_13TeV-madgraphMLM-herwig7",
             ],
@@ -42,11 +40,11 @@ cfg = {
     },
     # Input and output files
     "workflow": zjets,
-    "output": "output_GenZjets",
+    "output": "output/GenZjets",
     "run_options": {
-        #"executor": "parsl/condor", "workers": 1, "limit": None,
-        "executor": "futures", "workers": 10, "limit": 1,
-        "scaleout": 200,
+        "executor": "parsl/condor", "workers": 1, "limit": None,
+        #"executor": "futures", "workers": 10, "limit": 1,
+        "scaleout": 100,
         "walltime": "01:00:00",
         "mem_per_worker": 2,  # GB
         "chunk": 500000,

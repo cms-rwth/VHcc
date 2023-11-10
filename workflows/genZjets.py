@@ -56,8 +56,10 @@ class NanoProcessor(processor.ProcessorABC):
         }
         multi_axis = {
             # "dataset"     : Hist.axis.StrCategory([],      name="dataset", label="Primary dataset", growth=True),
-            "lep_eta": Hist.axis.Regular(50, -5, 5, name="lep_eta", label="lep_eta"),
-            "lep_pt": Hist.axis.Regular(50, 0, 500, name="lep_pt", label="lep_pt"),
+            "lep1_pt": Hist.axis.Regular(50, 0, 150, name="lep1_pt", label="Leading lepton pt"),
+            "lep1_eta": Hist.axis.Regular(50, -3.5, 3.5, name="lep1_eta", label="Leading lepton eta"),
+            "lep2_pt": Hist.axis.Regular(50, 0, 150, name="lep2_pt", label="Subeading lepton pt"),
+            "lep2_eta": Hist.axis.Regular(50, -3.5, 3.5, name="lep2_eta", label="Subeading lepton eta"),
             "dilep_m": Hist.axis.Regular(100, 50, 120, name="dilep_m", label="dilep_m"),
             "dilep_pt": Hist.axis.Regular(
                 100, 0, 400, name="dilep_pt", label="dilep_pt"
@@ -301,8 +303,10 @@ class NanoProcessor(processor.ProcessorABC):
             dilep_pt=ak.flatten(vpt[selection_2l]), weight=weight_2l
         )
 
-        output["lep1_pt"].fill(lepflav=lepflav_2l, lep_pt=leptons.pt[selection_2l][:, 0], weight=weight_2l)
-        output["lep1_eta"].fill(lepflav=lepflav_2l,lep_eta=leptons.eta[selection_2l][:, 0], weight=weight_2l)
+        output["lep1_pt"].fill(lepflav=lepflav[selection_2l], lep1_pt=leptons.pt[selection_2l][:, 0], weight=weight_2l)
+        output["lep1_eta"].fill(lepflav=lepflav[selection_2l],lep1_eta=leptons.eta[selection_2l][:, 0], weight=weight_2l)
+        output["lep2_pt"].fill(lepflav=lepflav[selection_2l], lep2_pt=leptons.pt[selection_2l][:, 0], weight=weight_2l)
+        output["lep2_eta"].fill(lepflav=lepflav[selection_2l],lep2_eta=leptons.eta[selection_2l][:, 0], weight=weight_2l)
 
         # Plots with 2L2J selection
 

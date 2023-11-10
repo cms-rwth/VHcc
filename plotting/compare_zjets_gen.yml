@@ -3,15 +3,10 @@ scaleToLumi : True
 
 ## Required, input files
 input :
- # - output_zjets_v73/output.coffea
- # - output_zjets_v08/output.coffea
- # - output_GenZjets_v21/output.coffea  # using 2016 samples
- # - output_GenZjets_v27/output.coffea  # using 2016 samples, with VPT>0 cut
- # - output_GenZjets_v08/output.coffea  # 2017 samples with VPT>60;  2023-Oct-02
- # - output_GenZjets_v11/output.coffea  # 2017 samples with VPT>60; Better binning; 2023-Oct-04
  #  - output_GenZjets_v23/output.coffea  # VPT>60; and 2l2j for dilep plots; LHE_NJets bins
-  - output_GenZjets_v32/output.coffea # Same with MLM+Herwig sample
-
+ #  - output_GenZjets_v32/output.coffea # Same with MLM+Herwig sample
+ # - output_GenZjets_v43/output.coffea # everything after bug fixes
+  - output/output_GenZjets_v28/output.coffea # Everything and Zpt>60
 
 mergemap:
    MiNNLO:
@@ -22,10 +17,10 @@ mergemap:
    #MiNNLO_Zpt_priv:
    #   list:
    #    - DYJetsToMuMu_BornSuppressV3_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
-   #MiNNLO_Zpt_offi:
-   #   list:
-   #    - DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
-   #    - DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
+   MiNNLO_Zpt_offi:
+      list:
+       - DYJetsToMuMu_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
+       - DYJetsToEE_M-50_TuneCP5_ZptWeighted_13TeV-powhegMiNNLO-pythia8-photos
    MLM:
       list:
        - DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8
@@ -65,9 +60,9 @@ compare:
     #MiNNLO_Zpt_priv:
     #   label: MiNNLO_Zpt_priv
     #   color: 'C1'
-    #MiNNLO_Zpt_offi:
-    #   label: MiNNLO_Zpt_offi
-    #   color: 'C5'
+    MiNNLO_Zpt_offi:
+       label: MiNNLO_Zpt_offi
+       color: 'C5'
     Sherpa:
        label: Sherpa
        color: 'C6'
@@ -115,14 +110,31 @@ variable:
      xlabel: "dR(jj) in bin LHE_NJet=1"
 
    dilep_m:
-      xlabel: $M(\ell\ell)$
+     axis:
+       lepflav: sum
+     xlabel: $M(\ell\ell)$
 
    dilep_pt:
-      xlabel: $p_T(\ell\ell)$
+     axis:
+       lepflav: sum
+     xlabel: $p_T(\ell\ell)$
 
    njet25:
      xlabel: Njets (with $p_T>25; |\eta|<2.4$)
-
+   
+   lep1_pt:
+     axis:
+       lepflav: sum
+   lep2_pt: 
+     axis:
+       lepflav: sum
+ 
+   lep1_eta:
+     axis:
+       lepflav: sum
+   lep2_eta:  
+     axis:
+       lepflav: sum
 
    nlep:
    LHE_Vpt:

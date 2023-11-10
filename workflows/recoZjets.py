@@ -209,38 +209,41 @@ class NanoProcessor(processor.ProcessorABC):
         # -----------------
         # Trigger selection
         # =================
-        """
-        trigger_mm = np.zeros(nEvents, dtype='bool')
-        trigger_ee = np.zeros(nEvents, dtype='bool')
 
-        for t in self._mumu_hlt[self._year]:
-            if t in events.HLT.fields:
-                trigger_mm = trigger_mm | events.HLT[t]
+        if self.cfg.user["trigger"]=="double":
+            
+            trigger_mm = np.zeros(nEvents, dtype='bool')
+            trigger_ee = np.zeros(nEvents, dtype='bool')
+            
+            for t in self._mumu_hlt[self._year]:
+                if t in events.HLT.fields:
+                    trigger_mm = trigger_mm | events.HLT[t]
 
-        for t in self._ee_hlt[self._year]:
-            if t in events.HLT.fields:
-                trigger_ee = trigger_ee | events.HLT[t]
+            for t in self._ee_hlt[self._year]:
+                if t in events.HLT.fields:
+                    trigger_ee = trigger_ee | events.HLT[t]
 
-        selection.add('trigger_ee', ak.to_numpy(trigger_ee))
-        selection.add('trigger_mm', ak.to_numpy(trigger_mm))
-        #del trigger_ee
-        #del trigger_mm
-        
-        """
-        trigger_SingleMu = np.zeros(nEvents, dtype='bool')
-        trigger_SingleEl = np.zeros(nEvents, dtype='bool')
+            selection.add('trigger_ee', ak.to_numpy(trigger_ee))
+            selection.add('trigger_mm', ak.to_numpy(trigger_mm))
 
-        for t in self._SingleMu_hlt[self._year]:
-            if t in events.HLT.fields:
-                trigger_SingleMu = trigger_SingleMu | events.HLT[t]
+        elif self.cfg.user["trigger"]=="single":
 
-        for t in self._SingleEl_hlt[self._year]:
-            if t in events.HLT.fields:
-                trigger_SingleEl = trigger_SingleEl | events.HLT[t]
+            trigger_SingleMu = np.zeros(nEvents, dtype='bool')
+            trigger_SingleEl = np.zeros(nEvents, dtype='bool')
 
-        selection.add('trigger_SingleMu', ak.to_numpy(trigger_SingleMu))
-        selection.add('trigger_SingleEl', ak.to_numpy(trigger_SingleEl))
-        
+            for t in self._SingleMu_hlt[self._year]:
+                if t in events.HLT.fields:
+                    trigger_SingleMu = trigger_SingleMu | events.HLT[t]
+
+            for t in self._SingleEl_hlt[self._year]:
+                if t in events.HLT.fields:
+                    trigger_SingleEl = trigger_SingleEl | events.HLT[t]
+
+            selection.add('trigger_SingleMu', ak.to_numpy(trigger_SingleMu))
+            selection.add('trigger_SingleEl', ak.to_numpy(trigger_SingleEl))
+        else:
+            print("Tigger now supported:", self.cfg.user["trigger"])
+            return False
 
         # ----------
         # MET filetrs
@@ -302,7 +305,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         output["nlep"].fill(nlep=(nmu+nel), weight=weights.weight())
 
-        selection.add('twoLep', ak.to_numpy((nel==2)|((nmu==2)&(nel==0))))
+        selection.add('twoLep', ak.to_numpy((nel>=2)|(nmu>=2)))
 
         # ---------------------
         # Build lepton pairs: the dileptons
@@ -315,7 +318,7 @@ class NanoProcessor(processor.ProcessorABC):
 
         pt_cut = (dileptons["lep1"].pt > 33) & (dileptons["lep2"].pt > 18)
         #Zmass_cut = np.abs( (dileptons["lep1"] + dileptons["lep2"]).mass - 91.19) < 15
-        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 0) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 2000)
+        Zmass_cut = ((dileptons["lep1"] + dileptons["lep2"]).mass > 60) & ((dileptons["lep1"] + dileptons["lep2"]).mass < 120)
         Vpt_cut = (dileptons["lep1"] + dileptons["lep2"]).pt > self.cfg.user['cuts']['vpt']
         charge_cut = (dileptons["lep1"].charge*dileptons["lep2"].charge < 0)
         #charge_cut = True
@@ -356,19 +359,20 @@ class NanoProcessor(processor.ProcessorABC):
         #lepflav = lepflav_mu*1 + lepflav_el*2
         lepflav = np.array(['mu' if x&~y else 'el' if y&~x else 'emu' for x,y in zip(lepflav_mu, lepflav_el)])
 
-        # Check sizes of arrays:
-        #print("Len z cand:", len(z_cand), "nEvents:", nEvents, len(trigger_mm), len(lepflav_mu))
-        #trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_mm, trigger_ee)])
-        trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_SingleMu, trigger_SingleEl)])
+        if self.cfg.user["trigger"]=="double":
+            trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_mm, trigger_ee)])
+            # Check sizes of arrays:
+            #print("Len z cand:", len(z_cand), "nEvents:", nEvents, len(trigger_mm), len(lepflav_mu))
+            del trigger_ee
+            del trigger_mm
+        elif self.cfg.user["trigger"]=="single":
+            trigger = np.array([m if f=='mu' else e if f=='el' else m|e for f,m,e in zip(lepflav, trigger_SingleMu, trigger_SingleEl)])
+            del trigger_SingleMu
+            del trigger_SingleEl
         #print(dataset, len(lepflav), lepflav)
         selection.add('trigger', ak.to_numpy(trigger))
-        #del trigger_ee
-        #del trigger_mm
-        del trigger_SingleMu
-        del trigger_SingleEl
         del trigger
 
-        
         selection_2l = selection.all("lumi", "trigger", "metfilter", "diLep")
         #selection_2l = selection.all("lumi", "diLep")
         output["npv0"].fill(npv=events[selection_2l].PV.npvs, lepflav=lepflav[selection_2l], weight=weights.weight()[selection_2l])
